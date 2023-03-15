@@ -1,0 +1,26 @@
+name: cGAN_2
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=11.7
+  - pip:
+      - matplotlib
+      - numpy
+      - ninja
+      - h5py
+      - tqdm
+      - imageio
+      - opencv-python
+      - PyYAML
+      - scikit-image
+      - scikit-learn
+      - scipy
+      - sigpy
