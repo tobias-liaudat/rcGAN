@@ -12,6 +12,7 @@ dependencies:
   - torchaudio
   - pytorch-cuda=11.7
   - pip:
+      - cupy-cuda11x
       - matplotlib
       - numpy
       - ninja
