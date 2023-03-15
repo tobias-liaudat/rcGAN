@@ -1,4 +1,4 @@
-checkpoint_dir: ""
+checkpoint_dir: "/disk/xray0/tl3/project-cGAN/outputs/chkp"
 data_parallel: 1
 
 sense:
@@ -10,7 +10,7 @@ sense:
 data:
   num_coils: 8
   channels: 16
-  path: "/storage/fastMRI_brain/data"
+  path: "/disk/xray0/tl3/project-cGAN/datasets/subsample_fastMRI"
   num_of_top_slices: 8
   resolution: 384
 
@@ -20,7 +20,7 @@ optimizer:
   beta_2: 0.99
 
 train:
-  batch_size: 40
+  batch_size: 12
   n_epochs: 100
   P: 2
   adv_weight: 0.01
@@ -30,13 +30,13 @@ train:
   drift_weight: 0.001
 
 validate:
-  batch_size: 40
+  batch_size: 12
   mu_std: 0.01
   psnr_threshold: 0.25
   P: 8
   cfid_P: 8
 
 test:
-  batch_size: 40
+  batch_size: 12
   P: 32
   cfid_P: 8
