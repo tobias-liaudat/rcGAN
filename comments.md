@@ -4,6 +4,7 @@
 ## Installation
 To install the requirements you can create a conda environment with everything with the following command
 `conda env create -f environment.yml`
+
 You need to have conda installed (miniconda3 recommended). You can change the name of the environment if you desire.
 
 
@@ -15,3 +16,17 @@ If you want to use a multi-GPU environment, you can set the devices with a comma
 `export CUDA_VISIBLE_DEVICES=1,2`
 
 
+# Train the model
+
+Set the data and checkpoint paths in `config/mri.yml` .
+
+Activate conda environment and set
+``` bash
+conda activate cGAN_2
+export CUDA_VISIBLE_DEVICES=0,1,2
+```
+
+To train the model as it is, one should use the three GPUs using a batch size of `12` (could be increased a little)
+``` bash
+python train.py --data-parallel --is-mri
+```
