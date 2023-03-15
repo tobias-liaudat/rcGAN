@@ -19,10 +19,10 @@ def train(args):
 
     if args.is_mri:
         with open(os.path.join('config', 'mri.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
     else:
         with open(os.path.join('config', 'inpaint.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
 
     cfg = dict2namespace(cfg)
 
@@ -146,6 +146,7 @@ if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
 
     args = create_arg_parser().parse_args()
+    print(args)
     # restrict visible cuda devices
     if args.data_parallel or (args.device >= 0):
         args.device = torch.device('cuda')
