@@ -3,7 +3,7 @@ data_parallel: 1
 
 sense:
   calib_width: 32
-  device: 3
+  device: 0
   crop: 0.70
   kernel_width: 6
 
@@ -21,13 +21,15 @@ optimizer:
 
 train:
   batch_size: 12
-  n_epochs: 100
+  n_epochs: 2
   P: 2
   adv_weight: 0.01
   l1_weight: 1
   num_iters_discriminator: 1
   gp_weight: 10
   drift_weight: 0.001
+# n_epochs: 100 (original number of epochs)
+# batch_size <= 14
 
 validate:
   batch_size: 12
