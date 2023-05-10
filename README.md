@@ -1,9 +1,8 @@
 # A Regularized Conditional GAN for Posterior Sampling in Inverse Problems [[arXiv]](https://arxiv.org/abs/2210.13389)
+
 ## Utilization Instructions
-First, install the required modules via
-```
-pip install -r requirements.txt
-```
+First, chcek the `comments.md` file for the installation.
+
 
 Next, set the location of the checkpoint directory in both config files, found in the ``config/`` folder. Then,
 download [the fastMRI dataset](https://fastmri.med.nyu.edu/) or [the celebA-HQ 256x256 dataset](https://drive.google.com/drive/folders/11Vz0fqHS2rXDb5pprgTjpD7S2BAJhi1P).
