@@ -118,7 +118,7 @@ class SelectiveSliceData(torch.utils.data.Dataset):
         self.recons_key = 'reconstruction_esc' if challenge == 'singlecoil' else 'reconstruction_rss'
 
         self.examples = []
-        os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+        # os.environ['CUDA_VISIBLE_DEVICES'] = '1' # [TL]
         files = list(pathlib.Path(root).iterdir())
 
         # remove files with wrong modality or scanner
@@ -205,7 +205,7 @@ class SelectiveSliceData_Val(torch.utils.data.Dataset):
         self.recons_key = 'reconstruction_esc' if challenge == 'singlecoil' else 'reconstruction_rss'
 
         self.examples = []
-        os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+        # os.environ['CUDA_VISIBLE_DEVICES'] = '1' # [TL]
         files = list(pathlib.Path(root).iterdir())
 
         # remove files with wrong modality or scanner
