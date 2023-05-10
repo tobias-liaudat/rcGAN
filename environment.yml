@@ -1,4 +1,4 @@
-name: cGAN_2
+name: cGAN_4
 channels:
   - pytorch
   - nvidia
@@ -11,11 +11,14 @@ dependencies:
   - torchvision
   - torchaudio
   - pytorch-cuda=11.7
+  - cudatoolkit-dev
+  - numpy=1.23.5
+  - scipy
+  - ninja
+  - cupy
   - pip:
-      - cupy-cuda11x
+      # - cupy-cuda11x
       - matplotlib
-      - numpy
-      - ninja
       - h5py
       - tqdm
       - imageio
@@ -23,5 +26,4 @@ dependencies:
       - PyYAML
       - scikit-image
       - scikit-learn
-      - scipy
       - sigpy
