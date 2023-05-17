@@ -10,9 +10,10 @@ sense:
 data:
   num_coils: 8
   channels: 16
-  path: "/disk/xray0/tl3/project-cGAN/datasets/subsample_fastMRI"
+  path: "/disk/xray0/tl3/project-cGAN/datasets/fastMRI"
   num_of_top_slices: 8
   resolution: 384
+# path: "/disk/xray0/tl3/project-cGAN/datasets/subsample_fastMRI"
 
 optimizer:
   lr: 0.001
@@ -21,7 +22,7 @@ optimizer:
 
 train:
   batch_size: 12
-  n_epochs: 2
+  n_epochs: 100
   P: 2
   adv_weight: 0.01
   l1_weight: 1
