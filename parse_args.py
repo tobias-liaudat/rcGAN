@@ -37,6 +37,8 @@ def create_arg_parser():
                         help='Which device to train on. Use idx of cuda device, or -1 for CPU')
     parser.add_argument('--plot-dir', type=str, default="",
                         help='The directory to save the plots to. This can be relative. Include a trailing slash')
+    parser.add_argument('--test-dir', type=str, default="",
+                        help='The directory to save the test results. This can be relative. Include a trailing slash')
     parser.add_argument('--num-plots', type=int,
                         help='The number of plots to generate when running plot.py')
     return parser
