@@ -19,10 +19,10 @@ def plot(args):
 
     if args.is_mri:
         with open(os.path.join('config', 'mri.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
     else:
         with open(os.path.join('config', 'inpaint.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
 
     cfg = dict2namespace(cfg)
     plotter = Plotter(cfg, args.is_mri, args.plot_dir)
