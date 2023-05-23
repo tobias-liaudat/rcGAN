@@ -20,10 +20,10 @@ def test(args):
 
     if args.is_mri:
         with open(os.path.join('config', 'mri.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
     else:
         with open(os.path.join('config', 'inpaint.yml'), 'r') as f:
-            cfg = yaml.load(f)
+            cfg = yaml.load(f, Loader=yaml.Loader)
 
     cfg = dict2namespace(cfg)
     tester = Tester(cfg, args.is_mri)
@@ -57,6 +57,18 @@ def test(args):
 
     print("Test Results:")
     print(f"CFID: {cfid_val:.2f}\nFID: {fid_val:.2f}\n{cfg.test.P}-PSNR: {np.mean(losses['psnr']):.2f}\n{cfg.test.P}-SSIM: {np.mean(losses['ssim']):.4f}\nTIME({cfg.test.batch_size}): {np.mean(losses['time'])}")
+
+    save_dict = {
+        'CFID': cfid_val,
+        'FID': fid_val,
+        'test_P': cfg.test.P,
+        'PSNR': np.mean(losses['psnr']),
+        'SSIM': np.mean(losses['ssim']),
+        'test_batch_size': cfg.test.batch_size,
+        'TIME': np.mean(losses['time']),
+    }
+    np.save(args.test_dir + 'test_results.npy', save_dict, allow_pickle=True)
+
 
 def dict2namespace(config):
     namespace = argparse.Namespace()
