@@ -65,7 +65,8 @@ def get_gan_resume(cfg, mri):
 
 def load_best_gen(cfg, mri):
     checkpoint_file_gen = pathlib.Path(
-        f'{cfg.checkpoint_dir}/generator_best_model.pt')
+        f'{cfg.checkpoint_dir}/generator_model.pt'
+    ) # TL
     checkpoint_gen = torch.load(checkpoint_file_gen, map_location=torch.device('cuda'))
 
     generator = build_generator(cfg, mri)
