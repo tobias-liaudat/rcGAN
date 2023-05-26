@@ -1,4 +1,4 @@
-checkpoint_dir: "/disk/xray0/tl3/project-cGAN/outputs/chkp"
+checkpoint_dir: "/disk/xray0/tl3/project-cGAN/outputs/model"
 data_parallel: 1
 
 sense:

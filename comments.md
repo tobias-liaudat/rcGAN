@@ -33,3 +33,22 @@ To train the model as it is, one should use the three GPUs
 ``` bash
 python train.py --data-parallel --is-mri
 ```
+
+To test the model then use run
+``` bash
+python test.py --data-parallel --is-mri --test-dir test_dir_path
+```
+
+To plot 
+``` bash
+python plot.py --data-parallel --is-mri --train-gif --num-plots 2 --plot-dir plot_dir_path 
+``` 
+
+``` python
+Test Results:
+CFID: 42.77
+FID: 55.67
+32-PSNR: -143.74
+32-SSIM: 0.1435
+TIME(12): 0.24560681792596975
+```
