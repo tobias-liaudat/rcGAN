@@ -170,4 +170,4 @@ pyrsistent==0.19.3=pypi_0
 decorator==5.1.1=pypi_0
 lightning-cloud==0.5.19=pypi_0
 httpcore==0.16.3=pypi_0
-realesrgan=0.3.0=dev_0
+realesrgan=0.3.0=pypi_0
