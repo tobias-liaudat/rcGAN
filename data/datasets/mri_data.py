@@ -163,11 +163,11 @@ class SelectiveSliceData_Test(torch.utils.data.Dataset):
             kspace = h5py.File(fname, 'r')['kspace']
 
             # if kspace.shape[-1] <= 384 or kspace.shape[1] < 8 or str(
-            #         fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
-            #         fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
-            #         fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
-            #         fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
-            #         fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_210_2100025.h5':
+            #         fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
+            #         fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
+            #         fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
+            #         fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
+            #         fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_210_2100025.h5':
             #     continue
             # else:
             num_slices = 6  # kspace.shape[0]
@@ -184,8 +184,11 @@ class SelectiveSliceData_Test(torch.utils.data.Dataset):
             target = data[self.recons_key][slice] if self.recons_key in data else None
 
             maps = None
-            with open(f'/storage/fastMRI_brain/sense_maps/test_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
-                maps = pickle.load(inp)
+            try:
+                with open(f'/share/gpu0/tl3/MRI/sense_maps/test_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
+                    maps = pickle.load(inp)
+            except:
+                maps = 1j*np.ones((8, 384, 384))
 
             return self.transform(kspace, target, data.attrs, fname.name, slice, maps)
 
@@ -253,11 +256,11 @@ class SelectiveSliceData(torch.utils.data.Dataset):
         for fname in sorted(files):
             kspace = h5py.File(fname, 'r')['kspace']
             if kspace.shape[-1] < 384 or kspace.shape[1] <= 8 or str(
-                    fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_210_2100025.h5':
+                    fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_210_2100025.h5':
                 continue
             else:
                 # if restrict_size and ((kspace.shape[1] != 640) or (kspace.shape[2] != 368)):
@@ -274,7 +277,7 @@ class SelectiveSliceData(torch.utils.data.Dataset):
         with h5py.File(fname, 'r') as data:
             maps = None
             try:
-                with open(f'/storage/fastMRI_brain/sense_maps/train_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
+                with open(f'/share/gpu0/tl3/MRI/sense_maps/train_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
                     maps = pickle.load(inp)
             except:
                 maps = 1j*np.ones((8, 384, 384))
@@ -353,11 +356,11 @@ class SelectiveSliceData_Val(torch.utils.data.Dataset):
             kspace = h5py.File(fname, 'r')['kspace']
 
             if kspace.shape[-1] <= 384 or kspace.shape[1] <= 8 or str(
-                    fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
-                fname) == '/storage/fastMRI_brain/data/multicoil_val/file_brain_AXT2_210_2100025.h5':
+                    fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_209_2090296.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_200_2000250.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_201_2010106.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_204_2130024.h5' or str(
+                fname) == '/share/gpu0/tl3/fastMRI_dataset/multicoil_val/file_brain_AXT2_210_2100025.h5':
                 continue
             else:
                 num_slices = 8  # kspace.shape[0]
@@ -374,8 +377,11 @@ class SelectiveSliceData_Val(torch.utils.data.Dataset):
             target = data[self.recons_key][slice] if self.recons_key in data else None
 
             maps = None
-            with open(f'/storage/fastMRI_brain/sense_maps/val_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
-                maps = pickle.load(inp)
+            try:
+                with open(f'/share/gpu0/tl3/MRI/sense_maps/val_full_res/{fname.name}_{slice}.pkl', 'rb') as inp:
+                    maps = pickle.load(inp)
+            except:
+                maps = 1j*np.ones((8, 384, 384))
 
             return self.transform(kspace, target, data.attrs, fname.name, slice, maps)
 
