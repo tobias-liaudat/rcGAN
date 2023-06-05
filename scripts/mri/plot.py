@@ -5,6 +5,9 @@ import types
 import json
 import pathlib
 
+import sys
+sys.path.append('/home/tl3/repos/project-rcGAN/rcGAN/')
+
 import numpy as np
 import matplotlib.patches as patches
 

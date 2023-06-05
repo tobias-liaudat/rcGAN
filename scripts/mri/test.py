@@ -6,6 +6,9 @@ import json
 import pathlib
 import lpips
 
+import sys
+sys.path.append('/home/tl3/repos/project-rcGAN/rcGAN/')
+
 import numpy as np
 
 from data.lightning.MRIDataModule import MRIDataModule
