@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=val_test_cGAN 
+#SBATCH --job-name=test_cGAN 
 #SBATCH -p GPU
 # requesting one node
 # SBATCH -N1
@@ -9,11 +9,11 @@
 #SBATCH --ntasks=1                   # nombre total de tache MPI (= nombre total de GPU)
 #SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
-#SBATCH --gres=gpu:v100:4            # requesting GPUs
+#SBATCH --gres=gpu:a100:4            # requesting GPUs
 #SBATCH --mail-use=t.liaudat@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=val_test_cGAN_%j.out
-#SBATCH --error=val_test_cGAN_%j.err
+#SBATCH --output=test_cGAN_%j.out
+#SBATCH --error=test_cGAN_%j.err
 
 
 
@@ -35,6 +35,6 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/tl3/repos/project-rcGAN/rcGAN
 
-srun python -u /scripts/mri/validate.py --exp-name rcgan_test
-srun python -u /scripts/mri/test.py --exp-name rcgan_test
-srun python -u /scripts/mri/test.py --exp-name rcgan_test --num-figs 10
+# srun python -u ./scripts/mri/validate.py --exp-name rcgan_test
+srun python -u ./scripts/mri/test.py --exp-name rcgan_test
+srun python -u ./scripts/mri/plot.py --exp-name rcgan_test --num-figs 10
