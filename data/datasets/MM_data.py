@@ -1,18 +1,10 @@
 #Add data set information and configuration here.
 
 import numpy as np
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
 import torch
-import pandas as pd
-import os
-from torchvision.io import read_image
 import jax.numpy as jnp
-from pathlib import Path
+import pathlib
 import random
-
-
-#Add function to find the required directory?
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
     """Loads the data."""
@@ -47,6 +39,9 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
             random.shuffle(files)
             num_files = round(len(files)*sample_rate)
             files = files[:num_files]
+        
+        for fname in sorted(files):
+            self.examples += fname
         
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -84,6 +79,9 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
             random.shuffle(files)
             num_files = round(len(files)*sample_rate)
             files = files[:num_files]
+
+        for fname in sorted(files):
+            self.examples += fname
     
     def __len__(self):
         return len(self.examples)
@@ -119,7 +117,10 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
             random.shuffle(files)
             num_files = round(len(files)*sample_rate)
             files = files[:num_files]
-    
+
+        for fname in sorted(files):
+            self.examples += fname
+                
     def __len__(self):
         return len(self.examples)
     
