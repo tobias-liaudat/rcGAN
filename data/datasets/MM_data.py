@@ -54,11 +54,12 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
 
         if self.transform:
             image = self.transform(image)
+            #image = torch.movedim(image, [2,H,W])
         return image
 
 class MassMappingDataset_Val(torch.utils.data.Dataset):
 
-    def __init__(self, data_dir, transform, sample_rate = 1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform=to_tensor, sample_rate = 1, big_test=False, test_set=False):
 
         self.test_set = test_set
         self.transform = transform
@@ -96,7 +97,8 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
 
 
 class MassMappingDataset_Train(torch.utils.data.Dataset):
-    def __init__(self, data_dir, transform, sample_rate=1):
+
+    def __init__(self, data_dir, transform=to_tensor, sample_rate=1):
 
         self.transform = transform
 
