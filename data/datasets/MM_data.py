@@ -5,10 +5,11 @@ import torch
 import jax.numpy as jnp
 import pathlib
 import random
+from rcgan.fastmri.data.transforms import to_tensor
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
     """Loads the data."""
-    def __init__(self, data_dir, transform=None, sample_rate=1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform=to_tensor, sample_rate=1, big_test=False, test_set=False):
         """
         Args:
             data_dir (path): The path to the dataset.
