@@ -54,7 +54,7 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
 
         if self.transform:
             image = self.transform(image)
-            #image = torch.movedim(image, [2,H,W])
+            image = image.permute(2,0,1)
         return image
 
 class MassMappingDataset_Val(torch.utils.data.Dataset):
@@ -92,6 +92,7 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
         image = jnp.load(self.examples[i])
         if self.transform:
             image = self.transform(image)
+            image = image.permute(2,0,1)
         return image        
 
 
@@ -131,4 +132,5 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
         image = jnp.load(self.examples[i])
         if self.transform:
             image = self.transform(image)
+            image = image.permute(2,0,1)
         return image        
