@@ -8,7 +8,7 @@ import random
 from rcgan.fastmri.data.transforms import to_tensor
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
-    """Loads the data."""
+    """Loads the test data."""
     def __init__(self, data_dir, transform=to_tensor, sample_rate=1, big_test=False, test_set=False):
         """
         Args:
@@ -16,7 +16,8 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
             transform (callable): A callable object that pre-processes the raw data into
                 appropriate form. The transform function should take 'kspace', 'target',
                 'attributes', 'filename', and 'slice' as inputs. 'target' may be null
-                for test data.  
+                for test data.
+                'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
             sample_rate (float, optional): A float between 0 and 1. This controls what fraction
                 of the volumes should be loaded.
         """
@@ -50,17 +51,28 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
     
     def __getitem__(self,i):
         """Loads and returns a sample from the dataset at a given index."""
-        image = jnp.load(self.examples[i])
+        data = jnp.load(self.examples[i])
 
         if self.transform:
-            image = self.transform(image)
-            image = image.permute(2,0,1)
-        return image
+            gt_data = self.transform(data) #Shape (H, W, 2)
+            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
+        return gt_data
 
 class MassMappingDataset_Val(torch.utils.data.Dataset):
+    """Loads the validation data."""
 
     def __init__(self, data_dir, transform=to_tensor, sample_rate = 1, big_test=False, test_set=False):
-
+        """
+        Args:
+            data_dir (path): The path to the dataset.
+            transform (callable): A callable object that pre-processes the raw data into
+                appropriate form. The transform function should take 'kspace', 'target',
+                'attributes', 'filename', and 'slice' as inputs. 'target' may be null
+                for test data.
+                'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
+            sample_rate (float, optional): A float between 0 and 1. This controls what fraction
+                of the volumes should be loaded.
+        """
         self.test_set = test_set
         self.transform = transform
 
@@ -88,19 +100,32 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.examples)
     
-    def __getitem__(self, i):
-        image = jnp.load(self.examples[i])
+    def __getitem__(self,i):
+        """Loads and returns a sample from the dataset at a given index."""
+        data = jnp.load(self.examples[i])
+
         if self.transform:
-            image = self.transform(image)
-            image = image.permute(2,0,1)
-        return image        
+            gt_data = self.transform(data) #Shape (H, W, 2)
+            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
+        return gt_data       
 
 
 
 class MassMappingDataset_Train(torch.utils.data.Dataset):
+    """Loads the training data."""
 
     def __init__(self, data_dir, transform=to_tensor, sample_rate=1):
-
+        """
+        Args:
+            data_dir (path): The path to the dataset.
+            transform (callable): A callable object that pre-processes the raw data into
+                appropriate form. The transform function should take 'kspace', 'target',
+                'attributes', 'filename', and 'slice' as inputs. 'target' may be null
+                for test data.  
+                'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
+            sample_rate (float, optional): A float between 0 and 1. This controls what fraction
+                of the volumes should be loaded.
+        """
         self.transform = transform
 
         self.examples = []
@@ -129,8 +154,10 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
         return len(self.examples)
     
     def __getitem__(self,i):
-        image = jnp.load(self.examples[i])
+        """Loads and returns a sample from the dataset at a given index."""
+        data = jnp.load(self.examples[i])
+
         if self.transform:
-            image = self.transform(image)
-            image = image.permute(2,0,1)
-        return image        
+            gt_data = self.transform(data) #Shape (H, W, 2)
+            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
+        return gt_data

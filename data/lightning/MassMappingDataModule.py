@@ -15,6 +15,7 @@ class MMDataModule(pl.LightningDataModule):
     DataModule used for semantic segmentation in geometric generalization project.
     """
     def __init__(self, args, big_test=False):
+        """The 'args' come from the config.yml file. See the docs for further information."""
         super().__init__()
         self.prepare_data_per_node = True
         self.args = args
