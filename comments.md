@@ -1,6 +1,12 @@
 
 # Installation
 
+If in the Hypatia cluster, first run:
+``` bash
+source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
+```
+
+
 First install the conda dependencies setting the correct channels:
 ``` bash
 conda create --name cGAN --file conda_requirements.txt --channel pytorch --channel nvidia --channel conda-forge --channel defaults
