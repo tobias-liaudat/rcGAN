@@ -29,15 +29,15 @@ Remember to scancel job when done. Check output below for access token if
 you need it.
 
 Before running this jobs the jupyter lab needs to generate a cust password
-Run: `jupyter lab password` to set the password you'll need to acess the jupyter lab server
+Run: "jupyter lab password" to set the password you'll need to acess the jupyter lab server
 "
 
 # source /share/apps/anaconda/3-2019.03/etc/profile.d/conda.sh
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 conda activate cGAN
 
-# Before running this jobs the jupyter lab needs to generate a cust password
-# Run: `jupyter lab password` to set the password you'll need to acess the jupyter lab server
+
+# To run this job and put it ont he queue: sbatch notebook_gpu.sh
 
 srun -n1 jupyter lab --no-browser --port=${port} --ip=${node}
 
