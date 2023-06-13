@@ -23,18 +23,13 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
         self.examples = []
         files = list(pathlib.Path(data_dir).iterdir())
 
-        random.seed()
+        # Shuffle list
         np.random.seed()
+        np.random.shuffle(files)
+        # random.seed()
+        # random.shuffle(files)
 
-        random.shuffle(files)
-
-        num_files = len(files)
-        f_testing_and_val = sorted(files[-num_files:]) if big_test else sorted(files[0:num_files])
-
-        files = f_testing_and_val
-        
-        for fname in sorted(files):
-            self.examples += fname
+        self.examples = files
         
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -42,7 +37,8 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
     
     def __getitem__(self,i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = np.load(self.examples[i], allow_pickle=True)
+        # Cast input data from float64 to complex128 as our inputs are complex
+        data = np.load(self.examples[i], allow_pickle=True).astype(np.complex128)
         # Tranform data and generate observations
         return self.transform(data)
         
@@ -66,26 +62,21 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
         self.examples = []
         files = list(pathlib.Path(data_dir).iterdir())
 
-        random.seed()
+        # Shuffle list
         np.random.seed()
+        np.random.shuffle(files)
+        # random.seed()
+        # random.shuffle(files)
 
-        random.shuffle(files)
-
-        num_files = (round(len(files)*0.7) if big_test else round(len(files)*0.3))
-        f_testing_and_val = sorted(files[-num_files:]) if big_test else sorted(files[0:num_files])
-
-        files = f_testing_and_val
-
-
-        for fname in sorted(files):
-            self.examples += fname
+        self.examples = files
     
     def __len__(self):
         return len(self.examples)
     
     def __getitem__(self, i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = np.load(self.examples[i], allow_pickle=True)
+        # Cast input data from float64 to complex128 as our inputs are complex
+        data = np.load(self.examples[i], allow_pickle=True).astype(np.complex128)
         # Tranform data and generate observations
         return self.transform(data)
 
@@ -110,25 +101,20 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
         self.examples = []
         files = list(pathlib.Path(data_dir).iterdir())
 
-        random.seed()
+        # Shuffle list
         np.random.seed()
-
-        random.shuffle(files)
-
-        num_files = round(len(files))
-
-        f_training = sorted(files[0:num_files])
-
-        files = f_training
-
-        for fname in sorted(files):
-            self.examples += fname
+        np.random.shuffle(files)
+        # random.seed()
+        # random.shuffle(files)
+        
+        self.examples = files
                 
     def __len__(self):
         return len(self.examples)
     
     def __getitem__(self,i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = np.load(self.examples[i], allow_pickle=True)
+        # Cast input data from float64 to complex128 as our inputs are complex
+        data = np.load(self.examples[i], allow_pickle=True).astype(np.complex128)
         # Tranform data and generate observations
         return self.transform(data)
