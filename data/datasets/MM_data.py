@@ -1,15 +1,13 @@
 #Add data set information and configuration here.
-
 import numpy as np
 import torch
-import jax.numpy as jnp
 import pathlib
 import random
-from rcgan.fastmri.data.transforms import to_tensor
+
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
     """Loads the test data."""
-    def __init__(self, data_dir, transform=to_tensor, sample_rate=1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform, sample_rate=1, big_test=False, test_set=False):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -51,17 +49,15 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
     
     def __getitem__(self,i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = jnp.load(self.examples[i])
-
-        if self.transform:
-            gt_data = self.transform(data) #Shape (H, W, 2)
-            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
-        return gt_data
+        data = np.load(self.examples[i], allow_pickle=True)
+        # Tranform data and generate observations
+        return self.transform(data)
+        
 
 class MassMappingDataset_Val(torch.utils.data.Dataset):
     """Loads the validation data."""
 
-    def __init__(self, data_dir, transform=to_tensor, sample_rate = 1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform, sample_rate = 1, big_test=False, test_set=False):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -100,21 +96,19 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.examples)
     
-    def __getitem__(self,i):
+    def __getitem__(self, i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = jnp.load(self.examples[i])
+        data = np.load(self.examples[i], allow_pickle=True)
+        # Tranform data and generate observations
+        return self.transform(data)
 
-        if self.transform:
-            gt_data = self.transform(data) #Shape (H, W, 2)
-            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
-        return gt_data       
 
 
 
 class MassMappingDataset_Train(torch.utils.data.Dataset):
     """Loads the training data."""
 
-    def __init__(self, data_dir, transform=to_tensor, sample_rate=1):
+    def __init__(self, data_dir, transform, sample_rate=1):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -155,9 +149,6 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
     
     def __getitem__(self,i):
         """Loads and returns a sample from the dataset at a given index."""
-        data = jnp.load(self.examples[i])
-
-        if self.transform:
-            gt_data = self.transform(data) #Shape (H, W, 2)
-            gt_data = gt_data.permute(2,0,1) #Shape (2, H, W)
-        return gt_data
+        data = np.load(self.examples[i], allow_pickle=True)
+        # Tranform data and generate observations
+        return self.transform(data)
