@@ -32,7 +32,9 @@ class MMDataTransform:
         k = kx**2 + ky**2
         # Define Kaiser-Squires kernel
         D = np.zeros((N, N), dtype=np.complex128)
-        D = np.where(k > 0, ((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))/k, D)
+        # D = np.where(k > 0, ((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))/k, D)
+        # Another formulation to avoid divide by zero warning
+        D[k>0] = (((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))[k>0]/k[k>0])
         # Apply inverse FFT shift 
         return np.fft.ifftshift(D)
 
