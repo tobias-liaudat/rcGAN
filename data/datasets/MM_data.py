@@ -7,7 +7,7 @@ import random
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
     """Loads the test data."""
-    def __init__(self, data_dir, transform, sample_rate=1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform, big_test=False, test_set=False):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -16,8 +16,6 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
                 'attributes', 'filename', and 'slice' as inputs. 'target' may be null
                 for test data.
                 'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
-            sample_rate (float, optional): A float between 0 and 1. This controls what fraction
-                of the volumes should be loaded.
         """
         self.test_set = test_set
         self.transform = transform
@@ -34,11 +32,6 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
         f_testing_and_val = sorted(files[-num_files:]) if big_test else sorted(files[0:num_files])
 
         files = f_testing_and_val
-
-        if sample_rate < 1:
-            random.shuffle(files)
-            num_files = round(len(files)*sample_rate)
-            files = files[:num_files]
         
         for fname in sorted(files):
             self.examples += fname
@@ -57,7 +50,7 @@ class MassMappingDataset_Test(torch.utils.data.Dataset):
 class MassMappingDataset_Val(torch.utils.data.Dataset):
     """Loads the validation data."""
 
-    def __init__(self, data_dir, transform, sample_rate = 1, big_test=False, test_set=False):
+    def __init__(self, data_dir, transform, big_test=False, test_set=False):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -66,8 +59,6 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
                 'attributes', 'filename', and 'slice' as inputs. 'target' may be null
                 for test data.
                 'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
-            sample_rate (float, optional): A float between 0 and 1. This controls what fraction
-                of the volumes should be loaded.
         """
         self.test_set = test_set
         self.transform = transform
@@ -85,10 +76,6 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
 
         files = f_testing_and_val
 
-        if sample_rate < 1:
-            random.shuffle(files)
-            num_files = round(len(files)*sample_rate)
-            files = files[:num_files]
 
         for fname in sorted(files):
             self.examples += fname
@@ -108,7 +95,7 @@ class MassMappingDataset_Val(torch.utils.data.Dataset):
 class MassMappingDataset_Train(torch.utils.data.Dataset):
     """Loads the training data."""
 
-    def __init__(self, data_dir, transform, sample_rate=1):
+    def __init__(self, data_dir, transform):
         """
         Args:
             data_dir (path): The path to the dataset.
@@ -117,8 +104,6 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
                 'attributes', 'filename', and 'slice' as inputs. 'target' may be null
                 for test data.  
                 'to_tensor' is a function that transforms a complex numpy array into a complex PyTorch tensor.
-            sample_rate (float, optional): A float between 0 and 1. This controls what fraction
-                of the volumes should be loaded.
         """
         self.transform = transform
 
@@ -135,11 +120,6 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
         f_training = sorted(files[0:num_files])
 
         files = f_training
-
-        if sample_rate <1:
-            random.shuffle(files)
-            num_files = round(len(files)*sample_rate)
-            files = files[:num_files]
 
         for fname in sorted(files):
             self.examples += fname
