@@ -124,25 +124,19 @@ class MMDataModule(pl.LightningDataModule):
         #Assign train/val datasets for use in dataloaders
 
         train_data = MassMappingDataset_Train(
-            data_dir=pathlib.Path(self.args.data_path),
+            data_dir=pathlib.Path(self.args.data_path) / 'kappa_train',
             transform=MMDataTransform(self.args, test=False),
-            sample_rate=1,
-            restrict_size=False
         )
 
         dev_data = MassMappingDataset_Val(
-            data_dir=pathlib.Path(self.args.data_path),
+            data_dir=pathlib.Path(self.args.data_path) / 'kappa_val',
             transform=MMDataTransform(self.args, test=True),
-            sample_rate=1,
-            restrict_size=False,
             big_test=self.big_test
         )    
 
         test_data = MassMappingDataset_Test(
-            data_dir=pathlib.Path(self.args.data_path),
+            data_dir=pathlib.Path(self.args.data_path) / 'kappa_test',
             transform=MMDataTransform(self.args, test=True),
-            sample_rate=1,
-            restrict_size=False,
             big_test=True
         )
 
