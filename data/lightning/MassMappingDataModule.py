@@ -3,15 +3,19 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from typing import Optional
 from data.datasets.MM_data import MassMappingDataset_Test, MassMappingDataset_Train, MassMappingDataset_Val
+from utils.mri import transforms
 
 import pathlib
 
 
 
 class MMDataTransform:
-    def __init__(self, args, test=False):
+    def __init__(self, args, test=False, theta=5.0, ng=1024, ngal=30):
         self.args = args
         self.test =test
+        self.theta = theta
+        self.ng = ng
+        self.ngal = ngal
 
     @staticmethod
     def compute_fourier_kernel(N: int) -> np.ndarray:
@@ -63,22 +67,41 @@ class MMDataTransform:
         gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(ngrid,ngrid) + 1j * np.random.randn(ngrid,ngrid))
         return gamma
 
-    def __call__(self, data):
-        gt_data = transforms.to_tensor(data) # Shape (H, W, 2)
-        gt_data = gt_data.permute(2, 0, 1) # Shape (2, H, W)
+    def gamma_gen(self, kappa):
+        """ Apply the forward model with the correct set of parameters.
+        
+        """
+        return MMDataTransform.noise_maker(self.theta, self.ng, self.ngal, kappa)
 
-        measurements = gt_data # TODO: I don't know what your degradation process looks like
-                               # I am assuming that you have GT data that you put through an
-                               # artificial measurement process.
 
-        # TODO: Normalization optional - I don't know whether or not you need it
-        normalized_measures, mean, std = transforms.normalize_instance(measurements)
-        normalized_gt = transforms.normalize(gt_data, mean, std)
+    def __call__(self, kappa):
+        """ Transform data
+
+        Ground truth (GT) -> kappa
+        Obs -> Gamma
+
+        Args:
+            data (np.ndarray): Complex-valued array
+
+        """
+        # Generate observation on the fly
+        gamma = self.gamma_gen(kappa)
+
+        # Format input GT data
+        pt_kappa = transforms.to_tensor(kappa) # Shape (H, W, 2)
+        pt_kappa = pt_kappa.permute(2, 0, 1)  # Shape (2, H, W)
+        # Format observation data
+        pt_gamma = transforms.to_tensor(gamma) # Shape (H, W, 2)
+        pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
+
+        # Normalization step
+        normalized_gamma, mean, std = transforms.normalize_instance(pt_gamma)
+        normalized_gt = transforms.normalize(pt_kappa, mean, std)
 
         # Return normalized measurements, normalized gt, mean, and std.
         # To unnormalize batch of images:
         # unnorm_tensor = normalized_tensor * std[:, :, None, None] + mean[:, :, None, None]
-        return normalized_measures.float(), normalized_gt.float(), mean, std
+        return normalized_gamma.float(), normalized_gt.float(), mean, std
 
 
 
