@@ -6,6 +6,8 @@
 - [X] Set up the working environment on Hypatia
     - [X] Install the conda environement and the cGAN model. See `comments.md`
     - [ ] Make sure you can launch a notebook running on one of Hypatia GPUs
+        - [X] Can you launch a notebook using current environment?
+        - [ ] Try on GPU
 
 ## Preprocessing
 - [X] Separate the dataset (in `/share/gpu0/tl3/mass_map_dataset`) into the three subset directories `kappa_test`, `kappa_train`, `kappa_val`.
