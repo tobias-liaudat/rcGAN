@@ -3,12 +3,13 @@
 
 
 ## Setup
-- [ ] Set up the working environment on Hypatia
-    - [ ] Install the conda environement and the cGAN model. See `comments.md`
-    - [ ] Make sure you can launch a notebook running on one of Hyptaia GPUs
+- [X] Set up the working environment on Hypatia
+    - [X] Install the conda environement and the cGAN model. See `comments.md`
+    - [ ] Make sure you can launch a notebook running on one of Hypatia GPUs
 
 ## Preprocessing
-- [ ] Separate the dataset (in `/share/gpu0/tl3/mass_map_dataset`) into the three subset directories `kappa_test`, `kappa_train`, `kappa_val`.
+- [X] Separate the dataset (in `/share/gpu0/tl3/mass_map_dataset`) into the three subset directories `kappa_test`, `kappa_train`, `kappa_val`.
+-> Stored in `/share/gpu0/jjwhit/mass_map_dataset/kappa20/`
 
 ## Model + Traning
 - [ ] Make sure that the generator can forward pass the data `rcGAN.forward()`
@@ -18,8 +19,8 @@
 - [ ] Make sure the different losses can run and produce an output.
 - [ ] Start modifying the training of the networks with the different losses used in `rcGAN`
 
-- [ ] Generate new `mmcGAN` to add all the mass mapping modifications to the MRI GAN 
+- [X] Generate new `mmcGAN` to add all the mass mapping modifications to the MRI GAN 
 
 
-- [ ] Redefine and clean the configuration `mass_map.yml` file
+- [X] Redefine and clean the configuration `mass_map.yml` file
 - [ ] Run the training!
