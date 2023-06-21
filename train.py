@@ -1,5 +1,4 @@
 import torch
-import os
 import yaml
 import types
 import json
@@ -39,7 +38,7 @@ if __name__ == '__main__':
         exit()
 
     wandb_logger = WandbLogger(
-        project="my_project",  # TODO: Change to your project name - maybe make this an arg
+        project="mass_mapping_project",  # TODO: Change to your project name - maybe make this an arg
         name=args.exp_name,
         log_model="all",
         save_dir=cfg.checkpoint_dir + 'wandb'
