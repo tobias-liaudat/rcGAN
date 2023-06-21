@@ -17,7 +17,7 @@ from models.archs.mri.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
 
-class rcGAN(pl.LightningModule):
+class mmGAN(pl.LightningModule):
     def __init__(self, args, exp_name, num_gpus):
         super().__init__()
         self.args = args
@@ -48,7 +48,7 @@ class rcGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
-        reformatted_tensor = torch.zeros(size=(samples.size(0), 8, self.resolution, self.resolution, 2),
+        reformatted_tensor = torch.zeros(size=(samples.size(0), 1, self.resolution, self.resolution, 2),
                                          device=self.device)
         #Takes values from samples and assigns to reformatted tensor
         #assumption: 0:8 for real, 8:16 for complex, multiple elements bc multiple MRI slices?
@@ -187,8 +187,7 @@ class rcGAN(pl.LightningModule):
         else:
             num_code = self.args.num_z_valid
 
-        #Is the 8 here bc MRI?ß
-        gens = torch.zeros(size=(y.size(0), 8, self.args.in_chans, self.args.im_size, self.args.im_size),
+        gens = torch.zeros(size=(y.size(0), 1, self.args.in_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
             gens[:, z, :, :, :] = self.forward(y, mask) * std[:, None, None, None] + mean[:, None, None, None] # EXPERIMENTAL UN
