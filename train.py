@@ -35,7 +35,8 @@ if __name__ == '__main__':
 
         model = rcGAN(cfg, args.exp_name, args.num_gpus)
     elif args.mass_mapping:
-        with open('configs/mass_map.yml', 'r') as f:
+        with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
+#        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
