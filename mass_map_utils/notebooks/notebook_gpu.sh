@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:a100:1
 #SBATCH --time 1-0:00:00
 #SBATCH --job-name jupyter-notebook
-#SBATCH --mail-use=t.liaudat@ucl.ac.uk
+#SBATCH --mail-use=ucasjjw@ucl.ac.uk
 #SBATCH --mail-type=ALL
 #SBATCH --output jupyter-notebook-%J.log
 #Based on https://docs.ycrc.yale.edu/clusters-at-yale/guides/jupyter/
@@ -20,15 +20,16 @@ cluster=$(hostname -f | awk -F"." '{print $2}')
 
 # print tunneling instructions jupyter-log
 echo -e "To connect:
-ssh -N -L ${port}:${node}:${port} ${user}@hypatia-login.hpc.phys.ucl.ac.uk
+ssh -L ${port}:${node}:${port} ${user}@hypatia-login.hpc.phys.ucl.ac.uk
 
 Use a Browser on your local machine to go to:
-localhost:${port}  (prefix w/ https:// if using password)
+localhost:${port}
 
 Remember to scancel job when done. Check output below for access token if
 you need it.
 
 Before running this jobs the jupyter lab needs to generate a cust password
+Do this after activating the conda environment.
 Run: "jupyter lab password" to set the password you'll need to acess the jupyter lab server
 "
 
