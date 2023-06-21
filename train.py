@@ -11,7 +11,8 @@ from utils.parse_args import create_arg_parser
 from models.lightning.rcGAN import rcGAN
 from pytorch_lightning import seed_everything
 from pytorch_lightning.loggers import WandbLogger
-
+from data.lightning.MassMappingDataModule import MMDataModule
+from models.lightning.mmGAN import mmGAN
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -33,6 +34,14 @@ if __name__ == '__main__':
         dm = MRIDataModule(cfg)
 
         model = rcGAN(cfg, args.exp_name, args.num_gpus)
+    elif args.mass_mapping:
+        with open('configs/myapplication.yml', 'r') as f:
+            cfg = yaml.load(f, Loader=yaml.FullLoader)
+            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+
+        dm = MMDataModule(cfg)
+
+        model = mmGAN(cfg, args.exp_name, args.num_gpus)
     else:
         print("No valid application selected. Please include one of the following args: --mri")
         exit()
