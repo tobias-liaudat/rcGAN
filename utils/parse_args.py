@@ -20,5 +20,7 @@ def create_arg_parser():
 
     parser.add_argument('--sense-maps-val', action='store_true',
                         help='Whether or not to generate sense maps for validation data.')
+    parser.add_argument('--mass_mapping', action='store_true',
+                        help='If the application is your application')
 
     return parser
