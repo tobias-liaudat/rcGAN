@@ -187,6 +187,7 @@ class rcGAN(pl.LightningModule):
         else:
             num_code = self.args.num_z_valid
 
+        #Is the 8 here bc MRI?ß
         gens = torch.zeros(size=(y.size(0), 8, self.args.in_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
