@@ -1,7 +1,7 @@
 #Change checkpoint and sense_map path
-checkpoint_dir: "/share/gpu0/tl3/MRI/mri_models/"
-data_path: "/share/gpu0/jjwhit/mass_map_dataset/kappa20/"
-sense_maps_path: "/share/gpu0/tl3/MRI/sense_maps/"
+checkpoint_dir: “/share/gpu0/jjwhit/mass_map/mm_models/”
+data_path: “/share/gpu0/jjwhit/mass_map_dataset/kappa20/”
+sense_maps_path: “/share/gpu0/jjwhit/mass_map/sense_maps/”
 
 
 # Number of code vectors for each phase
