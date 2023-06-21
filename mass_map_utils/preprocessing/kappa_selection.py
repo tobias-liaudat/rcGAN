@@ -4,12 +4,13 @@ import numpy as np
 
 
 #Define the source folder
-#kappa2 - z = 0.858
-src_path = "/disk/xray99/jdm/kappaTNG/kappaTNG-Hydro/LP*/run*/kappa20.dat"
+#kappa20 - z = 0.858
+#src_path = "/disk/xray99/jdm/kappaTNG/kappaTNG-Hydro/LP*/run*/kappa20.dat"
+src_path = "/share/gpu0/tl3/mass_map_dataset/kappa_dataset/*.npy"
 all_files = glob.glob(src_path)
 
 #Define the destination folder
-dst_path = os.path.join("/disk/xray99/tl3/mass_map_dataset/kappa_selection/kappa20/")
+dst_path = "/share/gpu0/jjwhit/mass_map_dataset/kappa20/"
 
 
    
