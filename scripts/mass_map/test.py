@@ -28,7 +28,7 @@ def load_object(dct):
 
 
 def rgb(im, unit_norm=False):
-    embed_ims = torch.zeros(size=(3, 384, 384))
+    embed_ims = torch.zeros(size=(3, 1024, 1024))
     tens_im = torch.tensor(im)
 
     if unit_norm:
@@ -87,9 +87,12 @@ if __name__ == "__main__":
                 mean = mean.cuda()
                 std = std.cuda()
 
-                gens = torch.zeros(size=(y.size(0), n, cfg.in_chans // 2, cfg.im_size, cfg.im_size, 2)).cuda()
+                # gens = torch.zeros(size=(y.size(0), n, cfg.in_chans // 2, cfg.im_size, cfg.im_size, 2)).cuda()
+                # for z in range(n):
+                #     gens[:, z, :, :, :, :] = model.reformat(model.forward(y))
+                gens = torch.zeros(size=(y.size(0), n, cfg.im_size, cfg.im_size, 2)).cuda()
                 for z in range(n):
-                    gens[:, z, :, :, :, :] = model.reformat(model.forward(y))
+                    gens[:, z, :, :, :] = model.reformat(model.forward(y))
 
                 avg = torch.mean(gens, dim=1)
 
@@ -106,7 +109,8 @@ if __name__ == "__main__":
                     gt_np = torch.tensor(gt_ksp).abs().numpy()
 
                     for z in range(n):
-                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :, :] * std[j] + mean[j]).cpu())
+                        # np_samp = tensor_to_complex_np((gens[j, z, :, :, :, :] * std[j] + mean[j]).cpu())
+                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * std[j] + mean[j]).cpu())
                         single_samps[z, :, :] = torch.tensor(np_samp).abs().numpy()
 
                     med_np = np.median(single_samps, axis=0)
