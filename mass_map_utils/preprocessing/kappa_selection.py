@@ -5,8 +5,12 @@ import numpy as np
 
 #Define the source folder
 #kappa20 - z = 0.858
+
+#Use this for the raw, .dat files
 #src_path = "/disk/xray99/jdm/kappaTNG/kappaTNG-Hydro/LP*/run*/kappa20.dat"
-src_path = "/share/gpu0/tl3/mass_map_dataset/kappa_dataset/*.npy"
+
+#Use this is files have already been converted to .npy files
+src_path = "/share/gpu0/jjwhit/mass_map_dataset/kappa_dataset/*.npy"
 all_files = glob.glob(src_path)
 
 #Define the destination folder
@@ -41,29 +45,50 @@ np.random.seed(0)
 np.random.shuffle(all_files)
 
 
+#Includes the transformation from .dat to .npy
+
+# for fname in all_files:
+#     print('Processing file n', img_number)
+
+#     with open(fname, 'rb') as f:
+
+#         dummy = np.fromfile(f, dtype="int32", count=1)
+#         kappa = np.fromfile(f, dtype="float", count=ng*ng)
+#         dummy = np.fromfile(f, dtype="int32", count=1)
+
+#         kappa = kappa.reshape((ng,ng))
+
+#         # Using 85% of data for training
+#         if (img_number/total_nb_files) <= 0.85:
+#             dst_dir = dst_train_path
+#         # Using 10% of data for testing
+#         elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
+#             dst_dir = dst_test_path
+#         # Using 5% of data for validation
+#         else:
+#             dst_dir = dst_val_path
+
+#         save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+        
+#         np.save(save_path, kappa, allow_pickle=True)
+        
+#         img_number +=1
+
 for fname in all_files:
     print('Processing file n', img_number)
+    data = np.load(fname, allow_pickle=True)
 
-    with open(fname, 'rb') as f:
+    if (img_number/total_nb_files) <= 0.85:
+        dst_dir = dst_train_path
+    # Using 10% of data for testing
+    elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
+        dst_dir = dst_test_path
+    # Using 5% of data for validation
+    else:
+        dst_dir = dst_val_path
 
-        dummy = np.fromfile(f, dtype="int32", count=1)
-        kappa = np.fromfile(f, dtype="float", count=ng*ng)
-        dummy = np.fromfile(f, dtype="int32", count=1)
-
-        kappa = kappa.reshape((ng,ng))
-
-        # Using 85% of data for training
-        if (img_number/total_nb_files) <= 0.85:
-            dst_dir = dst_train_path
-        # Using 10% of data for testing
-        elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
-            dst_dir = dst_test_path
-        # Using 5% of data for validation
-        else:
-            dst_dir = dst_val_path
-
-        save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
-        
-        np.save(save_path, kappa, allow_pickle=True)
-        
-        img_number +=1
+    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+    
+    np.save(save_path, data, allow_pickle=True)
+    
+    img_number +=1
