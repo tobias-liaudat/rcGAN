@@ -12,8 +12,8 @@ from PIL import Image
 from torch.nn import functional as F
 from utils.mri.fftc import ifft2c_new, fft2c_new
 # from utils.mri.math import tensor_to_complex_np
-from models.archs.mri.generator import UNetModel
-from models.archs.mri.discriminator import DiscriminatorModel
+from models.archs.mass_map.generator import UNetModel
+from models.archs.mass_map.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
 
