@@ -1,7 +1,6 @@
 #Change checkpoint and sense_map path
-checkpoint_dir: “/share/gpu0/jjwhit/mass_map/mm_models/”
-data_path: “/share/gpu0/jjwhit/mass_map_dataset/kappa20/kappa_val”
-sense_maps_path: “/share/gpu0/jjwhit/mass_map/sense_maps/”
+checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/
+data_path: /share/gpu0/jjwhit/mass_map_dataset/kappa20/
 
 
 # Number of code vectors for each phase
@@ -27,5 +26,5 @@ adv_weight: 1e-5
 # Training
 batch_size: 9
 #Remember to increase this for full training
-num_epochs: 5
+num_epochs: 100
 psnr_gain_tol: 0.25
