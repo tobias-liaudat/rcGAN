@@ -57,12 +57,12 @@ class mmGAN(pl.LightningModule):
 
         return reformatted_tensor
 
-    def readd_measures(self, samples, measures, mask):
+    def readd_measures(self, samples, measures):
         reformatted_tensor = self.reformat(samples)
         measures = fft2c_new(self.reformat(measures))
         reconstructed_kspace = fft2c_new(reformatted_tensor)
 
-        reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
+        # reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
 
         image = ifft2c_new(reconstructed_kspace)
 
@@ -98,11 +98,11 @@ class mmGAN(pl.LightningModule):
         gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean()
         return gradient_penalty
 
-    def forward(self, y, mask):
+    def forward(self, y):
         num_vectors = y.size(0)
-        noise = self.get_noise(num_vectors, mask)
+        noise = self.get_noise(num_vectors)
         samples = self.generator(torch.cat([y, noise], dim=1))
-        samples = self.readd_measures(samples, y, mask)
+        samples = self.readd_measures(samples, y)
         return samples
 
     def adversarial_loss_discriminator(self, fake_pred, real_pred):
@@ -150,7 +150,7 @@ class mmGAN(pl.LightningModule):
                 size=(y.size(0), self.args.num_z_train, self.args.in_chans, self.args.im_size, self.args.im_size),
                 device=self.device)
             for z in range(self.args.num_z_train):
-                gens[:, z, :, :, :] = self.forward(y, mask)
+                gens[:, z, :, :, :] = self.forward(y)
 
             avg_recon = torch.mean(gens, dim=1)
 
@@ -164,7 +164,7 @@ class mmGAN(pl.LightningModule):
 
         # train discriminator
         if optimizer_idx == 0:
-            x_hat = self.forward(y, mask)
+            x_hat = self.forward(y)
 
             real_pred = self.discriminator(input=x, y=y)
             fake_pred = self.discriminator(input=x_hat, y=y)
@@ -190,7 +190,7 @@ class mmGAN(pl.LightningModule):
         gens = torch.zeros(size=(y.size(0), 1, self.args.in_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
-            gens[:, z, :, :, :] = self.forward(y, mask) * std[:, None, None, None] + mean[:, None, None, None] # EXPERIMENTAL UN
+            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] # EXPERIMENTAL UN
 
         avg = torch.mean(gens, dim=1)
 
