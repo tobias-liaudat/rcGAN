@@ -142,7 +142,7 @@ class mmGAN(pl.LightningModule):
         return 0.001 * torch.mean(real_pred ** 2)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
-        y, x, mask, mean, std, _, _, _ = batch
+        y, x, mean, std = batch
 
         # train generator
         if optimizer_idx == 1:
@@ -178,7 +178,7 @@ class mmGAN(pl.LightningModule):
             return d_loss
 
     def validation_step(self, batch, batch_idx, external_test=False):
-        y, x, mask, mean, std, maps, _, _ = batch
+        y, x, mean, std= batch
 
         fig_count = 0
 
