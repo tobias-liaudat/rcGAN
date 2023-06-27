@@ -15,7 +15,7 @@ from models.lightning.mmGAN import mmGAN
 from utils.mri.math import complex_abs, tensor_to_complex_np
 from evaluation_scripts.metrics import psnr, ssim
 from utils.embeddings import VGG16Embedding
-from evaluation_scripts.cfid.cfid_metric import CFIDMetric
+from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric  
 from utils.mri.fftc import ifft2c_new, fft2c_new
 import sigpy as sp
 import sigpy.mri as mr
