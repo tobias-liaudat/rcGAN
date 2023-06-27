@@ -204,24 +204,24 @@ class mmGAN(pl.LightningModule):
         psnr_1s = []
 
         for j in range(y.size(0)):
-            S = sp.linop.Multiply((self.args.im_size, self.args.im_size), tensor_to_complex_np(maps[j].cpu()))
+            # S = sp.linop.Multiply((self.args.im_size, self.args.im_size), tensor_to_complex_np(maps[j].cpu()))
 
             # ON CPU
-            avg_sp_out = torch.tensor(S.H * tensor_to_complex_np(avg_gen[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            single_sp_out = torch.tensor(S.H * tensor_to_complex_np(self.reformat(gens[:, 0])[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            gt_sp_out = torch.tensor(S.H * tensor_to_complex_np(gt[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
+            # avg_sp_out = torch.tensor(S.H * tensor_to_complex_np(avg_gen[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
+            # single_sp_out = torch.tensor(S.H * tensor_to_complex_np(self.reformat(gens[:, 0])[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
+            # gt_sp_out = torch.tensor(S.H * tensor_to_complex_np(gt[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
 
             # ON GPU - Does not work with DDP
             # avg_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(avg_gen[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
             # single_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(self.reformat(gens[:, 0])[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
             # gt_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(gt[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
 
-            psnr_8s.append(peak_signal_noise_ratio(avg_sp_out, gt_sp_out))
-            psnr_1s.append(peak_signal_noise_ratio(single_sp_out, gt_sp_out))
+            psnr_8s.append(peak_signal_noise_ratio(avg_gen[j], gt[j]))
+            psnr_1s.append(peak_signal_noise_ratio(self.reformat(gens[:, 0])[j], gt[j]))
 
-            mag_avg_list.append(avg_sp_out)
-            mag_single_list.append(single_sp_out)
-            mag_gt_list.append(gt_sp_out)
+            mag_avg_list.append(avg_gen[j])
+            mag_single_list.append(self.reformat(gens[:, 0])[j])
+            mag_gt_list.append(gt[j])
 
         psnr_8s = torch.stack(psnr_8s)
         psnr_1s = torch.stack(psnr_1s)
@@ -245,7 +245,11 @@ class mmGAN(pl.LightningModule):
 
                 self.logger.log_image(
                     key=f"epoch_{self.current_epoch}_img",
-                    images=[Image.fromarray(np.uint8(plot_gt_np*255), 'L'), Image.fromarray(np.uint8(plot_avg_np*255), 'L'), Image.fromarray(np.uint8(cm.jet(5*np.abs(plot_gt_np - plot_avg_np))*255))],
+                    images=[
+                        Image.fromarray(np.uint8(plot_gt_np*255), 'L'),
+                        Image.fromarray(np.uint8(plot_avg_np*255), 'L'),
+                        Image.fromarray(np.uint8(cm.jet(5*np.abs(plot_gt_np - plot_avg_np))*255))
+                    ],
                     caption=["GT", f"Recon: PSNR (NP): {np_psnr:.2f}", "Error"]
                 )
 
