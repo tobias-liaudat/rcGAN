@@ -2,7 +2,6 @@
 import numpy as np
 import torch
 import pathlib
-import random
 
 
 class MassMappingDataset_Test(torch.utils.data.Dataset):
