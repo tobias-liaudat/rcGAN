@@ -48,12 +48,12 @@ class mmGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
-        reformatted_tensor = torch.zeros(size=(samples.size(0), 1, self.resolution, self.resolution, 2),
+        reformatted_tensor = torch.zeros(size=(samples.size(0), self.resolution, self.resolution, 2),
                                          device=self.device)
         #Takes values from samples and assigns to reformatted tensor
         #assumption: 0:8 for real, 8:16 for complex, multiple elements bc multiple MRI slices?
-        reformatted_tensor[:, :, :, :, 0] = samples[:, 0, :, :]
-        reformatted_tensor[:, :, :, :, 1] = samples[:, 1, :, :]
+        reformatted_tensor[:, :, :, 0] = samples[:, 0, :, :]
+        reformatted_tensor[:, :, :, 1] = samples[:, 1, :, :]
 
         return reformatted_tensor
 
@@ -67,8 +67,8 @@ class mmGAN(pl.LightningModule):
         image = ifft2c_new(reconstructed_kspace)
 
         output_im = torch.zeros(size=samples.shape, device=self.device)
-        output_im[:, 0, :, :] = image[:, :, :, :, 0]
-        output_im[:, 1, :, :] = image[:, :, :, :, 1]
+        output_im[:, 0, :, :] = image[:, :, :, 0]
+        output_im[:, 1, :, :] = image[:, :, :, 1]
 
         return output_im
 
@@ -101,8 +101,14 @@ class mmGAN(pl.LightningModule):
     def forward(self, y):
         num_vectors = y.size(0)
         noise = self.get_noise(num_vectors)
+        print(' after get noise y.shape: ', y.shape)
+        print('noise.shape: ', noise.shape)
         samples = self.generator(torch.cat([y, noise], dim=1))
+        print(' after generator samples.shape: ', samples.shape)
+        print('y.shape: ', y.shape)
         samples = self.readd_measures(samples, y)
+        print(' after readd measures samples.shape: ', samples.shape)
+        print('y.shape: ', y.shape)        
         return samples
 
     def adversarial_loss_discriminator(self, fake_pred, real_pred):
@@ -177,30 +183,25 @@ class mmGAN(pl.LightningModule):
 
             return d_loss
 
-    def validation_step(self, batch, batch_idx, external_test=False):
+    def validation_step(self, batch, batch_idx):
         y, x, mean, std= batch
 
         fig_count = 0
 
-        if external_test:
-            num_code = self.args.num_z_test
-        else:
-            num_code = self.args.num_z_valid
+        gens = torch.zeros(
+            size=(y.size(0), self.args.in_chans, self.args.im_size, self.args.im_size),
+            device=self.device
+        )
+        gens = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] # EXPERIMENTAL UN
 
-        gens = torch.zeros(size=(y.size(0), 1, self.args.in_chans, self.args.im_size, self.args.im_size),
-                           device=self.device)
-        for z in range(num_code):
-            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] # EXPERIMENTAL UN
-
-        avg = torch.mean(gens, dim=1)
-
-        avg_gen = self.reformat(avg)
+        # avg = torch.mean(gens, dim=1)
+        # avg_gen = self.reformat(avg)
         gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None])
 
-        mag_avg_list = []
+        # mag_avg_list = []
         mag_single_list = []
         mag_gt_list = []
-        psnr_8s = []
+        # psnr_8s = []
         psnr_1s = []
 
         for j in range(y.size(0)):
@@ -216,56 +217,59 @@ class mmGAN(pl.LightningModule):
             # single_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(self.reformat(gens[:, 0])[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
             # gt_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(gt[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
 
-            psnr_8s.append(peak_signal_noise_ratio(avg_gen[j], gt[j]))
+            # psnr_8s.append(peak_signal_noise_ratio(avg_gen[j], gt[j]))
             psnr_1s.append(peak_signal_noise_ratio(self.reformat(gens[:, 0])[j], gt[j]))
 
-            mag_avg_list.append(avg_gen[j])
+            # mag_avg_list.append(avg_gen[j])
             mag_single_list.append(self.reformat(gens[:, 0])[j])
             mag_gt_list.append(gt[j])
 
-        psnr_8s = torch.stack(psnr_8s)
+        # psnr_8s = torch.stack(psnr_8s)
         psnr_1s = torch.stack(psnr_1s)
-        mag_avg_gen = torch.cat(mag_avg_list, dim=0)
+        # mag_avg_gen = torch.cat(mag_avg_list, dim=0)
         mag_single_gen = torch.cat(mag_single_list, dim=0)
         mag_gt = torch.cat(mag_gt_list, dim=0)
 
-        self.log('psnr_8_step', psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True)
+        # self.log('psnr_8_step', psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True)
         self.log('psnr_1_step', psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True)
 
         if batch_idx == 0:
             if self.global_rank == 0 and self.current_epoch % 5 == 0 and fig_count == 0:
                 fig_count += 1
-                avg_gen_np = mag_avg_gen[0, 0, :, :].cpu().numpy()
+                # Using single generation instead of avg generator (mag_avg_gen)
+                single_gen_np = mag_single_gen[0, 0, :, :].cpu().numpy()
                 gt_np = mag_gt[0, 0, :, :].cpu().numpy()
 
-                plot_avg_np = (avg_gen_np - np.min(avg_gen_np)) / (np.max(avg_gen_np) - np.min(avg_gen_np))
+                plot_single_np = (single_gen_np - np.min(single_gen_np)) / (np.max(single_gen_np) - np.min(single_gen_np))
                 plot_gt_np = (gt_np - np.min(gt_np)) / (np.max(gt_np) - np.min(gt_np))
 
-                np_psnr = psnr(gt_np, avg_gen_np)
+                np_psnr = psnr(gt_np, single_gen_np)
 
                 self.logger.log_image(
                     key=f"epoch_{self.current_epoch}_img",
                     images=[
                         Image.fromarray(np.uint8(plot_gt_np*255), 'L'),
-                        Image.fromarray(np.uint8(plot_avg_np*255), 'L'),
-                        Image.fromarray(np.uint8(cm.jet(5*np.abs(plot_gt_np - plot_avg_np))*255))
+                        Image.fromarray(np.uint8(plot_single_np*255), 'L'),
+                        Image.fromarray(np.uint8(cm.jet(5*np.abs(plot_gt_np - plot_single_np))*255))
                     ],
                     caption=["GT", f"Recon: PSNR (NP): {np_psnr:.2f}", "Error"]
                 )
 
             self.trainer.strategy.barrier()
 
-        return {'psnr_8': psnr_8s.mean(), 'psnr_1': psnr_1s.mean()}
+        # return {'psnr_8': psnr_8s.mean(), 'psnr_1': psnr_1s.mean()}
+        return {'psnr_1': psnr_1s.mean()}
 
     def validation_epoch_end(self, validation_step_outputs):
-        avg_psnr = self.all_gather(torch.stack([x['psnr_8'] for x in validation_step_outputs]).mean()).mean()
+        # avg_psnr = self.all_gather(torch.stack([x['psnr_8'] for x in validation_step_outputs]).mean()).mean()
         avg_single_psnr = self.all_gather(torch.stack([x['psnr_1'] for x in validation_step_outputs]).mean()).mean()
 
-        avg_psnr = avg_psnr.cpu().numpy()
+        # avg_psnr = avg_psnr.cpu().numpy()
         avg_single_psnr = avg_single_psnr.cpu().numpy()
 
-        psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
-        psnr_diff = psnr_diff
+        # psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
+        psnr_diff = avg_single_psnr
+        # psnr_diff = psnr_diff
 
         mu_0 = 2e-2
         self.std_mult += mu_0 * psnr_diff
