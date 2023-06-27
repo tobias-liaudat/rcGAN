@@ -11,7 +11,7 @@ from utils.parse_args import create_arg_parser
 from models.lightning.mmGAN import mmGAN
 from pytorch_lightning import seed_everything
 from utils.embeddings import VGG16Embedding
-from evaluation_scripts.cfid.cfid_metric import CFIDMetric
+from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
