@@ -98,29 +98,29 @@ class DiscriminatorModel(nn.Module):
 
         # CHANGE BACK TO 16 FOR MORE
         self.initial_layers = nn.Sequential(
-            nn.Conv2d(self.in_chans, 32, kernel_size=(3, 3), padding=1),  # 384x384
+            nn.Conv2d(self.in_chans, 32, kernel_size=(3, 3), padding=1),  # 1024x1024
             nn.LeakyReLU()
         )
-
+        # This should be refactored to adapt to input and output number of features and the resolution dimensions
         self.encoder_layers = nn.ModuleList()
-        self.encoder_layers += [FullDownBlock(32, 64)]  # 64x64
-        self.encoder_layers += [FullDownBlock(64, 128)]  # 32x32
-        self.encoder_layers += [FullDownBlock(128, 256)]  # 16x16
-        self.encoder_layers += [FullDownBlock(256, 512)]  # 8x8
+        self.encoder_layers += [FullDownBlock(32, 64)]  # 512x512
+        self.encoder_layers += [FullDownBlock(64, 128)]  # 256x256
+        self.encoder_layers += [FullDownBlock(128, 256)]  # 128x128
+        self.encoder_layers += [FullDownBlock(256, 512)]  # 64x64
+        self.encoder_layers += [FullDownBlock(512, 512)]  # 32x32
+        self.encoder_layers += [FullDownBlock(512, 512)]  # 16x16
+        self.encoder_layers += [FullDownBlock(512, 512)]  # 8x8
         self.encoder_layers += [FullDownBlock(512, 512)]  # 4x4
-        self.encoder_layers += [FullDownBlock(512, 512)]  # 2x2
 
         self.dense = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(512 * 6 * 6, 1),
+            nn.Linear(512 * 4 * 4, 1),
         )
 
     def forward(self, input, y):
         output = torch.cat([input, y], dim=1)
         output = self.initial_layers(output)
-
         # Apply down-sampling layers
         for layer in self.encoder_layers:
             output = layer(output)
-
         return self.dense(output)
