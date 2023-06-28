@@ -1,16 +1,11 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-import os
 import torch
 
 import numpy as np
-import sigpy as sp
-import sigpy.mri as mr
 
 import torchvision.transforms as transforms
-from utils.mri.fftc import fft2c_new, ifft2c_new
-from utils.mri.math import complex_abs, tensor_to_complex_np
+from utils.mri.math import tensor_to_complex_np
 from tqdm import tqdm
-from fastmri.data.transforms import to_tensor
 
 def symmetric_matrix_square_root_torch(mat, eps=1e-10):
     """Compute square root of a symmetric matrix.
@@ -168,8 +163,8 @@ class CFIDMetric:
         image_embed = []
         cond_embed = []
         true_embed = []
-        cfids = []
-        count = 0
+        #cfids = []
+        #count = 0
         for i, data in tqdm(enumerate(self.loader),
                             desc='Computing generated distribution',
                             total=len(self.loader)):
