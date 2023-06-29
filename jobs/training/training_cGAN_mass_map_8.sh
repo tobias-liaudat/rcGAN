@@ -4,12 +4,12 @@
 #SBATCH -p GPU
 # requesting one node
 # SBATCH -N1
+#SBATCH –-nodelist=compute-gpu-0-4
 # requesting 12 cpus
 # SBATCH -n12
 #SBATCH --ntasks=1                   # nombre total de tache MPI (= nombre total de GPU)
 #SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
-#SBATCH –nodelist=compute-gpu-0-4
 #SBATCH --gres=gpu:a100:4            # requesting GPUs
 ##SBATCH --mem-per-gpu=80GB           # memory per GPU
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk

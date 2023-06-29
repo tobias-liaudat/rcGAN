@@ -10,6 +10,7 @@
 #SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
 #SBATCH --gres=gpu:v100:4            # requesting GPUs
+#SBATCH --mem-per-gpu=80
 #SBATCH --mail-use=t.liaudat@ucl.ac.uk
 #SBATCH --mail-type=ALL
 #SBATCH --output=tr_cGAN_%j.out
