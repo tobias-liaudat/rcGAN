@@ -5,13 +5,11 @@ import torch
 import pytorch_lightning as pl
 import numpy as np
 import torch.autograd as autograd
-import sigpy as sp
 from matplotlib import cm
 
 from PIL import Image
 from torch.nn import functional as F
 from utils.mri.fftc import ifft2c_new, fft2c_new
-# from utils.mri.math import tensor_to_complex_np
 from models.archs.mass_map.generator import UNetModel
 from models.archs.mass_map.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
@@ -196,7 +194,6 @@ class mmGAN(pl.LightningModule):
         avg_gen = self.reformat(avg)
         gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None])
 
-        # print('avg_gen.shape: ', avg_gen.shape)
         mag_avg_list = []
         mag_single_list = []
         mag_gt_list = []
@@ -223,18 +220,11 @@ class mmGAN(pl.LightningModule):
             mag_single_list.append(self.reformat(gens[:, 0])[j])
             mag_gt_list.append(gt[None, j, :, :, :])
 
-        # print('avg_gen[0].shape: ', avg_gen[0].shape)
-        # print('gens[:, 0][0].shape: ', gens[:, 0][0].shape)
-        # print('self.reformat(gens[:, 0])[0].shape: ', self.reformat(gens[:, 0])[0].shape)
-
         psnr_8s = torch.stack(psnr_8s)
         psnr_1s = torch.stack(psnr_1s)
         mag_avg_gen = torch.cat(mag_avg_list, dim=0)
         mag_single_gen = torch.cat(mag_single_list, dim=0)
         mag_gt = torch.cat(mag_gt_list, dim=0)
-
-        # print('mag_avg_gen.shape: ', mag_avg_gen.shape)
-        # print('mag_gt.shape: ', mag_gt.shape)
 
         self.log('psnr_8_step', psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True)
         self.log('psnr_1_step', psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True)
@@ -273,7 +263,6 @@ class mmGAN(pl.LightningModule):
         avg_single_psnr = avg_single_psnr.cpu().numpy()
 
         psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
-        # psnr_diff = psnr_diff
 
         mu_0 = 2e-2
         self.std_mult += mu_0 * psnr_diff
