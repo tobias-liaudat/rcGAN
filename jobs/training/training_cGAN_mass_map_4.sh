@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=tr_cGAN_4
+#SBATCH --job-name=cGAN_4
 #SBATCH -p GPU
-#SBATCH –-nodelist=compute-gpu-0-4
+#SBATCH --nodelist=compute-gpu-0-4
 # requesting one node
 # SBATCH -N1
 # requesting 12 cpus
