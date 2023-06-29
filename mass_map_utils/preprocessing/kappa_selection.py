@@ -47,48 +47,49 @@ np.random.shuffle(all_files)
 
 #Includes the transformation from .dat to .npy
 
-# for fname in all_files:
-#     print('Processing file n', img_number)
+ for fname in all_files:
+     print('Processing file n', img_number)
 
-#     with open(fname, 'rb') as f:
+     with open(fname, 'rb') as f:
 
-#         dummy = np.fromfile(f, dtype="int32", count=1)
-#         kappa = np.fromfile(f, dtype="float", count=ng*ng)
-#         dummy = np.fromfile(f, dtype="int32", count=1)
+         dummy = np.fromfile(f, dtype="int32", count=1)
+         kappa = np.fromfile(f, dtype="float", count=ng*ng)
+         dummy = np.fromfile(f, dtype="int32", count=1)
 
-#         kappa = kappa.reshape((ng,ng))
+         kappa = kappa.reshape((ng,ng))
+         kappa[kappa>0.7]=0.7
 
-#         # Using 85% of data for training
-#         if (img_number/total_nb_files) <= 0.85:
-#             dst_dir = dst_train_path
-#         # Using 10% of data for testing
-#         elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
-#             dst_dir = dst_test_path
-#         # Using 5% of data for validation
-#         else:
-#             dst_dir = dst_val_path
+         # Using 85% of data for training
+         if (img_number/total_nb_files) <= 0.85:
+             dst_dir = dst_train_path
+         # Using 10% of data for testing
+         elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
+             dst_dir = dst_test_path
+         # Using 5% of data for validation
+         else:
+             dst_dir = dst_val_path
 
-#         save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+         save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
         
-#         np.save(save_path, kappa, allow_pickle=True)
+         np.save(save_path, kappa, allow_pickle=True)
         
-#         img_number +=1
+         img_number +=1
 
-for fname in all_files:
-    print('Processing file n', img_number)
-    data = np.load(fname, allow_pickle=True)
+#for fname in all_files:
+#    print('Processing file n', img_number)
+#    data = np.load(fname, allow_pickle=True)
 
-    if (img_number/total_nb_files) <= 0.85:
-        dst_dir = dst_train_path
-    # Using 10% of data for testing
-    elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
-        dst_dir = dst_test_path
-    # Using 5% of data for validation
-    else:
-        dst_dir = dst_val_path
+#    if (img_number/total_nb_files) <= 0.85:
+#        dst_dir = dst_train_path
+#    # Using 10% of data for testing
+#    elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
+#        dst_dir = dst_test_path
+#    # Using 5% of data for validation
+#    else:
+#        dst_dir = dst_val_path
 
-    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+#    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+#    
+#    np.save(save_path, data, allow_pickle=True)
     
-    np.save(save_path, data, allow_pickle=True)
-    
-    img_number +=1
+#    img_number +=1
