@@ -1,9 +1,7 @@
 import torch
 import yaml
-import os
 import types
 import json
-import pathlib
 import lpips
 
 import numpy as np
@@ -12,14 +10,10 @@ from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri.math import complex_abs, tensor_to_complex_np
+from utils.mri.math import tensor_to_complex_np
 from evaluation_scripts.metrics import psnr, ssim
 from utils.embeddings import VGG16Embedding
 from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric  
-from utils.mri.fftc import ifft2c_new, fft2c_new
-import sigpy as sp
-import sigpy.mri as mr
-from utils.mri.transforms import to_tensor
 from DISTS_pytorch import DISTS
 
 
@@ -28,7 +22,7 @@ def load_object(dct):
 
 
 def rgb(im, unit_norm=False):
-    embed_ims = torch.zeros(size=(3, 1024, 1024))
+    embed_ims = torch.zeros(size=(3, 1024, 1024)) #TODO: Refactor resolution
     tens_im = torch.tensor(im)
 
     if unit_norm:
@@ -48,6 +42,7 @@ if __name__ == "__main__":
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
 
+    #TODO: Refactor config path
     with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)

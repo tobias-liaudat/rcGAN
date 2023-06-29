@@ -4,7 +4,6 @@ import yaml
 import types
 import json
 import numpy as np
-import pytorch_lightning as pl
 
 from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
@@ -21,6 +20,7 @@ if __name__ == "__main__":
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
 
+    #TODO: Refactor config path
     with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     best_epoch = -1
     inception_embedding = VGG16Embedding()
     best_cfid = 10000000
-    # start_epoch = 50
+    start_epoch = 50 #Will start saving models after 50 epochs
     end_epoch = 5
 
     with torch.no_grad():
@@ -44,10 +44,9 @@ if __name__ == "__main__":
                 print(e)
                 continue
 
-            # DEBUG
-            # if model.is_good_model == 0:
-            #     print("NO GOOD: SKIPPING...")
-            #     continue
+            if model.is_good_model == 0:
+                print("NO GOOD: SKIPPING...")
+                continue
 
             model = model.cuda()
             model.eval()

@@ -1,9 +1,7 @@
 import torch
 import yaml
-import os
 import types
 import json
-import pathlib
 
 import numpy as np
 import matplotlib.patches as patches
@@ -12,10 +10,9 @@ from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri.math import complex_abs, tensor_to_complex_np
+from utils.mri.math import tensor_to_complex_np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-import sigpy as sp
 from scipy import ndimage
 
 def load_object(dct):
@@ -27,11 +24,12 @@ if __name__ == "__main__":
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
 
+    #TODO: Refactor config path
     with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
-    dm = MMDataModule(cfg, big_test=True)
+    dm = MMDataModule(cfg)
     fig_count = 1
     dm.setup()
     test_loader = dm.test_dataloader()
@@ -155,7 +153,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title("Std. Dev.")
 
-                plt.savefig(f'figures/mri/mri_fig_avg_err_std_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/test_figures/test_fig_avg_err_std_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
                 nrow = 1
@@ -267,7 +265,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('Std. Dev.')
 
-                plt.savefig(f'figures/mri/zoomed_avg_samps_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/test_figures/zoomed_avg_samps_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
                 if fig_count == args.num_figs:
