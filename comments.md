@@ -32,9 +32,9 @@ configs -> `~/.config/wandb` -> `WANDB_CONFIG_DIR`
 
 # Set the variables
 ``` bash
-export WANDB_DIR=/share/gpu0/tl3/wandb/logs
-export WANDB_CACHE_DIR=/share/gpu0/tl3/wandb/.cache/wandb
-export WANDB_CONFIG_DIR=/share/gpu0/tl3/wandb/.config/wandb
+export WANDB_DIR=/share/gpu0/jjwhit/wandb/logs
+export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
+export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 ```
 
 comment
