@@ -101,6 +101,9 @@ class DiscriminatorModel(nn.Module):
             nn.Conv2d(self.in_chans, 32, kernel_size=(3, 3), padding=1),  # 1024x1024
             nn.LeakyReLU()
         )
+
+        #TODO: Refactor this session so it's not hard coded to our resolution.
+
         # This should be refactored to adapt to input and output number of features and the resolution dimensions
         self.encoder_layers = nn.ModuleList()
         self.encoder_layers += [FullDownBlock(32, 64)]  # 512x512
