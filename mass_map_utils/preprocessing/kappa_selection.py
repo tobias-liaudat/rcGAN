@@ -3,7 +3,6 @@ import os
 import numpy as np
 
 
-#Define the source folder
 #kappa20 - z = 0.858
 
 #Use this for the raw, .dat files
@@ -14,7 +13,7 @@ src_path = "/share/gpu0/jjwhit/mass_map_dataset/kappa_dataset/*.npy"
 all_files = glob.glob(src_path)
 
 #Define the destination folder
-dst_path = "/share/gpu0/jjwhit/mass_map_dataset/kappa20/"
+dst_path = "/share/gpu0/jjwhit/mass_map_dataset/kappa20_cropped/"
 
 
    
@@ -52,28 +51,35 @@ for fname in all_files:
     print('Processing file n', img_number)
 
     with open(fname, 'rb') as f:
-       dummy = np.fromfile(f, dtype="int32", count=1)
-       kappa = np.fromfile(f, dtype="float", count=ng*ng)
-       dummy = np.fromfile(f, dtype="int32", count=1)
+        dummy = np.fromfile(f, dtype="int32", count=1)
+        kappa = np.fromfile(f, dtype="float", count=ng*ng)
+        dummy = np.fromfile(f, dtype="int32", count=1)
 
-       kappa = kappa.reshape((ng,ng))
-       kappa[kappa>0.7]=0.7
+        kappa = kappa.reshape((ng,ng))
+        kappa[kappa>0.7]=0.7
 
-         # Using 85% of data for training
-       if (img_number/total_nb_files) <= 0.85:
-          dst_dir = dst_train_path
-         # Using 10% of data for testing
-       elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
-          dst_dir = dst_test_path
-         # Using 5% of data for validation
-      else:
-          dst_dir = dst_val_path
+        center_size = 384  #Size of MRI images
+        center_start = (ng - center_size) // 2
+        center_end =  center_start + center_size
 
-      save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
+        kappa_cropped = kappa[center_start:center_end,  center_start:center_end]
+
+
+            # Using 85% of data for training
+        if (img_number/total_nb_files) <= 0.85:
+            dst_dir = dst_train_path
+            # Using 10% of data for testing
+        elif (img_number/total_nb_files) > 0.85 and (img_number/total_nb_files) <= 0.95:
+            dst_dir = dst_test_path
+            # Using 5% of data for validation
+        else:
+            dst_dir = dst_val_path
+
+        save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "kappa_run_", img_number, ".npy")
         
-      np.save(save_path, kappa, allow_pickle=True)
+        np.save(save_path, kappa_cropped, allow_pickle=True)
         
-      img_number +=1
+        img_number +=1
 
 #for fname in all_files:
 #    print('Processing file n', img_number)
