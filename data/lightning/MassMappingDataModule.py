@@ -10,7 +10,7 @@ import pathlib
 
 
 class MMDataTransform:
-    def __init__(self, args, test=False, theta=5.0, ng=1024, ngal=30):
+    def __init__(self, args, test=False, theta=5.0, ng=384, ngal=30):
         self.args = args
         self.test =test
         self.theta = theta
