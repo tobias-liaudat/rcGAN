@@ -22,7 +22,7 @@ def load_object(dct):
 
 
 def rgb(im, unit_norm=False):
-    embed_ims = torch.zeros(size=(3, 1024, 1024)) #TODO: Refactor resolution
+    embed_ims = torch.zeros(size=(3, 384, 384)) #TODO: Refactor resolution
     tens_im = torch.tensor(im)
 
     if unit_norm:
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     seed_everything(1, workers=True)
 
     #TODO: Refactor config path
-    with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
+    with open('/home/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
