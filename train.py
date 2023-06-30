@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
         model = rcGAN(cfg, args.exp_name, args.num_gpus)
     elif args.mass_mapping:
-        with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
+        with open('/home/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
         model = mmGAN(cfg, args.exp_name, args.num_gpus)
     elif args.mass_mapping_8:
-        with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map_8.yml', 'r') as f:
+        with open('/home/jjwhit/rcGAN/configs/mass_map_8.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
         model = mmGAN(cfg, args.exp_name, args.num_gpus)
     elif args.mass_mapping_6:
-        with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map_6.yml', 'r') as f:
+        with open('/home/jjwhit/rcGAN/configs/mass_map_6.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
         model = mmGAN(cfg, args.exp_name, args.num_gpus)
     elif args.mass_mapping_4:
-        with open('/share/gpu0/jjwhit/rcGAN/configs/mass_map_4.yml', 'r') as f:
+        with open('/home/jjwhit/rcGAN/configs/mass_map_4.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
