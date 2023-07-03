@@ -57,7 +57,7 @@ class MMDataTransform:
         return np.fft.ifft2(F_gamma) # Perform 2D inverse FFT
 
     @staticmethod
-    def noise_maker(theta, ngal, kappa, ngrid = 384) -> np.ndarray:
+    def noise_maker(theta, ngrid, ngal, kappa) -> np.ndarray:
         """Adds some random Gaussian noise to a mock weak lensing map.
 
         Args:
