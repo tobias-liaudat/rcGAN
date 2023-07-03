@@ -1,0 +1,127 @@
++ echo 0,1,2,3
++ echo
++ echo
++ echo
++ cd /share/gpu0/jjwhit/rcGAN
++ srun python -u train.py --mass_mapping --exp-name mmgan_training_10 --num-gpus 4
+/share/gpu0/jjwhit/rcGAN/fastmri/__init__.py:16: UserWarning: Could not retrieve fastmri version!
+  warnings.warn("Could not retrieve fastmri version!")
+[rank: 0] Global seed set to 0
+wandb: Currently logged in as: jess-j-whitney. Use `wandb login --relogin` to force relogin
+wandb: WARNING Path /share/gpu0/jjwhit/mass_map/mm_models/wandb/wandb/ wasn't writable, using system temp directory.
+wandb: WARNING Path /share/gpu0/jjwhit/mass_map/mm_models/wandb/wandb/ wasn't writable, using system temp directory
+wandb: Tracking run with wandb version 0.15.4
+wandb: Run data is saved locally in /tmp/wandb/run-20230702_141853-5ussvoxa
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run mmgan_training_10
+wandb: ⭐️ View project at https://wandb.ai/jess-j-whitney/mass_mapping_project
+wandb: 🚀 View run at https://wandb.ai/jess-j-whitney/mass_mapping_project/runs/5ussvoxa
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+[rank: 0] Global seed set to 0
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+[W socket.cpp:426] [c10d] The server socket cannot be initialized on [::]:21695 (errno: 97 - Address family not supported by protocol).
+[W socket.cpp:601] [c10d] The client socket cannot be initialized to connect to [compute-gpu-0-2.local]:21695 (errno: 97 - Address family not supported by protocol).
+[W socket.cpp:601] [c10d] The client socket cannot be initialized to connect to [compute-gpu-0-2.local]:21695 (errno: 97 - Address family not supported by protocol).
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+
+  | Name          | Type               | Params
+-----------------------------------------------------
+0 | generator     | UNetModel          | 195 M 
+1 | discriminator | DiscriminatorModel | 11.0 M
+-----------------------------------------------------
+206 M     Trainable params
+0         Non-trainable params
+206 M     Total params
+827.392   Total estimated model params size (MB)
+SLURM auto-requeueing enabled. Setting signal handlers.
+srun: Job step aborted: Waiting up to 62 seconds for job step to finish.
+srun: got SIGCONT
+slurmstepd: error: *** STEP 536695.0 ON compute-gpu-0-2 CANCELLED AT 2023-07-02T23:00:19 ***
+slurmstepd: error: *** JOB 536695 ON compute-gpu-0-2 CANCELLED AT 2023-07-02T23:00:19 ***
+srun: forcing job termination
+bypassing sigterm
+Traceback (most recent call last):
+  File "train.py", line 108, in <module>
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 608, in fit
+    call._call_and_handle_interrupt(
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 38, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 650, in _fit_impl
+    self._run(model, ckpt_path=self.ckpt_path)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1103, in _run
+    results = self._run_stage()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1182, in _run_stage
+    self._run_train()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1205, in _run_train
+    self.fit_loop.run()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/loop.py", line 199, in run
+    self.advance(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 267, in advance
+    self._outputs = self.epoch_loop.run(self._data_fetcher)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/loop.py", line 199, in run
+    self.advance(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/epoch/training_epoch_loop.py", line 213, in advance
+    batch_output = self.batch_loop.run(kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/loop.py", line 199, in run
+    self.advance(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/batch/training_batch_loop.py", line 88, in advance
+    outputs = self.optimizer_loop.run(optimizers, kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/loop.py", line 199, in run
+    self.advance(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 202, in advance
+    result = self._run_optimization(kwargs, self._optimizers[self.optim_progress.optimizer_position])
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 249, in _run_optimization
+    self._optimizer_step(optimizer, opt_idx, kwargs.get("batch_idx", 0), closure)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 370, in _optimizer_step
+    self.trainer._call_lightning_module_hook(
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1347, in _call_lightning_module_hook
+    output = fn(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/core/module.py", line 1744, in optimizer_step
+    optimizer.step(closure=optimizer_closure)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/core/optimizer.py", line 169, in step
+    step_output = self._strategy.optimizer_step(self._optimizer, self._optimizer_idx, closure, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/strategies/ddp.py", line 280, in optimizer_step
+    optimizer_output = super().optimizer_step(optimizer, opt_idx, closure, model, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 234, in optimizer_step
+    return self.precision_plugin.optimizer_step(
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/precision_plugin.py", line 119, in optimizer_step
+    return optimizer.step(closure=closure, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/optim/optimizer.py", line 140, in wrapper
+    out = func(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/optim/optimizer.py", line 23, in _use_grad
+    ret = func(self, *args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/optim/adam.py", line 183, in step
+    loss = closure()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/precision_plugin.py", line 105, in _wrap_closure
+    closure_result = closure()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 149, in __call__
+    self._result = self.closure(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 144, in closure
+    self._backward_fn(step_output.closure_loss)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/optimizer_loop.py", line 305, in backward_fn
+    self.trainer._call_strategy_hook("backward", loss, optimizer, opt_idx)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1485, in _call_strategy_hook
+    output = fn(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 207, in backward
+    self.precision_plugin.backward(closure_loss, self.lightning_module, optimizer, optimizer_idx, *args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/precision_plugin.py", line 67, in backward
+    model.backward(tensor, optimizer, optimizer_idx, *args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/core/module.py", line 1488, in backward
+    loss.backward(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/_tensor.py", line 488, in backward
+    torch.autograd.backward(
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/autograd/__init__.py", line 197, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 60304) is killed by signal: Terminated. 
+wandb: While tearing down the service manager. The following error has occurred: [Errno 32] Broken pipe
+srun: error: compute-gpu-0-2: task 0: Exited with exit code 1
