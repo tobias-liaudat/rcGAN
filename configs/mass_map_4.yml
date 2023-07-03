@@ -4,8 +4,8 @@ data_path: /share/gpu0/jjwhit/mass_map_dataset/kappa20_cropped/
 
 
 # Number of code vectors for each phase
-num_z_test: 32
-num_z_valid: 8
+num_z_test: 32  #32
+num_z_valid: 8 #8
 num_z_train: 2
 
 # Data
@@ -24,7 +24,9 @@ gp_weight: 10
 adv_weight: 1e-5
 
 # Training
-batch_size: 4
+batch_size: 8
 #Remember to increase this for full training
 num_epochs: 100
 psnr_gain_tol: 0.25
+
+num_workers: 4
