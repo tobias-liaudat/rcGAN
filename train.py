@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import yaml
 import types
 import json
@@ -43,6 +44,7 @@ if __name__ == '__main__':
         dm = MMDataModule(cfg)
 
         model = mmGAN(cfg, args.exp_name, args.num_gpus)
+
     elif args.mass_mapping_8:
         with open('/home/jjwhit/rcGAN/configs/mass_map_8.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:

@@ -1,0 +1,7 @@
+0,1,2,3
+
+
+
+Experiment Name: mmgan_training_4
+Number of GPUs: 4
+Sanity Checking: 0it [00:00, ?it/s]Sanity Checking:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:  50%|█████     | 1/2 [00:06<00:06,  6.53s/it]Sanity Checking DataLoader 0: 100%|██████████| 2/2 [00:10<00:00,  5.14s/it]                                                                           Training: 0it [00:00, ?it/s]Training:   0%|          | 0/562 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/562 [00:00<?, ?it/s] 
