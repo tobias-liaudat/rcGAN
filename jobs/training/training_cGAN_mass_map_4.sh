@@ -35,6 +35,6 @@ echo $WANDB_DIR
 echo $WANDB_CACHE_DIR
 echo $WANDB_CONFIG_DIR
 
-cd /share/gpu0/jjwhit/rcGAN
+cd /home/jjwhit/rcGAN
 
-srun python -u train.py --mass_mapping_4 --exp-name mmgan_training_4 --num-gpus 4
+srun python -u train.py --mass_mapping_4 --exp-name mmgan_training_8 --num-gpus 4

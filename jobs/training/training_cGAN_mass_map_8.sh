@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=cGAN_8
 #SBATCH -p GPU
-#SBATCH --nodelist=compute-gpu-0-4
+#SBATCH --nodelist=compute-gpu-0-2
 # requesting one node
 # SBATCH -N1
 # requesting 12 cpus
@@ -35,6 +35,6 @@ echo $WANDB_DIR
 echo $WANDB_CACHE_DIR
 echo $WANDB_CONFIG_DIR
 
-cd /share/gpu0/jjwhit/rcGAN
+cd /home/jjwhit/rcGAN
 
 srun python -u train.py --mass_mapping_8 --exp-name mmgan_training_8 --num-gpus 4
