@@ -1,7 +1,0 @@
-0,7,8,9
-
-
-
-Experiment Name: mmgan_training_1
-Number of GPUs: 4
-Sanity Checking: 0it [00:00, ?it/s]Sanity Checking:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]
