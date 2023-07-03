@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import yaml
 import types
 import json
@@ -25,6 +26,7 @@ if __name__ == '__main__':
 
     print(f"Experiment Name: {args.exp_name}")
     print(f"Number of GPUs: {args.num_gpus}")
+    print("Device count: ",torch.cuda.device_count())
 
     if args.mri:
         with open('configs/mri.yml', 'r') as f:
@@ -68,8 +70,12 @@ if __name__ == '__main__':
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
         dm = MMDataModule(cfg)
-
+        
         model = mmGAN(cfg, args.exp_name, args.num_gpus)
+        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
+        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #model.to(device)
+
     else:
         print("No valid application selected. Please include one of the following args: --mri")
         exit()
@@ -90,10 +96,11 @@ if __name__ == '__main__':
         save_top_k=20
     )
 
-    trainer = pl.Trainer(accelerator="gpu", devices=args.num_gpus, strategy='ddp',
+    trainer = pl.Trainer(accelerator="gpu", devices=args.num_gpus, gpus=4, strategy='ddp',
                          max_epochs=cfg.num_epochs, callbacks=[checkpoint_callback_epoch],
                          num_sanity_val_steps=2, profiler="simple", logger=wandb_logger, benchmark=False,
                          log_every_n_steps=10)
+ 
 
     if args.resume:
         trainer.fit(model, dm,
