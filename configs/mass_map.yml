@@ -28,3 +28,5 @@ batch_size: 9
 #Remember to increase this for full training
 num_epochs: 100
 psnr_gain_tol: 0.25
+
+num_workers: 1

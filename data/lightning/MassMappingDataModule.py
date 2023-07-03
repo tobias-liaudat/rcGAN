@@ -168,7 +168,7 @@ class MMDataModule(pl.LightningDataModule):
         return DataLoader(
             dataset=self.train,
             batch_size=self.args.batch_size,
-            num_workers=4,
+            num_workers=self.args.num_workers,
             drop_last=True,
             pin_memory=False
         )
@@ -177,7 +177,7 @@ class MMDataModule(pl.LightningDataModule):
         return DataLoader(
             dataset=self.validate,
             batch_size=self.args.batch_size,
-            num_workers=4,
+            num_workers=self.args.num_workers,
             drop_last=True,
             pin_memory=False
         )
@@ -185,8 +185,8 @@ class MMDataModule(pl.LightningDataModule):
     def test_dataloader(self):
         return DataLoader(
             dataset=self.test,
-            batch_size=4,
-            num_workers=4,
+            batch_size=self.args.batch_size,
+            num_workers=self.args.num_workers,
             pin_memory=False,
             drop_last=False
         )
