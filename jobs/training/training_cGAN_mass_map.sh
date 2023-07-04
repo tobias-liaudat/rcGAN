@@ -23,9 +23,9 @@
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 conda activate cGAN
 
-#export WANDB_DIR=/share/gpu0/tl3/wandb/logs
-#export WANDB_CACHE_DIR=/share/gpu0/tl3/wandb/.cache/wandb
-#export WANDB_CONFIG_DIR=/share/gpu0/tl3/wandb/.config/wandb
+export WANDB_DIR=/share/gpu0/jjwhit/wandb/logs
+export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
+export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 
 # Echo commands
 set -x

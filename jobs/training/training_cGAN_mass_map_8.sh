@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=cGAN_8
+#SBATCH --job-name=training
 #SBATCH -p GPU
 #SBATCH --nodelist=compute-gpu-0-2
 # requesting one node
@@ -14,8 +14,8 @@
 #SBATCH --mem-per-gpu=80GB           # memory per GPU
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=tr_cGAN_8_%j.out
-#SBATCH --error=tr_cGAN_8_%j.err
+#SBATCH --output=tr_training_%j.out
+#SBATCH --error=tr_training_%j.err
 
 
 
@@ -23,9 +23,9 @@
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 conda activate cGAN
 
-#export WANDB_DIR=/share/gpu0/tl3/wandb/logs
-#export WANDB_CACHE_DIR=/share/gpu0/tl3/wandb/.cache/wandb
-#export WANDB_CONFIG_DIR=/share/gpu0/tl3/wandb/.config/wandb
+export WANDB_DIR=/share/gpu0/jjwhit/wandb/logs
+export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
+export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 
 # Echo commands
 set -x
