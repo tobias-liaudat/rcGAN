@@ -14,6 +14,7 @@ from utils.mri.math import tensor_to_complex_np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from scipy import ndimage
+import sys
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -35,12 +36,12 @@ if __name__ == "__main__":
     test_loader = dm.test_dataloader()
 
     with torch.no_grad():
-        rcGAN_model = mmGAN.load_from_checkpoint(
+        mmGAN_model = mmGAN.load_from_checkpoint(
             checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
 
-        rcGAN_model.cuda()
+        mmGAN_model.cuda()
 
-        rcGAN_model.eval()
+        mmGAN_model.eval()
 
         for i, data in enumerate(test_loader):
             y, x, mean, std = data
@@ -49,28 +50,29 @@ if __name__ == "__main__":
             mean = mean.cuda()
             std = std.cuda()
 
-            gens_rcgan = torch.zeros(
-                size=(y.size(0), cfg.num_z_test, cfg.in_chans // 2, cfg.im_size, cfg.im_size, 2)).cuda()
+            # gens_mmGAN = torch.zeros(
+            #     size=(y.size(0), cfg.num_z_test, cfg.in_chans // 2, cfg.im_size, cfg.im_size, 2)).cuda()
+            gens_mmGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
 
             for z in range(cfg.num_z_test):
-                gens_rcgan[:, z, :, :, :, :] = rcGAN_model.reformat(rcGAN_model.forward(y))
+                gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
 
-            avg_rcgan = torch.mean(gens_rcgan, dim=1)
+            avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
-            gt = rcGAN_model.reformat(x)
-            zfr = rcGAN_model.reformat(y)
+            gt = mmGAN_model.reformat(x)
+            zfr = mmGAN_model.reformat(y)
 
             for j in range(y.size(0)):
                 np_avgs = {
-                    'rcgan': None,
+                    'mmGAN': None,
                 }
 
                 np_samps = {
-                    'rcgan': [],
+                    'mmGAN': [],
                 }
 
                 np_stds = {
-                    'rcgan': None,
+                    'mmGAN': None,
                 }
 
                 np_gt = None
@@ -82,17 +84,17 @@ if __name__ == "__main__":
                 np_zfr = ndimage.rotate(
                     torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).abs().numpy(), 180)
 
-                np_avgs['rcgan'] = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((avg_rcgan[j] * std[j] + mean[j]).cpu())).abs().numpy(),
+                np_avgs['mmGAN'] = ndimage.rotate(
+                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).abs().numpy(),
                     180)
 
                 for z in range(cfg.num_z_test):
-                    np_samps['rcgan'].append(ndimage.rotate(torch.tensor(
-                        tensor_to_complex_np((gens_rcgan[j, z] * std[j] + mean[j]).cpu())).abs().numpy(), 180))
+                    np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
+                        tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).abs().numpy(), 180))
 
-                np_stds['rcgan'] = np.std(np.stack(np_samps['rcgan']), axis=0)
+                np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 
-                method = 'rcgan'
+                method = 'mmGAN'
                 zoom_startx = np.random.randint(120, 250)
                 zoom_starty1 = np.random.randint(30, 80)
                 zoom_starty2 = np.random.randint(260, 300)
@@ -137,7 +139,7 @@ if __name__ == "__main__":
 
                 ax = plt.subplot(gs[0, 2])
                 im = ax.imshow(2 * np.abs(np_avgs[method] - np_gt), cmap='jet', vmin=0,
-                               vmax=np.max(np.abs(np_avgs['rcgan'] - np_gt)))
+                               vmax=np.max(np.abs(np_avgs['mmGAN'] - np_gt)))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -146,7 +148,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[0, 3])
-                ax.imshow(np_stds[method], cmap='viridis', vmin=0, vmax=np.max(np_stds['rcgan']))
+                ax.imshow(np_stds[method], cmap='viridis', vmin=0, vmax=np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -258,7 +260,7 @@ if __name__ == "__main__":
                 ax = plt.subplot(gs[0, 7])
                 ax.imshow(np_stds[method][zoom_starty:zoom_starty + zoom_length,
                           zoom_startx:zoom_startx + zoom_length], cmap='viridis', vmin=0,
-                          vmax=np.max(np_stds['rcgan']))
+                          vmax=np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -269,5 +271,5 @@ if __name__ == "__main__":
                 plt.close(fig)
 
                 if fig_count == args.num_figs:
-                    exit()
+                    sys.exit()
                 fig_count += 1
