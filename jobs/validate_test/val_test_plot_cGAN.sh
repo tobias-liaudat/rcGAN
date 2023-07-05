@@ -35,6 +35,6 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u /scripts/mass_map/validate.py --exp-name mmGAN_test
-srun python -u /scripts/mass_map/test.py --exp-name mmGAN_test
-srun python -u /scripts/mass_map/test.py --exp-name mmGAN_test --num-figs 10
+srun python -u scripts/mass_map/validate.py --exp-name mmGAN_test
+srun python -u scripts/mass_map/test.py --exp-name mmGAN_test
+srun python -u scripts/mass_map/test.py --exp-name mmGAN_test --num-figs 10
