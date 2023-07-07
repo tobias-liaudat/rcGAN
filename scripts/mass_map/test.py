@@ -6,6 +6,10 @@ import lpips
 
 import numpy as np
 
+import sys
+sys.path.append('/home/jjwhit/rcGAN/')
+print(sys.path)
+
 from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
@@ -15,6 +19,7 @@ from evaluation_scripts.metrics import psnr, ssim
 from utils.embeddings import VGG16Embedding
 from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric  
 from DISTS_pytorch import DISTS
+
 
 
 def load_object(dct):
@@ -48,7 +53,8 @@ if __name__ == "__main__":
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
     cfg.batch_size = cfg.batch_size * 4
-    dm = MMDataModule(cfg, big_test=True)
+    dm = MMDataModule(cfg)
+
 
     dm.setup()
 
