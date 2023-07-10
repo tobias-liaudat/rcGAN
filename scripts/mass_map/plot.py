@@ -223,8 +223,23 @@ if __name__ == "__main__":
                 for l in range(4):
                     avg += np_samps[method][l]
 
-                avg = avg / 4
+                avg = avg / 8
 
+                ax.imshow(
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('8-Avg.')
+
+                ax = plt.subplot(gs[0, 4])
+                avg = np.zeros((384, 384))
+                for l in range(2):
+                    avg += np_samps[method][l]
+
+                avg = avg / 4
                 ax.imshow(
                     avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
                     cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
@@ -233,21 +248,6 @@ if __name__ == "__main__":
                 ax.set_xticks([])
                 ax.set_yticks([])
                 ax.set_title('4-Avg.')
-
-                ax = plt.subplot(gs[0, 4])
-                avg = np.zeros((384, 384))
-                for l in range(2):
-                    avg += np_samps[method][l]
-
-                avg = avg / 2
-                ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
-                    cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
-                ax.set_xticklabels([])
-                ax.set_yticklabels([])
-                ax.set_xticks([])
-                ax.set_yticks([])
-                ax.set_title('2-Avg.')
 
                 for samp in range(2):
                     ax = plt.subplot(gs[0, samp + 5])
