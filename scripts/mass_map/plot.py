@@ -125,7 +125,7 @@ if __name__ == "__main__":
                                        left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                ax.imshow(np_gt, cmap='inferno', vmin=0, vmax=0.5* np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -133,17 +133,17 @@ if __name__ == "__main__":
                 ax.set_title("Truth")
 
                 ax = plt.subplot(gs[0, 1])
-                ax.imshow(np_avgs[method], cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                ax.imshow(np_avgs[method], cmap='inferno', vmin=0, vmax=0.5** np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
                 ax.set_yticks([])
-                ax.set_title(method)
+                ax.set_title("Reconstruction")
 
 
                 ax = plt.subplot(gs[0, 2])
                 im = ax.imshow(2 * np.abs(np_avgs[method] - np_gt), cmap='jet', vmin=0,
-                               vmax=0.7*np.max(np.abs(np_avgs['mmGAN'] - np_gt)))
+                               vmax=0.5*np.max(np.abs(np_avgs['mmGAN'] - np_gt)))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[0, 3])
-                ax.imshow(np_stds[method], cmap='viridis', vmin=0, vmax=0.7*np.max(np_stds['mmGAN']))
+                ax.imshow(np_stds[method], cmap='viridis', vmin=0, vmax=0.5*np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -173,7 +173,7 @@ if __name__ == "__main__":
                                        left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                ax.imshow(np_gt, cmap='inferno', vmin=0, vmax=0.5* np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -192,7 +192,7 @@ if __name__ == "__main__":
                 ax = plt.subplot(gs[0, 1])
                 ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
                           cmap='inferno',
-                          vmin=0, vmax=0.7* np.max(np_gt))
+                          vmin=0, vmax=0.5 * np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -211,7 +211,7 @@ if __name__ == "__main__":
                 ax = plt.subplot(gs[0, 2])
                 ax.imshow(
                     np_avgs[method][zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
-                    cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                    cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
                 ax.imshow(
                     avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
-                    cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                    cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -242,7 +242,7 @@ if __name__ == "__main__":
                 avg = avg / 2
                 ax.imshow(
                     avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
-                    cmap='inferno', vmin=0, vmax=0.7* np.max(np_gt))
+                    cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -253,7 +253,7 @@ if __name__ == "__main__":
                     ax = plt.subplot(gs[0, samp + 5])
                     ax.imshow(np_samps[method][samp][zoom_starty:zoom_starty + zoom_length,
                               zoom_startx:zoom_startx + zoom_length], cmap='inferno', vmin=0,
-                              vmax=0.7* np.max(np_gt))
+                              vmax=0.5** np.max(np_gt))
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
                     ax.set_xticks([])
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                 ax = plt.subplot(gs[0, 7])
                 ax.imshow(np_stds[method][zoom_starty:zoom_starty + zoom_length,
                           zoom_startx:zoom_startx + zoom_length], cmap='viridis', vmin=0,
-                          vmax=0.7*np.max(np_stds['mmGAN']))
+                          vmax=0.5**np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
