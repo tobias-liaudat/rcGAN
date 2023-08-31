@@ -8,10 +8,11 @@ Fourier case
 - [] Handle the normalisation of the input/output pairs
 
 Image domain case
-- [] Try to input the dirty image and the PSF to the cGAN
+- [x] Try to input the dirty image and the PSF to the cGAN
+- [x] Add the conditioning on the sampling distribution
 
+- [] Update the scripts to `validate`, `test` and `plot` the results of the model.
 
-- [] Add the conditioning on the sampling distribution
 
 
 ## Dataset directories
