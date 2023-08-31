@@ -17,9 +17,9 @@ class RadioDataset_Test(torch.utils.data.Dataset):
         
         # Collects the paths of all files.
         # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir + "/x.npy" ).astype(np.float64)
-        self.y = np.load(data_dir + "/y_gridded.npy" ).astype(np.complex128)
-        self.uv = np.load(data_dir + "/uv_gridded.npy" ).astype(np.)
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
+        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
         
 
     def __len__(self):
@@ -47,9 +47,9 @@ class RadioDataset_Val(torch.utils.data.Dataset):
         
         # Collects the paths of all files.
         # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir + "/x.npy" ).astype(np.float64)
-        self.y = np.load(data_dir + "/y_gridded.npy" ).astype(np.complex128)
-        self.uv = np.load(data_dir + "/uv_gridded.npy" ).astype(np.)
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
+        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
         
 
     def __len__(self):
@@ -76,9 +76,9 @@ class RadioDataset_Train(torch.utils.data.Dataset):
         
         # Collects the paths of all files.
         # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir + "/x.npy" ).astype(np.float64)
-        self.y = np.load(data_dir + "/y_gridded.npy" ).astype(np.complex128)
-        self.uv = np.load(data_dir + "/uv_gridded.npy" ).astype(np.)
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
+        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
         
 
     def __len__(self):
