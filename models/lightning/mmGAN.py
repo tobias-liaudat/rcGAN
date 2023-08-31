@@ -46,6 +46,9 @@ class mmGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
+        # Refactor this stuff
+        # 3-> self.args.in_chans
+        # clone tensor -> swapaxis
         reformatted_tensor = torch.zeros(size=(samples.size(0), self.resolution, self.resolution, 2),
                                          device=self.device)
         #Takes values from samples and assigns to reformatted tensor
@@ -145,7 +148,7 @@ class mmGAN(pl.LightningModule):
         # train generator
         if optimizer_idx == 1:
             gens = torch.zeros(
-                size=(y.size(0), self.args.num_z_train, self.args.in_chans, self.args.im_size, self.args.im_size),
+                size=(y.size(0), self.args.num_z_train, self.args.out_chans, self.args.im_size, self.args.im_size),
                 device=self.device)
             for z in range(self.args.num_z_train):
                 gens[:, z, :, :, :] = self.forward(y)
@@ -185,7 +188,7 @@ class mmGAN(pl.LightningModule):
         else:
             num_code = self.args.num_z_valid
 
-        gens = torch.zeros(size=(y.size(0), num_code, self.args.in_chans, self.args.im_size, self.args.im_size),
+        gens = torch.zeros(size=(y.size(0), num_code, self.args.out_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
             gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] 
