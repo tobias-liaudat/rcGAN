@@ -31,7 +31,7 @@ class mmGAN(pl.LightningModule):
         )
 
         self.discriminator = DiscriminatorModel(
-            in_chans=self.args.in_chans + 2,
+            in_chans=self.args.in_chans + self.args.out_chans, # Number of channels from x and y
             out_chans=self.out_chans
         )
 
@@ -112,7 +112,8 @@ class mmGAN(pl.LightningModule):
     def adversarial_loss_generator(self, y, gens):
         fake_pred = torch.zeros(size=(y.shape[0], self.args.num_z_train), device=self.device)
         for k in range(y.shape[0]):
-            cond = torch.zeros(1, gens.shape[2], gens.shape[3], gens.shape[4], device=self.device)
+            # cond = torch.zeros(1, gens.shape[2], gens.shape[3], gens.shape[4], device=self.device)
+            cond = torch.zeros(1, self.args.in_chans, self.args.im_size, self.args.im_size, device=self.device)
             cond[0, :, :, :] = y[k, :, :, :]
             cond = cond.repeat(self.args.num_z_train, 1, 1, 1)
             temp = self.discriminator(input=gens[k], y=cond)
