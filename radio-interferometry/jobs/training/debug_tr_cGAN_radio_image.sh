@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=training
+#SBATCH --job-name=tr_image_radio
 #SBATCH -p GPU
 ##SBATCH --nodelist=compute-gpu-0-2
 # requesting one node
