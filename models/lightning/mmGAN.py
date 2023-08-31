@@ -46,32 +46,31 @@ class mmGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
-        # Refactor this stuff
-        # 3-> self.args.in_chans
-        # clone tensor -> swapaxis
-        reformatted_tensor = torch.zeros(size=(samples.size(0), self.resolution, self.resolution, 2),
-                                         device=self.device)
-        #Takes values from samples and assigns to reformatted tensor
-        #assumption: 0:8 for real, 8:16 for complex, multiple elements bc multiple MRI slices?
-        reformatted_tensor[:, :, :, 0] = samples[:, 0, :, :]
-        reformatted_tensor[:, :, :, 1] = samples[:, 1, :, :]
+        # reformatted_tensor = torch.zeros(
+        #     size=(samples.size(0), self.resolution, self.resolution, 2), device=self.device
+        # )
+        # #Takes values from samples and assigns to reformatted tensor
+        # reformatted_tensor[:, :, :, 0] = samples[:, 0, :, :]
+        # reformatted_tensor[:, :, :, 1] = samples[:, 1, :, :]
+        # return reformatted_tensor
 
+        # New implementation
+        reformatted_tensor = torch.swapaxes(torch.clone(samples), 3, 1)
         return reformatted_tensor
 
     def readd_measures(self, samples, measures):
-        reformatted_tensor = self.reformat(samples)
-        measures = fft2c_new(self.reformat(measures))
-        reconstructed_kspace = fft2c_new(reformatted_tensor)
+        # reformatted_tensor = self.reformat(samples)
+        # measures = fft2c_new(self.reformat(measures))
+        # reconstructed_kspace = fft2c_new(reformatted_tensor)
+        # # # reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
+        # image = ifft2c_new(reconstructed_kspace)
+        # output_im = torch.zeros(size=samples.shape, device=self.device)
+        # output_im[:, 0, :, :] = image[:, :, :, 0]
+        # output_im[:, 1, :, :] = image[:, :, :, 1]
+        # return output_im
 
-        # reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
-
-        image = ifft2c_new(reconstructed_kspace)
-
-        output_im = torch.zeros(size=samples.shape, device=self.device)
-        output_im[:, 0, :, :] = image[:, :, :, 0]
-        output_im[:, 1, :, :] = image[:, :, :, 1]
-
-        return output_im
+        # New implementation
+        return torch.clone(samples)
 
     def compute_gradient_penalty(self, real_samples, fake_samples, y):
         """Calculates the gradient penalty loss for WGAN GP"""
@@ -112,7 +111,6 @@ class mmGAN(pl.LightningModule):
     def adversarial_loss_generator(self, y, gens):
         fake_pred = torch.zeros(size=(y.shape[0], self.args.num_z_train), device=self.device)
         for k in range(y.shape[0]):
-            # cond = torch.zeros(1, gens.shape[2], gens.shape[3], gens.shape[4], device=self.device)
             cond = torch.zeros(1, self.args.in_chans, self.args.im_size, self.args.im_size, device=self.device)
             cond[0, :, :, :] = y[k, :, :, :]
             cond = cond.repeat(self.args.num_z_train, 1, 1, 1)
