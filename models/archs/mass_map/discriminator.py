@@ -106,16 +106,17 @@ class DiscriminatorModel(nn.Module):
 
         # This should be refactored to adapt to input and output number of features and the resolution dimensions
         self.encoder_layers = nn.ModuleList()
-        self.encoder_layers += [FullDownBlock(32, 64)]  # 64x64
-        self.encoder_layers += [FullDownBlock(64, 128)]  # 32x32
-        self.encoder_layers += [FullDownBlock(128, 256)]  # 16x16
-        self.encoder_layers += [FullDownBlock(256, 512)]  # 8x8
-        self.encoder_layers += [FullDownBlock(512, 512)]  # 4x4
-        self.encoder_layers += [FullDownBlock(512, 512)]  # 2x2
+        self.encoder_layers += [FullDownBlock(32, 64)]  # 192x192
+        self.encoder_layers += [FullDownBlock(64, 128)]  # 96x96
+        self.encoder_layers += [FullDownBlock(128, 256)]  # 48x48
+        self.encoder_layers += [FullDownBlock(256, 512)]  # 24x24
+        self.encoder_layers += [FullDownBlock(512, 512)]  # 12x12
+        self.encoder_layers += [FullDownBlock(512, 512)]  # 6x6
 
         self.dense = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(512 * 6 * 6, 1),
+            # nn.Linear(512 * 6 * 6, 1),
+            nn.Linear(512 * 5 * 5, 1),
         )
 
     def forward(self, input, y):
