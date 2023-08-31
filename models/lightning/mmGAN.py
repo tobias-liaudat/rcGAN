@@ -111,7 +111,13 @@ class mmGAN(pl.LightningModule):
     def adversarial_loss_generator(self, y, gens):
         fake_pred = torch.zeros(size=(y.shape[0], self.args.num_z_train), device=self.device)
         for k in range(y.shape[0]):
-            cond = torch.zeros(1, self.args.in_chans, self.args.im_size, self.args.im_size, device=self.device)
+            cond = torch.zeros(
+                1,
+                self.args.in_chans,
+                self.args.im_size,
+                self.args.im_size,
+                device=self.device
+            )
             cond[0, :, :, :] = y[k, :, :, :]
             cond = cond.repeat(self.args.num_z_train, 1, 1, 1)
             temp = self.discriminator(input=gens[k], y=cond)
@@ -131,7 +137,8 @@ class mmGAN(pl.LightningModule):
 
     def l1_std_p(self, avg_recon, gens, x):
         return F.l1_loss(avg_recon, x) - self.std_mult * np.sqrt(
-            2 / (np.pi * self.args.num_z_train * (self.args.num_z_train+ 1))) * torch.std(gens, dim=1).mean()
+            2 / (np.pi * self.args.num_z_train * (self.args.num_z_train+ 1))
+            ) * torch.std(gens, dim=1).mean()
 
     def gradient_penalty(self, x_hat, x, y):
         gradient_penalty = self.compute_gradient_penalty(x.data, x_hat.data, y.data)
@@ -147,7 +154,13 @@ class mmGAN(pl.LightningModule):
         # train generator
         if optimizer_idx == 1:
             gens = torch.zeros(
-                size=(y.size(0), self.args.num_z_train, self.args.out_chans, self.args.im_size, self.args.im_size),
+                size=(
+                    y.size(0),
+                    self.args.num_z_train,
+                    self.args.out_chans,
+                    self.args.im_size, 
+                    self.args.im_size
+                ),
                 device=self.device)
             for z in range(self.args.num_z_train):
                 gens[:, z, :, :, :] = self.forward(y)
