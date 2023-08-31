@@ -77,8 +77,20 @@ if __name__ == '__main__':
         #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         #model.to(device)
-    elif args.radio:
-        with open('./configs/radio.yml', 'r') as f:
+    elif args.radio_fourier:
+        with open('./configs/radio_fourier.yml', 'r') as f:
+#        with open('configs/mass_map.yml', 'r') as f:
+            cfg = yaml.load(f, Loader=yaml.FullLoader)
+            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+
+        dm = RadioDataModule(cfg)
+        
+        model = mmGAN(cfg, args.exp_name, args.num_gpus)
+        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
+        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #model.to(device)
+    elif args.radio_image:
+        with open('./configs/radio_image.yml', 'r') as f:
 #        with open('configs/mass_map.yml', 'r') as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)
             cfg = json.loads(json.dumps(cfg), object_hook=load_object)
