@@ -37,7 +37,8 @@ class RadioDataTransform:
 
 
         # Format input gt data.
-        pt_x = transforms.to_tensor(x) # Shape (H, W, 2)
+        pt_x = transforms.to_tensor(x.astype(np.complex128)) # Shape (H, W, 2)
+        # pt_x = pt_x[None,:] # Shape (1, H, W)
         pt_x = pt_x.permute(2, 0, 1)  # Shape (2, H, W)
         # Format observation data.
         pt_y = transforms.to_tensor(y) # Shape (H, W, 2)
