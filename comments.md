@@ -39,3 +39,4 @@ export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 
 comment
 
+
