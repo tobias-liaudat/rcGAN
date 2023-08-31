@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
@@ -37,16 +38,22 @@ class RadioDataTransform:
 
 
         # Format input gt data.
-        pt_x = transforms.to_tensor(x.astype(np.complex128)) # Shape (H, W, 2)
-        # pt_x = pt_x[None,:] # Shape (1, H, W)
+        pt_x = transforms.to_tensor(x) # Shape (H, W, 2)
         pt_x = pt_x.permute(2, 0, 1)  # Shape (2, H, W)
         # Format observation data.
         pt_y = transforms.to_tensor(y) # Shape (H, W, 2)
         pt_y = pt_y.permute(2, 0, 1)  # Shape (2, H, W)
-
-        # Normalization step.
+        # Format uv data
+        pt_uv = transforms.to_tensor(uv)[:, :, None] # Shape (H, W, 1)
+        pt_uv = pt_uv.permute(2, 0, 1)  # Shape (1, H, W)
+        # Normalize everything based on measurements y
         normalized_y, mean, std = transforms.normalize_instance(pt_y)
         normalized_x = transforms.normalize(pt_x, mean, std)
+        normalized_uv = transforms.normalize(pt_uv, mean, std)
+
+
+        # Use normalized stack of y + uv
+        normalized_y = torch.cat([normalized_y, normalized_uv], dim=0)
 
         # Return normalized measurements, normalized gt, mean, and std.
         # To unnormalize batch of images:

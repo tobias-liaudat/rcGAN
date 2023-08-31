@@ -17,9 +17,10 @@ class RadioDataset_Test(torch.utils.data.Dataset):
         
         # Collects the paths of all files.
         # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.complex128)
         self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
-        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
+        self.uv = np.load(data_dir.joinpath("uv.npy")).real.astype(np.float64)
+        self.uv = (self.uv - self.uv.min())/(self.uv.max() - self.uv.min()) # normalize range of uv values to (0,1)       
         
 
     def __len__(self):
@@ -46,11 +47,11 @@ class RadioDataset_Val(torch.utils.data.Dataset):
         self.transform = transform
         
         # Collects the paths of all files.
-        # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        # Val/x.npy, Val/y.npy, Val/uv.npy
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.complex128)
         self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
-        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
-        
+        self.uv = np.load(data_dir.joinpath("uv.npy")).real.astype(np.float64)
+        self.uv = (self.uv - self.uv.min())/(self.uv.max() - self.uv.min()) # normalize range of uv values to (0,1)       
 
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -75,10 +76,11 @@ class RadioDataset_Train(torch.utils.data.Dataset):
         self.transform = transform
         
         # Collects the paths of all files.
-        # Test/x.npy, Test/y.npy, Test/uv.npy
-        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.float64)
+        # Train/x.npy, Train/y.npy, Train/uv.npy
+        self.x = np.load(data_dir.joinpath("x.npy")).astype(np.complex128)
         self.y = np.load(data_dir.joinpath("y.npy")).astype(np.complex128)
-        self.uv = np.load(data_dir.joinpath("uv.npy")).astype(np.float64)
+        self.uv = np.load(data_dir.joinpath("uv.npy")).real.astype(np.float64)
+        self.uv = (self.uv - self.uv.min())/(self.uv.max() - self.uv.min()) # normalize range of uv values to (0,1)       
         
 
     def __len__(self):

@@ -9,7 +9,7 @@ num_z_valid: 2
 num_z_train: 2
 
 # Data
-in_chans: 2  # Real+Imag parts from obs
+in_chans: 3  # Real+Imag parts from obs
 out_chans: 2
 im_size: 360 #384x384 pixel images
 
