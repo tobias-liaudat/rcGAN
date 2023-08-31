@@ -22,7 +22,7 @@ class mmGAN(pl.LightningModule):
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
-        self.in_chans = args.in_chans + 2
+        self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
 
         self.generator = UNetModel(
@@ -31,7 +31,7 @@ class mmGAN(pl.LightningModule):
         )
 
         self.discriminator = DiscriminatorModel(
-            in_chans=self.args.in_chans * 2,
+            in_chans=self.args.in_chans + 2,
             out_chans=self.out_chans
         )
 
