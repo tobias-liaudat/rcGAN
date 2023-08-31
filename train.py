@@ -13,6 +13,7 @@ from models.lightning.rcGAN import rcGAN
 from pytorch_lightning import seed_everything
 from pytorch_lightning.loggers import WandbLogger
 from data.lightning.MassMappingDataModule import MMDataModule
+from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
 
 def load_object(dct):
@@ -76,7 +77,18 @@ if __name__ == '__main__':
         #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         #model.to(device)
+    elif args.radio:
+        with open('./configs/radio.yml', 'r') as f:
+#        with open('configs/mass_map.yml', 'r') as f:
+            cfg = yaml.load(f, Loader=yaml.FullLoader)
+            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
+        dm = RadioDataModule(cfg)
+        
+        model = mmGAN(cfg, args.exp_name, args.num_gpus)
+        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
+        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #model.to(device)
     else:
         print("No valid application selected. Please include one of the following args: --mri")
         exit()
