@@ -28,7 +28,9 @@ def create_arg_parser():
                         help='If the application is your application')
     parser.add_argument('--mass_mapping_4', action='store_true',
                         help='If the application is your application')
-    parser.add_argument('--radio', action='store_true',
+    parser.add_argument('--radio_fourier', action='store_true',
+                    help='If the application is your application')
+    parser.add_argument('--radio_image', action='store_true',
                     help='If the application is your application')
 
     return parser
