@@ -29,7 +29,7 @@ Remember to scancel job when done. Check output below for access token if
 you need it.
 
 Before running this jobs the jupyter lab needs to generate a cust password
-Do this after activating the conda environment.
+Do this after activating the conda environment. REMEMBER THIS.
 Run: "jupyter lab password" to set the password you'll need to acess the jupyter lab server
 "
 

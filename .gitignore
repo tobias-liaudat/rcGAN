@@ -170,3 +170,11 @@ jobs/validate_test/zoomed_overview_2.png
 jobs/validate_test/zoomed_overview_3.png
 jobs/validate_test/zoomed_overview_4.png
 jobs/validate_test/zoomed_overview_5.png
+jobs/validate_test/val_test_cGAN_538273.err
+jobs/validate_test/val_test_cGAN_538273.out
+jobs/validate_test/val_test_cGAN_540044.err
+jobs/validate_test/val_test_cGAN_540044.out
+jobs/validate_test/val_test_cGAN_540048.err
+jobs/validate_test/val_test_cGAN_540048.out
+jobs/validate_test/val_test_cGAN_540050.err
+jobs/validate_test/val_test_cGAN_540050.out
