@@ -18,7 +18,7 @@ from torchmetrics.functional import peak_signal_noise_ratio
 class mmGAN(pl.LightningModule):
     def __init__(self, args, exp_name, num_gpus):
         super().__init__()
-        self.args = args
+        self.args = args # This is the cfg object 
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
@@ -32,7 +32,8 @@ class mmGAN(pl.LightningModule):
 
         self.discriminator = DiscriminatorModel(
             in_chans=self.args.in_chans + self.args.out_chans, # Number of channels from x and y
-            out_chans=self.out_chans
+            out_chans=self.out_chans,
+            input_im_size=self.args.im_size
         )
 
         self.std_mult = 1
