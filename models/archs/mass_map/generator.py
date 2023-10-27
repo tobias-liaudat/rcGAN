@@ -126,7 +126,7 @@ class UNetModel(nn.Module):
         self.chans = 128
         self.num_pool_layers = 4
 
-        num_pool_layers = self.num_pool_layers
+        num_pool_layers = self.num_pool_layers #TODO: this doesn't need to be here.
 
         ch = self.chans
 
