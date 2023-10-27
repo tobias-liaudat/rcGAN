@@ -20,8 +20,9 @@ if __name__ == "__main__":
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
 
-    #TODO: Refactor config path
-    with open('/home/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
+    config_path = args.config
+
+    with open(config_path, 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
