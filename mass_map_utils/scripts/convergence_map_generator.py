@@ -3,8 +3,10 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import glob
 
 
+# Configures redshift distribution.
 redshift_distribution = np.load("/home/jjwhit/rcGAN/mass_map_utils/cosmos/hist_n_z.npy", allow_pickle=True)
 
 redshift_vals_array = np.array((0, 
@@ -26,7 +28,6 @@ redshift_vals_array = np.array((0,
                                 4.594, 4.703, 4.819, 4.940, 5.068)
                                 )
 
-print(redshift_vals_array)
 z = np.arange(0, 5.5, .01)
 
 bin_edges = (np.concatenate([[0],
@@ -41,10 +42,39 @@ plt.savefig('Redshift Distribution Histogram')
 pdf = hist
 
 
-source_dir = "/share/gpu0/jjwhit/kappaTNG_suites/LP*/run*/" 
+# Configures kappaTNG files. 
 
 
-#Ensure all files are in order of ascending redshift:
+source_dir = "/share/gpu0/jjwhit/kappaTNG_suites/LP*/run*/"
+all_files = glob.glob(source_dir)
+dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
+
+
+# Ensures destination directories exist.
+
+if not os.path.exists(dst_dir):
+   # Create a new directory because it does not exist
+   os.makedirs(dst_dir)
+   print("The new directory has been made!")
+
+dst_train_path = dst_dir + 'kappa_train/'
+dst_test_path = dst_dir + 'kappa_test/'
+dst_val_path = dst_dir + 'kappa_val/'
+
+if not os.path.exists(dst_train_path):
+    os.makedirs(dst_train_path)
+if not os.path.exists(dst_test_path):
+    os.makedirs(dst_test_path)
+if not os.path.exists(dst_val_path):
+    os.makedirs(dst_val_path)
+
+# Set seed
+np.random.seed(0)
+# Shuffle files
+np.random.shuffle(all_files)
+total_nb_files = len(all_files)
+
+#Ensure all source files are in order of ascending redshift:
 file_prefix = "kappa"
 file_extension = ".dat"
 
@@ -101,11 +131,20 @@ for fname in range(len(redshift_vals_array)): #We will repeat this process for e
             
             omega[img_num] = pdf[img_num] * delta_z
             norm_factor = np.sum(omega)
-            
-            # kappa_tot += omega[img_num] * kappa
             kappa_tot += (omega[img_num]/norm_factor) * kappa
             img_num +=1
 
-    save_path = '{:s}{:s}{:05d}{:s}'.format('/share/gpu0/jjwhit/kappa_cosmos_simulations/', "sim_", n, ".npy")
+    # Using 85% of data for training
+    if (img_num/total_nb_files) <= 0.85:
+        dst_dir = dst_train_path
+    # Using 10% of data for testing
+    elif (img_num/total_nb_files) > 0.85 and (img_num/total_nb_files) <= 0.95:
+        dst_dir = dst_test_path
+    # Using 5% of data for validation
+    else:
+        dst_dir = dst_val_path
+
+
+    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "sim_", n, ".npy")
     np.save(save_path, kappa_tot, allow_pickle=True)
     n += 1
