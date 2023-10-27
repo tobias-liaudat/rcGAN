@@ -109,61 +109,56 @@ class ConvUpBlock(nn.Module):
 
 
 class UNetModel(nn.Module):
-    def __init__(self, in_chans, out_chans):
+    def __init__(self, in_chans, out_chans, chans=128, num_pool_layers=4):
         """
         Args:
             in_chans (int): Number of channels in the input to the U-Net model.
             out_chans (int): Number of channels in the output to the U-Net model.
             chans (int): Number of output channels of the first convolution layer.
             num_pool_layers (int): Number of down-sampling and up-sampling layers.
-            drop_prob (float): Dropout probability.
         """
         super().__init__()
 
         # self.preprocess_unet = UNET()
         self.in_chans = in_chans
         self.out_chans = out_chans
-        self.chans = 128
-        self.num_pool_layers = 4
+        self.chans = chans
+        self.num_pool_layers = num_pool_layers
 
-        num_pool_layers = self.num_pool_layers #TODO: this doesn't need to be here.
-
-        ch = self.chans
-
-        self.down_sample_layers = nn.ModuleList([ConvDownBlock(in_chans, ch, batch_norm=False)])
-        for i in range(num_pool_layers - 1):
+        self.down_sample_layers = nn.ModuleList([ConvDownBlock(in_chans, self.chans, batch_norm=False)])
+        for i in range(self.num_pool_layers - 1):
             if i < 3:
-                self.down_sample_layers += [ConvDownBlock(ch, ch * 2)]
-                ch *= 2
+                self.down_sample_layers += [ConvDownBlock(self.chans, self.chans * 2)]
+                self.chans *= 2
             else:
-                self.down_sample_layers += [ConvDownBlock(ch, ch)]
+                self.down_sample_layers += [ConvDownBlock(self.chans, self.chans)]
 
         self.res_layer_1 = nn.Sequential(
-            nn.Conv2d(ch, ch, kernel_size=3, padding=1),
-            nn.BatchNorm2d(ch),
+            nn.Conv2d(self.chans, self.chans, kernel_size=3, padding=1),
+            nn.BatchNorm2d(self.chans),
             nn.PReLU(),
-            ResidualBlock(ch),
-            ResidualBlock(ch),
-            ResidualBlock(ch),
-            ResidualBlock(ch),
-            ResidualBlock(ch),
+            ResidualBlock(self.chans),
+            ResidualBlock(self.chans),
+            ResidualBlock(self.chans),
+            ResidualBlock(self.chans),
+            ResidualBlock(self.chans),
         )
 
         self.conv = nn.Sequential(
-            nn.Conv2d(ch, ch, kernel_size=3, padding=1),
-            nn.BatchNorm2d(ch),
+            nn.Conv2d(self.chans, self.chans, kernel_size=3, padding=1),
+            nn.BatchNorm2d(self.chans),
             nn.PReLU(),
         )
 
         self.up_sample_layers = nn.ModuleList()
-        for i in range(num_pool_layers - 1):
-            self.up_sample_layers += [ConvUpBlock(ch * 2, ch // 2)]
-            ch //= 2
+        for i in range(self.num_pool_layers - 1):
+            self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans // 2)]
+            self.chans //= 2
 
-        self.up_sample_layers += [ConvUpBlock(ch * 2, ch)]
+        self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans)]
         self.conv2 = nn.Sequential(
-            nn.Conv2d(ch, ch // 2, kernel_size=1),
-            nn.Conv2d(ch // 2, out_chans, kernel_size=1),
+            nn.Conv2d(self.chans, self.chans // 2, kernel_size=1),
+            nn.Conv2d(self.chans // 2, out_chans, kernel_size=1),
         )
 
     def forward(self, input):
