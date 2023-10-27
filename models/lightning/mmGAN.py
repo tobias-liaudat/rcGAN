@@ -245,11 +245,11 @@ class mmGAN(pl.LightningModule):
         self.log('psnr_1_step', psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True)
 
         if batch_idx == 0:
-            if self.global_rank == 0 and self.current_epoch % 5 == 0 and fig_count == 0:
+            if self.global_rank == 0 and self.current_epoch % 1 == 0 and fig_count == 0:
                 fig_count += 1
                 # Using single generation instead of avg generator (mag_avg_gen)
-                avg_gen_np = mag_avg_gen[0, 0, :, :].cpu().numpy()
-                gt_np = mag_gt[0, 0, :, :].cpu().numpy()
+                avg_gen_np = mag_avg_gen[0, :, :, 0].cpu().numpy()
+                gt_np = mag_gt[0, :, :, 0].cpu().numpy()
 
                 plot_avg_np = (avg_gen_np - np.min(avg_gen_np)) / (np.max(avg_gen_np) - np.min(avg_gen_np))
                 plot_gt_np = (gt_np - np.min(gt_np)) / (np.max(gt_np) - np.min(gt_np))
