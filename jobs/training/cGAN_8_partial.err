@@ -1,0 +1,122 @@
++ echo 0,1,2,3
++ echo
++ echo
++ echo
++ cd /home/jjwhit/rcGAN
++ srun python -u train.py --mass_mapping_8 --exp-name mmgan_training_8 --num-gpus 4
+/home/jjwhit/rcGAN/fastmri/__init__.py:16: UserWarning: Could not retrieve fastmri version!
+  warnings.warn("Could not retrieve fastmri version!")
+[rank: 0] Global seed set to 0
+wandb: Currently logged in as: jess-j-whitney. Use `wandb login --relogin` to force relogin
+wandb: WARNING Path /share/gpu0/jjwhit/mass_map/mm_models/wandb/wandb/ wasn't writable, using system temp directory.
+wandb: WARNING Path /share/gpu0/jjwhit/mass_map/mm_models/wandb/wandb/ wasn't writable, using system temp directory
+wandb: Tracking run with wandb version 0.15.4
+wandb: Run data is saved locally in /tmp/wandb/run-20230704_084538-emwg7jcn
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run mmgan_training_8
+wandb: ⭐️ View project at https://wandb.ai/jess-j-whitney/mass_mapping_project
+wandb: 🚀 View run at https://wandb.ai/jess-j-whitney/mass_mapping_project/runs/emwg7jcn
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+[rank: 0] Global seed set to 0
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+[W socket.cpp:426] [c10d] The server socket cannot be initialized on [::]:21872 (errno: 97 - Address family not supported by protocol).
+[W socket.cpp:601] [c10d] The client socket cannot be initialized to connect to [compute-gpu-0-4.local]:21872 (errno: 97 - Address family not supported by protocol).
+[W socket.cpp:601] [c10d] The client socket cannot be initialized to connect to [compute-gpu-0-4.local]:21872 (errno: 97 - Address family not supported by protocol).
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:612: UserWarning: Checkpoint directory /share/gpu0/jjwhit/mass_map/mm_models/mmgan_training_8 exists and is not empty.
+  rank_zero_warn(f"Checkpoint directory {dirpath} exists and is not empty.")
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+
+  | Name          | Type               | Params
+-----------------------------------------------------
+0 | generator     | UNetModel          | 195 M 
+1 | discriminator | DiscriminatorModel | 6.3 M 
+-----------------------------------------------------
+202 M     Trainable params
+0         Non-trainable params
+202 M     Total params
+808.555   Total estimated model params size (MB)
+SLURM auto-requeueing enabled. Setting signal handlers.
+Traceback (most recent call last):
+  File "train.py", line 110, in <module>
+    trainer.fit(model, dm)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 608, in fit
+    call._call_and_handle_interrupt(
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 38, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 650, in _fit_impl
+    self._run(model, ckpt_path=self.ckpt_path)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1103, in _run
+    results = self._run_stage()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1182, in _run_stage
+    self._run_train()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1205, in _run_train
+    self.fit_loop.run()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/loop.py", line 200, in run
+    self.on_advance_end()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 295, in on_advance_end
+    self.trainer._call_callback_hooks("on_train_epoch_end")
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1385, in _call_callback_hooks
+    fn(self, self.lightning_module, *args, **kwargs)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py", line 303, in on_train_epoch_end
+    self._save_topk_checkpoint(trainer, monitor_candidates)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py", line 360, in _save_topk_checkpoint
+    self._save_monitor_checkpoint(trainer, monitor_candidates)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py", line 658, in _save_monitor_checkpoint
+    self._update_best_and_save(current, trainer, monitor_candidates)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py", line 709, in _update_best_and_save
+    self._save_checkpoint(trainer, filepath)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py", line 372, in _save_checkpoint
+    logger.after_save_checkpoint(proxy(self))
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loggers/wandb.py", line 518, in after_save_checkpoint
+    self._scan_and_log_checkpoints(checkpoint_callback)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/pytorch_lightning/loggers/wandb.py", line 601, in _scan_and_log_checkpoints
+    artifact.add_file(p, name="model.ckpt")
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/artifacts/local_artifact.py", line 388, in add_file
+    return self._add_local_file(name, local_path, digest=digest)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/artifacts/local_artifact.py", line 708, in _add_local_file
+    shutil.copyfile(path, staging_path)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/shutil.py", line 276, in copyfile
+    return dst
+OSError: [Errno 28] No space left on device
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+Thread SenderThread:
+Traceback (most recent call last):
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/internal_util.py", line 49, in run
+    self._run()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/internal_util.py", line 100, in _run
+    self._process(record)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/internal.py", line 328, in _process
+    self._sm.send(record)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/sender.py", line 376, in send
+    send_handler(record)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/sender.py", line 398, in send_request
+    send_handler(record)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/sender.py", line 630, in send_request_defer
+    self._flush_job()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/sender.py", line 1602, in _flush_job
+    artifact = self._job_builder.build()
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/internal/job_builder.py", line 299, in build
+    f.write(json.dumps(source_info, indent=4))
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/contextlib.py", line 120, in __exit__
+    next(self.gen)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/artifacts/local_artifact.py", line 367, in new_file
+    self.add_file(path, name=name)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/artifacts/local_artifact.py", line 388, in add_file
+    return self._add_local_file(name, local_path, digest=digest)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/site-packages/wandb/sdk/artifacts/local_artifact.py", line 706, in _add_local_file
+    with tempfile.NamedTemporaryFile(dir=get_staging_dir(), delete=False) as f:
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/tempfile.py", line 540, in NamedTemporaryFile
+    (fd, name) = _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+  File "/home/jjwhit/.conda/envs/cGAN/lib/python3.8/tempfile.py", line 250, in _mkstemp_inner
+    fd = _os.open(file, flags, 0o600)
+OSError: [Errno 28] No space left on device: '/home/jjwhit/.local/share/wandb/artifacts/staging/tmp9sr2zt2c'
+wandb: ERROR Internal wandb error: file data was not synced
+srun: error: compute-gpu-0-4: task 0: Exited with exit code 255
