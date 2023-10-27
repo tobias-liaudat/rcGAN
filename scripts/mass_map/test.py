@@ -8,7 +8,6 @@ import numpy as np
 
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
-print(sys.path)
 
 from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
