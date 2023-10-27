@@ -9,7 +9,7 @@ from matplotlib import cm
 
 from PIL import Image
 from torch.nn import functional as F
-from utils.mri.fftc import ifft2c_new, fft2c_new
+from utils.mri.fftc import ifft2c_new, fft2c_new #TODO: Unused imports.
 from models.archs.mass_map.generator import UNetModel
 from models.archs.mass_map.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
