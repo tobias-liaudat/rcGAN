@@ -9,9 +9,17 @@ Fourier case
 
 Image domain case
 - [x] Try to input the dirty image and the PSF to the cGAN
-
-
+<<<<<<< HEAD
+=======
 - [x] Add the conditioning on the sampling distribution
+>>>>>>> ab450c382fdd1dc5b6f4b48c6b0fa044f14be625
+
+- [] Update the scripts to `validate`, `test` and `plot` the results of the model.
+
+<<<<<<< HEAD
+- [x] Add the conditioning on the sampling distribution
+=======
+>>>>>>> ab450c382fdd1dc5b6f4b48c6b0fa044f14be625
 
 Data generation
 - [ ] add noise
