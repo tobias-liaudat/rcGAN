@@ -82,7 +82,7 @@ class FullDownBlock(nn.Module):
 
 
 class DiscriminatorModel(nn.Module):
-    def __init__(self, in_chans, out_chans, z_location=None, model_type=None, mbsd=False):
+    def __init__(self, in_chans, out_chans, input_im_size, z_location=None, model_type=None, mbsd=False):
         """
         Args:
             in_chans (int): Number of channels in the input to the U-Net model.
@@ -113,11 +113,13 @@ class DiscriminatorModel(nn.Module):
         self.encoder_layers += [FullDownBlock(512, 512)]  # 12x12
         self.encoder_layers += [FullDownBlock(512, 512)]  # 6x6
 
+        downsampled_imsize = input_im_size
+        for i in range(6):
+            downsampled_imsize = downsampled_imsize // 2 # half dimension (rounded down) for every FullDownBlock
+
         self.dense = nn.Sequential(
             nn.Flatten(),
-            # nn.Linear(512 * 6 * 6, 1), # for 384
-#             nn.Linear(512 * 5 * 5, 1), # for 360
-            nn.Linear(512 * 4 * 4, 1), # for 256
+            nn.Linear(512 * downsampled_imsize**2 , 1),
         )
 
     def forward(self, input, y):
