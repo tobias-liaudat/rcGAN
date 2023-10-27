@@ -10,27 +10,9 @@ def create_arg_parser():
     parser.add_argument('--resume', action='store_true',
                         help='Whether or not to resume training.')
     parser.add_argument('--resume-epoch', default=0, type=int, help='Epoch to resume training from')
-    parser.add_argument('--mri', action='store_true',
-                        help='If the application is MRI')
-    parser.add_argument('--myapplication', action='store_true',
-                        help='If the application is your custom application')
-    parser.add_argument('--exp-name', type=str, default="", help='Name for the run.')
+    parser.add_argument('--config', type=str, default='./configs/mri.yml', action='store_true', help='Path to the config file') 
+    parser.add_argument('--exp-name', type=str, default="default_exp_name", help='Name for the run.')
     parser.add_argument('--num-gpus', default=1, type=int, help='The number of GPUs to use during training.')
     parser.add_argument('--num-figs', default=1, type=int, help='The number of figures to generate while plotting.')
-
-    parser.add_argument('--sense-maps-val', action='store_true',
-                        help='Whether or not to generate sense maps for validation data.')
-    parser.add_argument('--mass_mapping', action='store_true',
-                        help='If the application is your application')
-    parser.add_argument('--mass_mapping_8', action='store_true',
-                        help='If the application is your application')
-    parser.add_argument('--mass_mapping_6', action='store_true',
-                        help='If the application is your application')
-    parser.add_argument('--mass_mapping_4', action='store_true',
-                        help='If the application is your application')
-    parser.add_argument('--radio_fourier', action='store_true',
-                    help='If the application is your application')
-    parser.add_argument('--radio_image', action='store_true',
-                    help='If the application is your application')
 
     return parser
