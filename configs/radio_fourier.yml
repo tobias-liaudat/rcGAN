@@ -2,6 +2,8 @@
 checkpoint_dir: /share/gpu0/mars/TNG_data/rcGAN/models/
 data_path: /share/gpu0/mars/TNG_data/rcGAN/fourier/
 
+# Define the experience
+experience: radio
 
 # Number of code vectors for each phase
 num_z_test: 32

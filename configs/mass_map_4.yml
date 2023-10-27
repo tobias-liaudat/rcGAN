@@ -2,6 +2,8 @@
 checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/
 data_path: /share/gpu0/jjwhit/mass_map_dataset/kappa20_cropped/
 
+# Define the experience
+experience: mass_mapping
 
 # Number of code vectors for each phase
 num_z_test: 32 
