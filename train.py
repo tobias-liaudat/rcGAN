@@ -28,85 +28,30 @@ if __name__ == '__main__':
     print(f"Experiment Name: {args.exp_name}")
     print(f"Number of GPUs: {args.num_gpus}")
     print("Device count: ",torch.cuda.device_count())
+    print(f"Config file path: {args.config}")
 
-    if args.mri:
-        with open('configs/mri.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+    config_path = args.config
 
-        dm = MRIDataModule(cfg)
+    with open(config_path, 'r') as f:
+        cfg = yaml.load(f, Loader=yaml.FullLoader)
+        cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
-        model = rcGAN(cfg, args.exp_name, args.num_gpus)
-    elif args.mass_mapping:
-        with open('/home/jjwhit/rcGAN/configs/mass_map.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = MMDataModule(cfg)
-
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-
-    elif args.mass_mapping_8:
-        with open('/home/jjwhit/rcGAN/configs/mass_map_8.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = MMDataModule(cfg)
-
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-    elif args.mass_mapping_6:
-        with open('/home/jjwhit/rcGAN/configs/mass_map_6.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = MMDataModule(cfg)
-
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-    elif args.mass_mapping_4:
-        with open('/home/jjwhit/rcGAN/configs/mass_map_4.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = MMDataModule(cfg)
-        
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
-        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        #model.to(device)
-    elif args.radio_fourier:
-        with open('./configs/radio_fourier.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = RadioDataModule(cfg)
-        
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
-        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        #model.to(device)
-    elif args.radio_image:
-        with open('./configs/radio_image.yml', 'r') as f:
-#        with open('configs/mass_map.yml', 'r') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
-            cfg = json.loads(json.dumps(cfg), object_hook=load_object)
-
-        dm = RadioDataModule(cfg)
-        
-        model = mmGAN(cfg, args.exp_name, args.num_gpus)
-        #model =  nn.DataParallel(model, device_ids = [0,1,2,3])
-        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        #model.to(device)
-    else:
-        print("No valid application selected. Please include one of the following args: --mri")
-        exit()
+        # Load the correct model
+        if cfg.experience == 'mri':
+            dm = MRIDataModule(cfg)
+            model = rcGAN(cfg, args.exp_name, args.num_gpus)
+        elif cfg.experience == 'mass_mapping':
+            dm = MMDataModule(cfg)
+            model = mmGAN(cfg, args.exp_name, args.num_gpus)
+        elif cfg.experience == 'radio':
+            dm = RadioDataModule(cfg)
+            model = mmGAN(cfg, args.exp_name, args.num_gpus)
+        else:
+            print("No valid experience selected in config file. Options are 'mri', 'mass_mapping', 'radio'.")
+            exit()
 
     wandb_logger = WandbLogger(
-        project="mass_mapping_project",  # TODO: Change to your project name - maybe make this an arg
+        project=cfg.experience,
         name=args.exp_name,
         log_model="all",
         save_dir=cfg.checkpoint_dir + 'wandb'
@@ -121,11 +66,18 @@ if __name__ == '__main__':
         save_top_k=20
     )
 
-    trainer = pl.Trainer(accelerator="gpu", devices=args.num_gpus, strategy='ddp',
-                         max_epochs=cfg.num_epochs, callbacks=[checkpoint_callback_epoch],
-                         num_sanity_val_steps=2, profiler="simple", logger=wandb_logger, benchmark=False,
-                         log_every_n_steps=10)
- 
+    trainer = pl.Trainer(
+        accelerator="gpu",
+        devices=args.num_gpus,
+        strategy='ddp',
+        max_epochs=cfg.num_epochs,
+        callbacks=[checkpoint_callback_epoch],
+        num_sanity_val_steps=2,
+        profiler="simple",
+        logger=wandb_logger,
+        benchmark=False,
+        log_every_n_steps=10
+    )
 
     if args.resume:
         trainer.fit(model, dm,
