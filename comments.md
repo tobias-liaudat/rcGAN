@@ -39,6 +39,24 @@ export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
 export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 ```
 
-comment
+# Training the model
+
+Training is as simple as running the following command:
+```python
+python train.py --config ./configs/mass_map.yml --exp-name rcgan_test --num-gpus X
+```
+where ```X``` is the number of GPUs you plan to use. Note that this project uses Weights and Biases (wandb) for logging.
+See [their documentation](https://docs.wandb.ai/quickstart) for instructions on how to setup environment variables.
+Alternatively, you may use a different logger. See PyTorch Lightning's [documentation](https://lightning.ai/docs/pytorch/stable/extensions/logging.html) for options.
+
+If you need to resume training, use the following command:
+```python
+python train.py --config ./configs/mass_map.yml --exp-name rcgan_test --num-gpus X --resume --resume-epoch Y
+```
+where ```Y``` is the epoch to resume from.
+
+By default, we save the previous 50 epochs. Ensure that your checkpoint path points to a location with sufficient disk space.
+If disk space is a concern, 50 can be reduced to 25.
+This is important for the next step, validation.
 
 
