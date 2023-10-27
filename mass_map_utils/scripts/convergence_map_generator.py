@@ -63,7 +63,7 @@ sorted_files = sorted(required_files, key=get_file_number)
 img_num = 0
 kappa_tot = np.zeros((1024, 1024))
 omega = np.zeros(len(redshift_vals_array))
-
+n = 1
 
 for fname in range(len(redshift_vals_array)): #We will repeat this process for every source redshift.
     if fname in range(0, 41):
@@ -105,5 +105,7 @@ for fname in range(len(redshift_vals_array)): #We will repeat this process for e
             # kappa_tot += omega[img_num] * kappa
             kappa_tot += (omega[img_num]/norm_factor) * kappa
             img_num +=1
-    
-    np.save('/share/gpu0/jjwhit/kappa_cosmos_simulations/', kappa_tot) #TODO: Save these properly
+
+    save_path = '{:s}{:s}{:05d}{:s}'.format('/share/gpu0/jjwhit/kappa_cosmos_simulations/', "sim_", n, ".npy")
+    np.save(save_path, kappa_tot, allow_pickle=True)
+    n += 1
