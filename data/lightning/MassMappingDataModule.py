@@ -17,6 +17,29 @@ class MMDataTransform:
         self.theta = theta
         self.im_size = args.im_size
         self.ngal = ngal #TODO: Redefine ngal(?)
+        self.mask = None
+        self.std1 = None
+        self.std2 = None
+
+        # Load mask and std dev for noise
+        try:
+            if self.args.cosmo_dir_path is not None:
+                self.mask =  np.load(
+                    self.args.cosmo_dir_path + 'cosmos_mask.npy', allow_pickle=True
+                ).astype(bool)
+                self.std1 = np.load(
+                    self.args.cosmo_dir_path + 'cosmos_std1.npy', allow_pickle=True
+                )
+                self.std2 = np.load(
+                    self.args.cosmo_dir_path + 'cosmos_std2.npy', allow_pickle=True
+                )
+        except:
+            print('There is a problem with the mask loading. Proceeding without mask.')
+            self.args.cosmo_dir_path = None
+            self.mask = None
+            self.std1 = None
+            self.std2 = None
+
 
     @staticmethod
     def compute_fourier_kernel(N: int) -> np.ndarray:
@@ -74,6 +97,23 @@ class MMDataTransform:
         sigma = 0.37 / np.sqrt(((theta*60/im_size)**2)*ngal)
         gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) + 1j * np.random.randn(im_size,im_size))
         return gamma
+    
+    def realistic_noise_maker(self, kappa: np.ndarray) -> np.ndarray:
+        """Adds realistic simulated Gaussian noise to a mock weak lensing map.
+
+        Args:
+            im_size (int): Size of weak lensing map, in pixels.
+            kappa (np.ndarray): Convergence map.
+        
+        Returns:
+            gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
+        """
+
+        D = MMDataTransform.compute_fourier_kernel(self.im_size) #Fourier kernel
+        gamma = MMDataTransform.forward_model(kappa, D) + (
+            self.std1 * np.random.randn(self.im_size, self.im_size) + 1.j * self.std2 * np.random.randn(self.im_size, self.im_size)
+        )
+        return gamma
 
     def gamma_gen(self, kappa: np.ndarray) -> np.ndarray:
         """Apply the forward model with the correct set of parameters.
@@ -87,7 +127,10 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        return MMDataTransform.noise_maker(self.theta, self.im_size, self.ngal, kappa)
+        if self.args.cosmo_dir_path is not None:
+            return self.realistic_noise_maker(kappa)
+        else:
+            return MMDataTransform.noise_maker(self.theta, self.im_size, self.ngal, kappa)
 
 
     def __call__(self, kappa: np.ndarray) -> Tuple[float, float, float, float]:
@@ -120,6 +163,10 @@ class MMDataTransform:
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalize_instance(pt_gamma)
         normalized_gt = transforms.normalize(pt_kappa, mean, std)
+
+        # Mask the shear gamma
+        if self.mask is not None:
+            normalized_gamma[self.mask] = 0.
 
         # Return normalized measurements, normalized gt, mean, and std.
         # To unnormalize batch of images:
