@@ -10,11 +10,11 @@ import pathlib
 
 
 class MMDataTransform:
-    def __init__(self, args, test=False, theta=5.0, ng=384, ngal=30):
+    def __init__(self, args, test=False, theta=5.0, im_size=384, ngal=30):
         self.args = args
         self.test =test
         self.theta = theta
-        self.ng = ng
+        self.im_size = im_size
         self.ngal = ngal
 
     @staticmethod
@@ -57,21 +57,21 @@ class MMDataTransform:
         return np.fft.ifft2(F_gamma) # Perform 2D inverse FFT
 
     @staticmethod
-    def noise_maker(theta, ngrid, ngal, kappa) -> np.ndarray:
+    def noise_maker(theta, im_size, ngal, kappa) -> np.ndarray:
         """Adds some random Gaussian noise to a mock weak lensing map.
 
         Args:
             theta (float): Opening angle in deg.
-            ngrid (int): Number of grids.
+            im_size (int): Number of grids.
             ngal (int): Number of galaxies.
             kappa (np.ndarray): Convergence map.
         
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        D = MMDataTransform.compute_fourier_kernel(ngrid) #Fourier kernel #TODO: Refactor back to ng in future - currently ng =
-        sigma = 0.37 / np.sqrt(((theta*60/ngrid)**2)*ngal)
-        gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(ngrid,ngrid) + 1j * np.random.randn(ngrid,ngrid))
+        D = MMDataTransform.compute_fourier_kernel(im_size) #Fourier kernel #TODO: Refactor
+        sigma = 0.37 / np.sqrt(((theta*60/im_size)**2)*ngal)
+        gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) + 1j * np.random.randn(im_size,im_size))
         return gamma
 
     def gamma_gen(self, kappa) -> np.ndarray:
