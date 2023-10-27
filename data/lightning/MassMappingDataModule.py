@@ -1,5 +1,6 @@
 import numpy as np
 from torch.utils.data import DataLoader
+from utils.parse_args import create_arg_parser
 import pytorch_lightning as pl
 from typing import Optional
 from data.datasets.MM_data import MassMappingDataset_Test, MassMappingDataset_Train, MassMappingDataset_Val
@@ -10,11 +11,11 @@ import pathlib
 
 
 class MMDataTransform:
-    def __init__(self, args, test=False, theta=5.0, im_size=384, ngal=30):
+    def __init__(self, args, test=False, theta=5.0, ngal=30):
         self.args = args
         self.test =test
         self.theta = theta
-        self.im_size = im_size
+        self.im_size = args.im_size
         self.ngal = ngal
 
     @staticmethod
@@ -69,7 +70,7 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        D = MMDataTransform.compute_fourier_kernel(im_size) #Fourier kernel #TODO: Refactor
+        D = MMDataTransform.compute_fourier_kernel(im_size) #Fourier kernel
         sigma = 0.37 / np.sqrt(((theta*60/im_size)**2)*ngal)
         gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) + 1j * np.random.randn(im_size,im_size))
         return gamma
@@ -86,7 +87,7 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        return MMDataTransform.noise_maker(self.theta, self.ng, self.ngal, kappa)
+        return MMDataTransform.noise_maker(self.theta, self.im_size, self.ngal, kappa)
 
 
     def __call__(self, kappa) -> Tuple[float, float, float, float]:
