@@ -13,10 +13,10 @@ import pathlib
 class MMDataTransform:
     def __init__(self, args, test=False, theta=5.0, ngal=30):
         self.args = args
-        self.test =test
+        self.test = test
         self.theta = theta
         self.im_size = args.im_size
-        self.ngal = ngal
+        self.ngal = ngal #TODO: Redefine ngal(?)
 
     @staticmethod
     def compute_fourier_kernel(N: int) -> np.ndarray:
@@ -58,12 +58,12 @@ class MMDataTransform:
         return np.fft.ifft2(F_gamma) # Perform 2D inverse FFT
 
     @staticmethod
-    def noise_maker(theta, im_size, ngal, kappa) -> np.ndarray:
+    def noise_maker(theta: float, im_size: int, ngal: int, kappa: np.ndarray) -> np.ndarray:
         """Adds some random Gaussian noise to a mock weak lensing map.
 
         Args:
             theta (float): Opening angle in deg.
-            im_size (int): Number of grids.
+            im_size (int): Size of weak lensing map, in pixels.
             ngal (int): Number of galaxies.
             kappa (np.ndarray): Convergence map.
         
@@ -75,7 +75,7 @@ class MMDataTransform:
         gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) + 1j * np.random.randn(im_size,im_size))
         return gamma
 
-    def gamma_gen(self, kappa) -> np.ndarray:
+    def gamma_gen(self, kappa: np.ndarray) -> np.ndarray:
         """Apply the forward model with the correct set of parameters.
 
         This function takes the input, kappa, applies the forward relationship to generate the corresponding value of the shear field,
@@ -90,7 +90,7 @@ class MMDataTransform:
         return MMDataTransform.noise_maker(self.theta, self.im_size, self.ngal, kappa)
 
 
-    def __call__(self, kappa) -> Tuple[float, float, float, float]:
+    def __call__(self, kappa: np.ndarray) -> Tuple[float, float, float, float]:
         """ Transforms the data.
 
         Note: gt = ground truth. The ground truth is the original kappa simulation from kappaTNG.
