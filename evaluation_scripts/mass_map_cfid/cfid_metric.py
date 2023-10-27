@@ -143,7 +143,7 @@ class CFIDMetric:
             # reformatted[:, :, :, 0] = multi_coil_inp[i, 0:8, :, :]
             # reformatted[:, :, :, 1] = multi_coil_inp[i, 8:16, :, :]
             reformatted = torch.zeros(size=(1, self.args.im_size, self.args.im_size, 2)).cuda()
-            reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :] #TODO: does this need to be adapted for mass_mapping?
+            reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
             unnormal_im = reformatted * std[i] + mean[i]
