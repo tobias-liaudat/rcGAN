@@ -26,8 +26,13 @@ def load_object(dct):
     return types.SimpleNamespace(**dct)
 
 
-def rgb(im, unit_norm=False):
-    embed_ims = torch.zeros(size=(3, 384, 384)) #TODO: Refactor resolution
+def rgb(im, im_size, unit_norm=False):
+    """
+    Args:
+        im: Input image.
+        im_size (int): Width of (square) image.
+    """
+    embed_ims = torch.zeros(size=(3, im_size, im_size))
     tens_im = torch.tensor(im)
 
     if unit_norm:
@@ -119,8 +124,8 @@ if __name__ == "__main__":
                     apsds.append(np.mean(np.std(single_samps, axis=0), axis=(0, 1)))
                     psnrs.append(psnr(gt_np, avg_gen_np))
                     ssims.append(ssim(gt_np, avg_gen_np))
-                    lpipss.append(lpips_met(rgb(gt_np), rgb(avg_gen_np)).numpy())
-                    distss.append(dists_met(rgb(gt_np, unit_norm=True), rgb(avg_gen_np, unit_norm=True)).numpy())
+                    lpipss.append(lpips_met(rgb(gt_np, cfg.im_size), rgb(avg_gen_np, cfg.im_size)).numpy())
+                    distss.append(dists_met(rgb(gt_np, cfg.im_size, unit_norm=True), rgb(avg_gen_np, cfg.im_size, unit_norm=True)).numpy())
 
             print('AVG Recon')
             print(f'PSNR: {np.mean(psnrs):.2f} \pm {np.std(psnrs) / np.sqrt(len(psnrs)):.2f}')

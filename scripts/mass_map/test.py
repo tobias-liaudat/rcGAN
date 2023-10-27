@@ -26,6 +26,11 @@ def load_object(dct):
 
 
 def rgb(im, im_size, unit_norm=False):
+    """
+    Args:
+        im: Input image.
+        im_size (int): Width of (square) image.
+    """
     embed_ims = torch.zeros(size=(3, im_size, im_size))
     tens_im = torch.tensor(im)
 
