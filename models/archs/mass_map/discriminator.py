@@ -82,7 +82,7 @@ class FullDownBlock(nn.Module):
 
 
 class DiscriminatorModel(nn.Module):
-    def __init__(self, in_chans, out_chans, input_im_size, z_location=None, model_type=None, mbsd=False):
+    def __init__(self, in_chans, out_chans, input_im_size):
         """
         Args:
             in_chans (int): Number of channels in the input to the U-Net model.
@@ -91,29 +91,24 @@ class DiscriminatorModel(nn.Module):
         super().__init__()
 
         self.in_chans = in_chans
-        self.out_chans = 2
-        self.z_location = z_location
-        self.model_type = model_type
-        self.mbsd = mbsd
+        self.out_chans = out_chans
+        self.input_im_size = input_im_size
 
-        # CHANGE BACK TO 16 FOR MORE
         self.initial_layers = nn.Sequential(
             nn.Conv2d(self.in_chans, 32, kernel_size=(3, 3), padding=1),  # 384x384
             nn.LeakyReLU()
         )
 
-        #TODO: Refactor this session so it's not hard coded to our resolution.
-
         # This should be refactored to adapt to input and output number of features and the resolution dimensions
         self.encoder_layers = nn.ModuleList()
-        self.encoder_layers += [FullDownBlock(32, 64)]  # 192x192
-        self.encoder_layers += [FullDownBlock(64, 128)]  # 96x96
-        self.encoder_layers += [FullDownBlock(128, 256)]  # 48x48
-        self.encoder_layers += [FullDownBlock(256, 512)]  # 24x24
-        self.encoder_layers += [FullDownBlock(512, 512)]  # 12x12
-        self.encoder_layers += [FullDownBlock(512, 512)]  # 6x6
+        self.encoder_layers += [FullDownBlock(32, 64)]
+        self.encoder_layers += [FullDownBlock(64, 128)]
+        self.encoder_layers += [FullDownBlock(128, 256)]
+        self.encoder_layers += [FullDownBlock(256, 512)]
+        self.encoder_layers += [FullDownBlock(512, 512)]
+        self.encoder_layers += [FullDownBlock(512, 512)]
 
-        downsampled_imsize = input_im_size
+        downsampled_imsize = self.input_im_size
         for i in range(6):
             downsampled_imsize = downsampled_imsize // 2 # half dimension (rounded down) for every FullDownBlock
 
