@@ -27,9 +27,9 @@ if __name__ == "__main__":
     torch.set_float32_matmul_precision('medium')
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
+    config_path = args.config
 
-    #TODO: Refactor config path
-    with open('/home/jjwhit/rcGAN/configs/mass_map_8.yml', 'r') as f:
+    with open(config_path, 'r') as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
