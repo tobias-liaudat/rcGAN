@@ -70,6 +70,16 @@ if not os.path.exists(dst_val_path):
 
 # Set seed
 np.random.seed(0)
+
+LPs = np.arange(100)
+runs = np.arange(100)
+
+mesh1, mesh2 = np.meshgrid(LPs, runs)
+
+flat_mesh1 = mesh1.flatten()
+flat_mesh2 = mesh2.flatten()
+
+
 # Shuffle files
 np.random.shuffle(all_files)
 total_nb_files = len(all_files)
