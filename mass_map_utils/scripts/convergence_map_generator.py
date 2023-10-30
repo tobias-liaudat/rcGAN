@@ -45,8 +45,7 @@ pdf = hist
 # Configures kappaTNG files. 
 
 
-source_dir = "/share/gpu0/jjwhit/kappaTNG_suites/LP*/run*/"
-all_files = glob.glob(source_dir)
+#source_dir = "/share/gpu0/jjwhit/kappaTNG_suites/LP*/run*/"
 dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
 
 
@@ -68,28 +67,32 @@ if not os.path.exists(dst_test_path):
 if not os.path.exists(dst_val_path):
     os.makedirs(dst_val_path)
 
-# Set seed
+#Shuffling input files
 np.random.seed(0)
 
-LPs = np.arange(100)
-runs = np.arange(100)
+LPs = np.arange(1, 101)
+runs = np.arange(1, 101)
 
 mesh1, mesh2 = np.meshgrid(LPs, runs)
 
 flat_mesh1 = mesh1.flatten()
 flat_mesh2 = mesh2.flatten()
 
+paths = ['kappaTNG_suites/LP{:03d}/run{:03d}/kappa*.dat'.format(lp, run) for lp, run in zip(flat_mesh1, flat_mesh2)]
 
 # Shuffle files
-np.random.shuffle(all_files)
-total_nb_files = len(all_files)
+np.random.shuffle(paths)
+total_nb_files = len(paths)
+
+all_files = glob.glob(paths)
+
 
 #Ensure all source files are in order of ascending redshift:
 file_prefix = "kappa"
 file_extension = ".dat"
 
 # List all files in the folder
-files = os.listdir(source_dir)
+files = os.listdir(paths)
 
 required_files = [file for file in files if file.startswith(file_prefix) and file.endswith(file_extension)]
 
@@ -107,10 +110,10 @@ n = 1
 
 for fname in range(len(redshift_vals_array)): #We will repeat this process for every source redshift.
     if fname in range(0, 41):
-        full_path = os.path.join(source_dir, sorted_files[fname])
+        full_path = os.path.join(paths, sorted_files[fname])
     else:
         # Uses z=2.6 map (with appropriate weight) for redshifts beyond kappaTNG range.
-        full_path = os.path.join(source_dir, sorted_files[40])
+        full_path = os.path.join(paths, sorted_files[40])
 
     if not os.path.exists(full_path):
         print(f'The file at {full_path} does not exist.')
