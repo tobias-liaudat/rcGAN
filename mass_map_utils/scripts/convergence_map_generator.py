@@ -44,13 +44,17 @@ pdf = hist
 
 # Configures kappaTNG files. 
 
+np.random.seed(0)
+LPs = np.arange(1, 101)
+runs = np.arange(1, 101)
+mesh1, mesh2 = np.meshgrid(LPs, runs)
+flat_mesh1 = mesh1.flatten()
+flat_mesh2 = mesh2.flatten()
+np.random.shuffle(flat_mesh1)
+np.random.shuffle(flat_mesh2)
 
-#source_dir = "/share/gpu0/jjwhit/kappaTNG_suites/LP*/run*/"
+
 dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
-
-
-# Ensures destination directories exist.
-
 if not os.path.exists(dst_dir):
    # Create a new directory because it does not exist
    os.makedirs(dst_dir)
@@ -67,97 +71,59 @@ if not os.path.exists(dst_test_path):
 if not os.path.exists(dst_val_path):
     os.makedirs(dst_val_path)
 
-#Shuffling input files
-np.random.seed(0)
 
-LPs = np.arange(1, 101)
-runs = np.arange(1, 101)
-
-mesh1, mesh2 = np.meshgrid(LPs, runs)
-
-flat_mesh1 = mesh1.flatten()
-flat_mesh2 = mesh2.flatten()
-
-paths = ['kappaTNG_suites/LP{:03d}/run{:03d}/kappa*.dat'.format(lp, run) for lp, run in zip(flat_mesh1, flat_mesh2)]
-
-# Shuffle files
-np.random.shuffle(paths)
-total_nb_files = len(paths)
-
-all_files = glob.glob(paths)
-
-
-#Ensure all source files are in order of ascending redshift:
-file_prefix = "kappa"
-file_extension = ".dat"
-
-# List all files in the folder
-files = os.listdir(paths)
-
-required_files = [file for file in files if file.startswith(file_prefix) and file.endswith(file_extension)]
-
-def get_file_number(file_name):
-    return int(file_name[len(file_prefix):-len(file_extension)])
-
-#The files are now ordered in ascending redshift.
-sorted_files = sorted(required_files, key=get_file_number)
-
-
-img_num = 0
-kappa_tot = np.zeros((1024, 1024))
-omega = np.zeros(len(redshift_vals_array))
 n = 1
+for it in range(len(flat_mesh1)):
+    path_to_load = '/share/gpu0/jjwhit/kappaTNG_suites/LP{:03d}/run{:03d}/'.format(flat_mesh1[it], flat_mesh2[it])
+    
+    # Reset slice, kappa_tot, and omega for each different map.
+    slice = 0
+    kappa_tot = np.zeros((1024, 1024))
+    omega = np.zeros(len(redshift_vals_array))
+    for fname in range(len(redshift_vals_array)):
+        if fname in range(0, 41):
+            full_path = os.path.join(path_to_load, 'kappa' + str(fname).zfill(2) + '.dat')
+        else:
+            # Uses z=2.6 map (with appropriate weight) for redshifts beyond kappaTNG range.
+            full_path = os.path.join(path_to_load, 'kappa40.dat')
 
-for fname in range(len(redshift_vals_array)): #We will repeat this process for every source redshift.
-    if fname in range(0, 41):
-        full_path = os.path.join(paths, sorted_files[fname])
-    else:
-        # Uses z=2.6 map (with appropriate weight) for redshifts beyond kappaTNG range.
-        full_path = os.path.join(paths, sorted_files[40])
-
-    if not os.path.exists(full_path):
-        print(f'The file at {full_path} does not exist.')
-    else:
-        with open(full_path, 'rb') as f:
-            # Load file
-            #print(f"loading z = {redshift_vals_array[fname]}...")
-            dummy = np.fromfile(f, dtype="int32", count=1)
-            kappa = np.fromfile(f, dtype="float", count=1024*1024)
-            dummy = np.fromfile(f, dtype="int32", count=1)  
-
-            kappa = kappa.reshape((1024, 1024))
-
+        if not os.path.exists(full_path):
+            print(f'The file at {full_path} does not exist.')
+        else:
+            with open(full_path, 'rb') as f:
+                # Load file
+                #print(f"loading z = {redshift_vals_array[fname]}...")
+                dummy = np.fromfile(f, dtype="int32", count=1)
+                kappa = np.fromfile(f, dtype="float", count=1024*1024)
+                dummy = np.fromfile(f, dtype="int32", count=1)  
+    
+                kappa = kappa.reshape((1024, 1024))
             # Bin size halved for first and last bins.
             # delta_z is the range of each bin.
-            if img_num == 0:
-                delta_z = (redshift_vals_array[img_num + 1] - redshift_vals_array[img_num])/2
-              
-        
-            elif img_num == len(redshift_vals_array) - 1:
-                delta_z = (redshift_vals_array[img_num] - redshift_vals_array[img_num - 1])/2
+            if slice == 0:
+                delta_z = (redshift_vals_array[slice + 1] - redshift_vals_array[slice])/2     
+
+            elif slice == len(redshift_vals_array) - 1:
+                delta_z = (redshift_vals_array[slice] - redshift_vals_array[slice - 1])/2
 
             else:
                 delta_z = (
-                    (redshift_vals_array[img_num + 1] - redshift_vals_array[img_num]) /2
-                    - (redshift_vals_array[img_num] - redshift_vals_array[img_num - 1]) /2
+                    (redshift_vals_array[slice + 1] - redshift_vals_array[slice]) /2
+                    - (redshift_vals_array[slice] - redshift_vals_array[slice - 1]) /2
                 )
-            
-            omega[img_num] = pdf[img_num] * delta_z
-            norm_factor = np.sum(omega)
-            kappa_tot += (omega[img_num]/norm_factor) * kappa
-            img_num +=1
 
-    # Using 85% of data for training
-    if (img_num/total_nb_files) <= 0.85:
+            omega[slice] = pdf[slice] * delta_z
+            norm_factor = np.sum(omega)
+            kappa_tot += (omega[slice]/norm_factor) * kappa
+            slice +=1
+
+    if (it/len(flat_mesh1)) <= 0.85:
         dst_dir = dst_train_path
-    # Using 10% of data for testing
-    elif (img_num/total_nb_files) > 0.85 and (img_num/total_nb_files) <= 0.95:
+    elif (it/len(flat_mesh1)) > 0.85 and (it/len(flat_mesh1)) <=0.95:
         dst_dir = dst_test_path
-    # Using 5% of data for validation
     else:
         dst_dir = dst_val_path
 
-
     save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "sim_", n, ".npy")
     np.save(save_path, kappa_tot, allow_pickle=True)
-    n += 1
+    n +=1
