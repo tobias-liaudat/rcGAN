@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#SBATCH --job-name=training
+#SBATCH --job-name=dataset_creation 
 #SBATCH -p GPU
-#SBATCH --nodelist=compute-gpu-0-2
 # requesting one node
 # SBATCH -N1
 # requesting 12 cpus
@@ -10,12 +9,11 @@
 #SBATCH --ntasks=1                   # nombre total de tache MPI (= nombre total de GPU)
 #SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
-#SBATCH --gres=gpu:a100:4            # requesting GPUs
-#SBATCH --mem-per-gpu=80GB           # memory per GPU
+#SBATCH --gres=gpu:v100:1            # requesting GPUs
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=training_%j.out
-#SBATCH --error=training_%j.err
+#SBATCH --output=dataset_%j.out
+#SBATCH --error=dataset_%j.err
 
 
 
@@ -37,4 +35,5 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u train.py --mass_mapping --exp-name mmgan_training_cosmos --num-gpus 4
+#srun python -u ./mass_map_utils/scripts/convergence_map_generator.py
+srun python -u ./mass_map_utils/preprocessing/cropper.py
