@@ -6,6 +6,7 @@ import json
 import numpy as np
 import matplotlib.patches as patches
 
+#TODO: Move to within mass_map directory - same for plot, test, and validate.py
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 
