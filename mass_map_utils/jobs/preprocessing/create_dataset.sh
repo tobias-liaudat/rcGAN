@@ -36,4 +36,4 @@ echo $WANDB_CONFIG_DIR
 cd /home/jjwhit/rcGAN
 
 srun python -u ./mass_map_utils/scripts/convergence_map_generator.py
-srun python -u ./mass_map_utils/preprocessing/cropper.py
+srun python -u ./mass_map_utils/jobs/preprocessing/cropper.py
