@@ -62,7 +62,7 @@ for fname in all_training:
     center_start = (1024 - center_size) // 2
     center_end =  center_start + center_size
     kappa_cropped = kappa[center_start:center_end,  center_start:center_end]
-    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_train_path, "kappa_run_", img_number, ".npy")
+    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_train_path, "cropped_sim_", img_number, ".npy")
     
     np.save(save_path, kappa_cropped, allow_pickle=True)
     
@@ -79,7 +79,7 @@ for fname in all_val:
     center_start = (1024 - center_size) // 2
     center_end =  center_start + center_size
     kappa_cropped = kappa[center_start:center_end,  center_start:center_end]
-    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_val_path, "kappa_run_", img_number, ".npy")
+    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_val_path, "cropped_sim_", img_number, ".npy")
     
     np.save(save_path, kappa_cropped, allow_pickle=True)
     
