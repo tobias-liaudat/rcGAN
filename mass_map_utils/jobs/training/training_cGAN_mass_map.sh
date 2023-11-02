@@ -2,13 +2,12 @@
 
 #SBATCH --job-name=training
 #SBATCH -p GPU
-#SBATCH --nodelist=compute-gpu-0-2
 # requesting one node
 # SBATCH -N1
 # requesting 12 cpus
 # SBATCH -n12
-#SBATCH --ntasks=1                   # nombre total de tache MPI (= nombre total de GPU)
-#SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
+#SBATCH --ntasks=4                   # nombre total de tache MPI (= nombre total de GPU)
+#SBATCH --ntasks-per-node=4          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
 #SBATCH --gres=gpu:a100:4            # requesting GPUs
 #SBATCH --mem-per-gpu=80GB           # memory per GPU
@@ -37,4 +36,4 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u train.py --mass_mapping --exp-name mmgan_training_cosmos --num-gpus 4
+srun python -u train.py --mass_mapping --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos --num-gpus 4
