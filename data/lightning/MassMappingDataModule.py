@@ -166,7 +166,7 @@ class MMDataTransform:
 
         # Mask the shear gamma
         if self.mask is not None:
-            normalized_gamma[self.mask] = 0.
+            normalized_gamma[:, self.mask] = 0.
 
         # Return normalized measurements, normalized gt, mean, and std.
         # To unnormalize batch of images:
