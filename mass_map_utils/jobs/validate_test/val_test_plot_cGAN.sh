@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=val_cGAN 
+#SBATCH --job-name=val_cosmo_cGAN 
 #SBATCH -p GPU
 # requesting one node
 # SBATCH -N1
@@ -12,8 +12,8 @@
 #SBATCH --gres=gpu:a100:1            # requesting GPUs
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=val_test_cGAN_%j.out
-#SBATCH --error=val_test_cGAN_%j.err
+#SBATCH --output=val_test_cosmo_cGAN_%j.out
+#SBATCH --error=val_test_cosmo_cGAN_%j.err
 
 
 
@@ -35,6 +35,7 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-#srun python -u ./scripts/mass_map/validate.py --exp-name mmgan_training_8 #Remember to change exp-name to the batch you want to validate
-#srun python -u ./scripts/mass_map/test.py --exp-name mmgan_training_8
-srun python -u ./scripts/mass_map/plot.py --exp-name mmgan_training_8 --num-figs 5
+#Remember to change exp-name to the batch you want to validate
+srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos 
+# srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos
+# srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos --num-figs 5
