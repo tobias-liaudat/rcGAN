@@ -5,6 +5,9 @@ import types
 import json
 import numpy as np
 
+import sys
+sys.path.append('/home/jjwhit/rcGAN/')
+
 from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from models.lightning.mmGAN import mmGAN
@@ -33,6 +36,7 @@ if __name__ == "__main__":
     inception_embedding = VGG16Embedding()
     best_cfid = 10000000
     start_epoch = 50 #Will start saving models after 50 epochs
+    end_epoch = 99
 
 
     with torch.no_grad():
