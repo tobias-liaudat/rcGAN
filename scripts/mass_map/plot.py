@@ -99,19 +99,21 @@ if __name__ == "__main__":
                 np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 
                 method = 'mmGAN'
-                zoom_startx = np.random.randint(120, 250)
-                zoom_starty1 = np.random.randint(30, 80)
-                zoom_starty2 = np.random.randint(260, 300)
+                zoom_length = 60  # Adjust this value based on your preference
+                margin = 10  # Adjust this value to set the margin
+
+                # Ensure the square is not touching the edge
+                zoom_startx = np.random.randint(margin, cfg.im_size - zoom_length - margin)
+                zoom_starty1 = np.random.randint(margin, int(cfg.im_size / 2) - zoom_length - margin)
+                zoom_starty2 = np.random.randint(int(cfg.im_size / 2) + margin, cfg.im_size - zoom_length - margin)
 
                 p = np.random.rand()
-                zoom_starty = zoom_starty1
-                if p <= 0.5:
-                    zoom_starty = zoom_starty2
-
-                zoom_length = 80
+                zoom_starty = zoom_starty1 if p <= 0.5 else zoom_starty2
 
                 x_coord = zoom_startx + zoom_length
                 y_coords = [zoom_starty, zoom_starty + zoom_length]
+
+
 
                 # Global recon, error, std
                 nrow = 2
@@ -154,12 +156,12 @@ if __name__ == "__main__":
 
                 axes[0,0].set_aspect('equal')
 
-                plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/square_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/square_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
-                # New figure
-                #cbar_font_size = 14
+                # #New figure
+                # cbar_font_size = 14
                 # title_fonts = 20
                 # #fig = plt.figure(figsize=(12,12))
                 # fig = plt.subplots(nrow, ncol, figsize=(2,2), constrained_layout=True)
@@ -174,11 +176,12 @@ if __name__ == "__main__":
                 # ax = plt.gca()
                 # ax.set_title("Reconstruction", fontsize=title_fonts)
                 # im = ax.imshow(np_avgs[method], cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt))
-                # divider = make_axes_locatable(ax)
-                # cax = divider.append_axes('right', size='5%', pad=0.05)
-                # cbar = fig.colorbar(im, cax=cax)
-                # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
-                # cbar.ax.tick_params(labelsize=cbar_font_size)
+                # cbar = plt.colorbar(im, ax=ax)
+                # # divider = make_axes_locatable(ax)
+                # # cax = divider.append_axes('right', size='5%', pad=0.05)
+                # # cbar = fig.colorbar(im, cax=cax)
+                # # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
+                # # cbar.ax.tick_params(labelsize=cbar_font_size)
                 # ax.set_xticks([]);ax.set_yticks([])                
 
                 # plt.subplot(223)
@@ -190,11 +193,12 @@ if __name__ == "__main__":
                 #     vmin=0,
                 #     vmax=0.2 *np.max(np.abs(np_avgs['mmGAN'] - np_gt))
                 # )
-                # divider = make_axes_locatable(ax)
-                # cax = divider.append_axes('right', size='5%', pad=0.05)
-                # cbar = fig.colorbar(im, cax=cax)
-                # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
-                # cbar.ax.tick_params(labelsize=cbar_font_size)
+                # cbar = plt.colorbar(im, ax=ax)
+                # # divider = make_axes_locatable(ax)
+                # # cax = divider.append_axes('right', size='5%', pad=0.05)
+                # # cbar = fig.colorbar(im, cax=cax)
+                # # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
+                # # cbar.ax.tick_params(labelsize=cbar_font_size)
                 # ax.set_xticks([]);ax.set_yticks([])
 
                 # plt.subplot(224)
@@ -203,15 +207,54 @@ if __name__ == "__main__":
                 # im = ax.imshow(
                 #     np_stds[method], cmap='viridis', vmin=0, vmax=0.4 * np.max(np_stds['mmGAN'])
                 # )
-                # divider = make_axes_locatable(ax)
-                # cax = divider.append_axes('right', size='5%', pad=0.05)
-                # cbar = fig.colorbar(im, cax=cax)
-                # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
-                # cbar.ax.tick_params(labelsize=cbar_font_size)
+                # cbar = plt.colorbar(im, ax=ax)
+                # # divider = make_axes_locatable(ax)
+                # # cax = divider.append_axes('right', size='5%', pad=0.05)
+                # # cbar = fig.colorbar(im, cax=cax)
+                # # cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.2f'))
+                # # cbar.ax.tick_params(labelsize=cbar_font_size)
                 # ax.set_xticks([]);ax.set_yticks([])
 
-                # plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/avg_err_std_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
+                # plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/avg_err_std_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
                 # plt.close(fig)
+
+
+                # New figure
+                cbar_font_size = 14
+                title_fonts = 20
+                fig, axs = plt.subplots(nrow, ncol, figsize=(8, 8), constrained_layout=True)
+
+                axs = axs.flatten()  # Flatten the 2D array of Axes
+
+                axs[0].set_title("Truth", fontsize=title_fonts)
+                im = axs[0].imshow(np_gt, cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt))
+                axs[0].set_xticks([]); axs[0].set_yticks([])
+
+                axs[1].set_title("Reconstruction", fontsize=title_fonts)
+                im = axs[1].imshow(np_avgs[method], cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt))
+                cbar = plt.colorbar(im, ax=axs[1])
+                axs[1].set_xticks([]); axs[1].set_yticks([])
+
+                axs[2].set_title("Absolute Error", fontsize=title_fonts)
+                im = axs[2].imshow(
+                    np.abs(np_avgs[method] - np_gt),
+                    cmap='jet',
+                    vmin=0,
+                    vmax=0.2 * np.max(np.abs(np_avgs['mmGAN'] - np_gt))
+                )
+                cbar = plt.colorbar(im, ax=axs[2])
+                axs[2].set_xticks([]); axs[2].set_yticks([])
+
+                axs[3].set_title("Std. Dev.", fontsize=title_fonts)
+                im = axs[3].imshow(
+                    np_stds[method], cmap='viridis', vmin=0, vmax=0.4 * np.max(np_stds['mmGAN'])
+                )
+                cbar = plt.colorbar(im, ax=axs[3])
+                axs[3].set_xticks([]); axs[3].set_yticks([])
+
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/avg_err_std_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
+                plt.close(fig)
+
 
                 # Plot 2
                 nrow = 4
@@ -303,7 +346,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('Std. Dev.', fontsize=7)
 
-                plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/zoomed_overview_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_overview_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
                 #Plot number 3
@@ -365,7 +408,7 @@ if __name__ == "__main__":
                 ax.set_title('Reconstruction', fontsize=8)
 
                 ax = plt.subplot(gs[1, 1])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size, cfg.im_size))
                 for l in range(8):
                     avg += np_samps[method][l]
                 avg = avg / 8
@@ -381,7 +424,7 @@ if __name__ == "__main__":
 
                 
                 ax = plt.subplot(gs[2, 0])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size, cfg.im_size))
                 for l in range(4):
                     avg += np_samps[method][l]
 
@@ -397,7 +440,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[2, 1])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size, cfg.im_size))
                 for l in range(2):
                     avg += np_samps[method][l]
 
@@ -433,7 +476,7 @@ if __name__ == "__main__":
                 ax.set_title('Std. Dev.', fontsize=8)                
 
                 #plt.savefig(f'/share/gpu0/jjwhit/test_figures_1/test_fig_1_avg_err_std_{fig_count}.png', bbox_inches='tight', dpi=300)
-                plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/avg_err_std_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/avg_err_std_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -505,7 +548,7 @@ if __name__ == "__main__":
                     ax.set_title(f'Sample {samp + 3}', fontsize=7)
                 
 
-                plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/diversity_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/diversity_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -532,7 +575,7 @@ if __name__ == "__main__":
                 ax1 = ax
 
                 ax = plt.subplot(gs[0, 1])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size,cfg.im_size))
                 for l in range(2):
                     avg += np_samps[method][l]
 
@@ -548,7 +591,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[1, 0])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size,cfg.im_size))
                 for l in range(4):
                     avg += np_samps[method][l]
 
@@ -564,7 +607,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[1, 1])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size,cfg.im_size))
                 for l in range(8):
                     avg += np_samps[method][l]
 
@@ -580,7 +623,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[2, 0])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size,cfg.im_size))
                 for l in range(16):
                     avg += np_samps[method][l]
 
@@ -595,7 +638,7 @@ if __name__ == "__main__":
                 ax.set_title('16-Avg.', fontsize=8)
 
                 ax = plt.subplot(gs[2, 1])
-                avg = np.zeros((384, 384))
+                avg = np.zeros((cfg.im_size,cfg.im_size))
                 for l in range(32):
                     avg += np_samps[method][l]
 
@@ -609,7 +652,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('32-Avg.', fontsize=8)
 
-                plt.savefig(f'/home/jjwhit/rcGAN/jobs/validate_test/P_ascent_zoom_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/P_ascent_zoom_{fig_count}_v2.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
