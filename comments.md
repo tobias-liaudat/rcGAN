@@ -70,10 +70,10 @@ In particular if we want to run on 4 GPUs on one node we need to make sure that 
 #SBATCH --ntasks-per-node=4   # ntasks needs to be same as n_gpus
 ```
 
-An example of a job-script for training using multiple GPUs can be found in `examples/example_multi_gpu.sh`
+An example of a job-script for training using multiple GPUs can be found in [examples/example_multi_gpu.sh](https://github.com/astro-informatics/rcGAN/blob/dev-multiGPU/examples/example_multi_gpu_train.sh)
 
 ## Batch size tuning
-Additionally I have created a script, `find_batch_size.py` that finds the largest batch_size that you can run per GPU. This depends on the VRAM available on the GPU and can therefore vary accross machines/nodes. An example job file can be found in `examples/example_find_batch_size.sh`. Usage is:
+Additionally I have created a script, [find_batch_size.py](https://github.com/astro-informatics/rcGAN/blob/dev-multiGPU/find_batch_size.py) that finds the largest batch_size that you can run per GPU. This depends on the VRAM available on the GPU and can therefore vary accross machines/nodes. An example job file can be found in [examples/example_find_batch_size.sh](https://github.com/astro-informatics/rcGAN/blob/dev-multiGPU/examples/example_find_batch_size.sh). Usage is:
 
 ```
 python find_batch_size.py --config [config_file.yml]
