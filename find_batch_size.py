@@ -1,3 +1,6 @@
+"""This script can be used to find the maximum batch size that fits on a single GPU. Make sure to run this on the same GPU as you run the full test run.
+"""
+
 import torch
 import torch.nn as nn
 import yaml
@@ -15,6 +18,7 @@ from pytorch_lightning.loggers import WandbLogger
 from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
+from torch.utils.data import DataLoader
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -38,55 +42,39 @@ if __name__ == '__main__':
 
         # Load the correct model
         if cfg.experience == 'mri':
-            dm = MRIDataModule(cfg)
+            DM = MRIDataModule
             model = rcGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'mass_mapping':
-            dm = MMDataModule(cfg)
+            DM = MMDataModule
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'radio':
-            dm = RadioDataModule(cfg)
+            DM = RadioDataModule
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         else:
             print("No valid experience selected in config file. Options are 'mri', 'mass_mapping', 'radio'.")
             exit()
 
-    wandb_logger = WandbLogger(
-        project=cfg.experience,
-        name=args.exp_name,
-        log_model="all",
-        save_dir=cfg.checkpoint_dir + 'wandb'
-    )
 
-    checkpoint_callback_epoch = ModelCheckpoint(
-        monitor='epoch',
-        mode='max',
-        dirpath=cfg.checkpoint_dir + args.exp_name + '/',
-        filename='checkpoint-{epoch}',
-        # every_n_epochs=1,
-        save_top_k=20
-    )
+    class newDataModule(DM):
+        def __init__(self, cfg, batch_size):
+            super().__init__(cfg)
+            self.args.batch_size = batch_size
+            self.hparams.batch_size = batch_size
+    
+        def train_dataloader(self):
+            return DataLoader(
+                dataset=self.train,
+                batch_size=self.hparams.batch_size,
+                num_workers=self.args.num_workers,
+                drop_last=True,
+                pin_memory=False
+           )
+        
+    test_model = mmGAN(cfg, args.exp_name, num_gpus=1)
+    dm = newDataModule(cfg, cfg.batch_size)
+    trainer = pl.Trainer(accelerator="gpu", devices=1,auto_scale_batch_size="binsearch")
+    trainer.tune(test_model, datamodule=dm)
 
-    try:
-        accumulate_grad_batches = cfg.accumulate_grad_batches
-    except: 
-        accumulate_grad_batches = 1
-
-    trainer = pl.Trainer(
-        accelerator="gpu",
-        devices=args.num_gpus,
-        strategy='ddp',
-        max_epochs=cfg.num_epochs,
-        callbacks=[checkpoint_callback_epoch],
-        num_sanity_val_steps=2,
-        profiler="simple",
-        logger=wandb_logger,
-        benchmark=False,
-        log_every_n_steps=10,
-        accumulate_grad_batches=accumulate_grad_batches
-    )
-
-    if args.resume:
-        trainer.fit(model, dm,
-                    ckpt_path=cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={args.resume_epoch}.ckpt')
-    else:
-        trainer.fit(model, dm)
+    print("="*20)
+    print("Maximum Batch Size: ", dm.hparams.batch_size)
+    print("="*20)
