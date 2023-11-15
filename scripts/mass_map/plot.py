@@ -591,10 +591,10 @@ if __name__ == "__main__":
                 nrow = 1
                 ncol = 3
                 
-                fig, axes = plt.subplots(nrow, ncol, figsize=(3, 9), constrained_layout=True)
+                fig, axes = plt.subplots(nrow, ncol, figsize=(9,3), constrained_layout=True)
 
-                axes[0].imshow(np_gt, aspect='auto', cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt), origin='lower')
-                axes[0,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[0].imshow(np_gt,  cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt), origin='lower')
+                axes[0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
                 axes[0].set_title('Truth')
                 axes[0].set_xticklabels([])
                 axes[0].set_yticklabels([])
