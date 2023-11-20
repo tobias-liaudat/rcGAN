@@ -15,7 +15,7 @@ from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
-from mass_map_utils.scripts.ks_utils import backward_model, Gaussian_smoothing
+from mass_map_utils.scripts.ks_utils import backward_model, Gaussian_smoothing, ks93, ks93
 from scipy import ndimage
 import sys
 
@@ -585,7 +585,7 @@ if __name__ == "__main__":
                 gamma_sim = MMDataTransform.forward_model(np_gt, D) + (
                             std1 * np.random.randn(cfg.im_size, cfg.im_size) + 1.j * std2 * np.random.randn(cfg.im_size, cfg.im_size)
                         )
-                kappa_sim = backward_model(gamma_sim,D)
+                # kappa_sim = backward_model(gamma_sim,D)
 
                 nrow = 1
                 ncol = 4
@@ -610,7 +610,16 @@ if __name__ == "__main__":
                 axes[1].set_xticks([])
                 axes[1].set_yticks([])
 
-                im3 = axes[2].imshow(kappa_sim.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                # im3 = axes[2].imshow(kappa_sim.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                # axes[2].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
+                # axes[2].set_title('Kaiser-Squires')
+                # axes[2].set_xticklabels([])
+                # axes[2].set_yticklabels([])
+                # axes[2].set_xticks([])
+                # axes[2].set_yticks([])
+
+                kappa_sim = ks93(gamma_sim.real, gamma_sim.imag)
+                im3 = axes[2].imshow(kappa_sim[0], cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[2].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
                 axes[2].set_title('Kaiser-Squires')
                 axes[2].set_xticklabels([])
@@ -618,7 +627,7 @@ if __name__ == "__main__":
                 axes[2].set_xticks([])
                 axes[2].set_yticks([])
 
-                ks = Gaussian_smoothing(kappa_sim, cfg.im_size, cfg.im_size, 5.0, cfg.im_size)
+                ks = Gaussian_smoothing(kappa_sim[0], cfg.im_size, cfg.im_size, 5.0, cfg.im_size)
 
                 im4 = axes[3].imshow(ks.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[3].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
