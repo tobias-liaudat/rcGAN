@@ -586,46 +586,159 @@ if __name__ == "__main__":
                             std1 * np.random.randn(cfg.im_size, cfg.im_size) + 1.j * std2 * np.random.randn(cfg.im_size, cfg.im_size)
                         )
                 kappa_sim = backward_model(gamma_sim,D)
-                ks = Gaussian_smoothing(kappa_sim,cfg.im_size,cfg.im_size,5.0, cfg.im_size)
 
                 nrow = 1
-                ncol = 3
-                
-                fig, axes = plt.subplots(nrow, ncol, figsize=(9,3), constrained_layout=True)
+                ncol = 4
+                fig, axes = plt.subplots(nrow, ncol, figsize=(12,3), constrained_layout=True)
 
-                axes[0].imshow(np_gt,  cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt), origin='lower')
-                axes[0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                vmin = 0
+                vmax = 0.4 * np.max(np_gt)
+
+                im1 = axes[0].imshow(np_gt, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                axes[0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=0.75)
                 axes[0].set_title('Truth')
                 axes[0].set_xticklabels([])
                 axes[0].set_yticklabels([])
                 axes[0].set_xticks([])
                 axes[0].set_yticks([])
-                #plt.colorbar(shrink=0.8)
 
-                im2 = axes[1].imshow(np_avgs[method], cmap='inferno', vmin=0, vmax=0.4 * np.max(np_gt), origin='lower')
-                axes[1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                im2 = axes[1].imshow(np_avgs[method], cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                axes[1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=0.75)
                 axes[1].set_title('cGAN')
                 axes[1].set_xticklabels([])
                 axes[1].set_yticklabels([])
                 axes[1].set_xticks([])
                 axes[1].set_yticks([])
-                #plt.colorbar(shrink=0.8)
 
-                ks = Gaussian_smoothing(np_gt,cfg.im_size,cfg.im_size,5.0, cfg.im_size)
-                
-                im3 = axes[2].imshow(ks.real, cmap='inferno', vmin=0, vmax=0.4 * np.max(ks.real), origin='lower')
+                im3 = axes[2].imshow(kappa_sim.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[2].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
                 axes[2].set_title('Kaiser-Squires')
                 axes[2].set_xticklabels([])
                 axes[2].set_yticklabels([])
                 axes[2].set_xticks([])
                 axes[2].set_yticks([])
-                #plt.colorbar(shrink=0.8)
+
+                ks = Gaussian_smoothing(kappa_sim, cfg.im_size, cfg.im_size, 5.0, cfg.im_size)
+
+                im4 = axes[3].imshow(ks.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                axes[3].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
+                axes[3].set_title('Kaiser-Squires')
+                axes[3].set_xticklabels([])
+                axes[3].set_yticklabels([])
+                axes[3].set_xticks([])
+                axes[3].set_yticks([])
+
+                cbar1 = fig.colorbar(im1, ax=axes[0], shrink=0.8, orientation='vertical', pad=0.02)
+                cbar1.mappable.set_clim(vmin, vmax)
+                cbar2 = fig.colorbar(im2, ax=axes[1], shrink=0.8, orientation='vertical', pad=0.02)
+                cbar2.mappable.set_clim(vmin, vmax)
+                cbar3 = fig.colorbar(im3, ax=axes[2], shrink=0.8, orientation='vertical', pad=0.02)
+                cbar3.mappable.set_clim(vmin, vmax)
+                cbar4 = fig.colorbar(im4, ax=axes[3], shrink=0.8, orientation='vertical', pad=0.02)
+                cbar4.mappable.set_clim(vmin, vmax)
 
                 plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/ks_comparison{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
+
+                #Plot 7: P-ascent.
+                nrow = 4
+                ncol = 2
+                fig = plt.figure(figsize=(ncol + 1, nrow + 1))
+
+                gs = gridspec.GridSpec(nrow, ncol,
+                                       wspace=0.25, hspace=0.25,
+                                       top=1. - 0.5 / (nrow + 1), bottom=0.5 / (nrow + 1),
+                                       left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
+
+
+                ax = plt.subplot(gs[0, 0])
+                ax.imshow(np_gt, cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('Truth', fontsize=8)
+
+                ax1 = ax
+
+                ax = plt.subplot(gs[0, 1])
+                avg = np.zeros((cfg.im_size,cfg.im_size))
+                for l in range(2):
+                    avg += np_samps[method][l]
+
+                avg = avg / 2
+                ax.imshow(avg,cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('2-Avg.', fontsize=8)
+
+
+                ax = plt.subplot(gs[1, 0])
+                avg = np.zeros((cfg.im_size,cfg.im_size))
+                for l in range(4):
+                    avg += np_samps[method][l]
+
+                avg = avg / 4
+                ax.imshow(avg, cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('4-Avg.', fontsize=8)
+
+
+                ax = plt.subplot(gs[1, 1])
+                avg = np.zeros((cfg.im_size,cfg.im_size))
+                for l in range(8):
+                    avg += np_samps[method][l]
+
+                avg = avg / 8
+                ax.imshow(avg, cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('8-Avg.', fontsize=8)
+
+
+                ax = plt.subplot(gs[2, 0])
+                avg = np.zeros((cfg.im_size,cfg.im_size))
+                for l in range(16):
+                    avg += np_samps[method][l]
+
+                avg = avg / 16
+                ax.imshow(avg, cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('16-Avg.', fontsize=8)
+
+                ax = plt.subplot(gs[2, 1])
+                avg = np.zeros((cfg.im_size,cfg.im_size))
+                for l in range(32):
+                    avg += np_samps[method][l]
+
+                avg = avg / 32
+                ax.imshow(avg, cmap='inferno', vmin=0, vmax=0.5 * np.max(np_gt))
+                ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('32-Avg.', fontsize=8)
+
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/P_ascent_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.close(fig)
 
 
 
