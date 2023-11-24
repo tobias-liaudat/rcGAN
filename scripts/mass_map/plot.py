@@ -15,7 +15,7 @@ from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
-from mass_map_utils.scripts.ks_utils import backward_model, Gaussian_smoothing, ks93, ks93
+from mass_map_utils.scripts.ks_utils import Gaussian_smoothing, ks93, ks93
 from scipy import ndimage
 import sys
 
