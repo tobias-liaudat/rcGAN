@@ -55,6 +55,9 @@ if __name__ == "__main__":
 
 #TODO: Step 2: Load cosmos shear map
     cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
+    cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
+    cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1)
+    cosmos_shear_tensor = cosmos_shear_tensor[None,:, :, :]
 
 
 #TODO: Step 3: Feed shear map through gan
