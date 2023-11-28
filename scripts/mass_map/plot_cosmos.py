@@ -54,8 +54,13 @@ if __name__ == "__main__":
         mmGAN_model.eval()
 
 #TODO: Step 2: Load cosmos shear map
+    cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
 
 
 #TODO: Step 3: Feed shear map through gan
 
 #TODO Step 4: Generate a bunch of samples
+    gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
+    for z in range(cfg.num_z_test):
+        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(cosmos_shear) #TODO: Removed batch size, is that okay? or do I need to add first index back?
+    #samples = output.detach().cpy().numpy()
