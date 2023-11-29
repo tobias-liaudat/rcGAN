@@ -15,6 +15,7 @@ from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
+from utils.mri import transforms
 from mass_map_utils.scripts.ks_utils import Gaussian_smoothing, ks93, ks93
 from scipy import ndimage
 import sys
@@ -53,17 +54,24 @@ if __name__ == "__main__":
 
         mmGAN_model.eval()
 
-#TODO: Step 2: Load cosmos shear map
+#Step 2: Load cosmos shear map
     cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
     cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
     cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1)
     cosmos_shear_tensor = cosmos_shear_tensor[None,:, :, :]
 
+#Step 3: Feed through GAN and generate 32 samples.
 
-#TODO: Step 3: Feed shear map through gan
+    #TODO: Load the mean and std.
+    normalized_gamma, mean, std = transforms.normalize_instance(cosmos_shear_tensor)
 
-#TODO Step 4: Generate a bunch of samples
     gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
     for z in range(cfg.num_z_test):
-        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(cosmos_shear) #TODO: Removed batch size, is that okay? or do I need to add first index back?
-    #samples = output.detach().cpy().numpy()
+        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(normalized_gamma) #TODO: Removed batch size, is that okay? or do I need to add first index back?
+    #normalized gamma or cosmos_shear_tensor?
+
+    torch.save(gens_mmGAN, '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps')
+
+    # avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
+
+    # zfr = mmGAN_model.reformat(cosmos_shear_tensor)
