@@ -17,7 +17,7 @@ def backward_model(γ: np.ndarray, 𝒟: np.ndarray) -> np.ndarray:
   return np.fft.ifft2(𝓕𝜅) # Perform 2D inverse FFT
 
 
-def Gaussian_smoothing(kappa,m,n,theta,ngrid):
+def Gaussian_smoothing(kappa,n,theta,epsilon=25):
     """Applies Gaussian smoothing to a convergence map.
 
     This is done by taking Fourier transform of the convergence map, and a Gaussian,
@@ -25,9 +25,9 @@ def Gaussian_smoothing(kappa,m,n,theta,ngrid):
 
     Args:
         kappa (np.ndarray): Convergence map.
-        m,n (int, int): The dimensions, in pixels, of kappa.
+        n (int): The dimensions, in pixels, of kappa. Where n x n is the number of pixels in kappa.
         theta (float): Opening angle in deg.
-        ngrid (int): Number of grids.
+        epsiolon (int): Smoothing scale.
 
     Returns:
         smoothed_kappa (np.ndarray): Returns a smoothed representation of the the convergence field.
@@ -35,19 +35,16 @@ def Gaussian_smoothing(kappa,m,n,theta,ngrid):
     kappa_f = np.fft.fft2(kappa) #Fourier transform of kappa
     kappa_f_shifted = np.fft.fftshift(kappa_f) #Changes the indexing of the Fourier coefficients
     
-    Gaussian_filter = np.zeros((m,n))
-    i = (25*ngrid)/(60*theta)
-    sig_pix = i/(2*ngrid*np.sqrt(2*np.log(2)))
+    Gaussian_filter = np.zeros((n,n))
+    i = (epsilon*n)/(60*theta)
+    sig_pix = i/(2*np.sqrt(2*np.log(2)))
 
-    s = int(m/2)
     t = int(n/2)
-    x = np.arange(-s,s)
     y = np.arange(-t,t)
-    xx,yy = np.meshgrid(x,y)
+    xx,yy = np.meshgrid(y,y)
 
-    const = 1/(np.sqrt(2*np.pi*sig_pix**2))
     exponential = np.exp(-(xx**2 + yy**2)*2*(sig_pix*np.pi)**2)
-    Gaussian_filter = const*exponential
+    Gaussian_filter = exponential
 
     smoothed_kappa_f = np.fft.ifftshift(kappa_f_shifted*Gaussian_filter)
     smoothed_kappa = np.fft.ifft2(smoothed_kappa_f)
