@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from skimage.measure import find_contours
 
+
 def load_object(dct):
     return types.SimpleNamespace(**dct)
 
@@ -58,19 +59,22 @@ if __name__ == "__main__":
     cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
     cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
     cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1)
-    cosmos_shear_tensor = cosmos_shear_tensor[None,:, :, :]
+    cosmos_shear_tensor = cosmos_shear_tensor[None,:, :, :].cuda()
 
 #Step 3: Feed through GAN and generate 32 samples.
 
     #TODO: Load the mean and std.
     normalized_gamma, mean, std = transforms.normalize_instance(cosmos_shear_tensor)
+    normalized_gamma = normalized_gamma.cuda()
+    mean = mean.cuda()
+    std = std.cuda()
 
     gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
     for z in range(cfg.num_z_test):
-        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(normalized_gamma) #TODO: Removed batch size, is that okay? or do I need to add first index back?
+        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma)) #TODO: Removed batch size, is that okay? or do I need to add first index back?
     #normalized gamma or cosmos_shear_tensor?
 
-    torch.save(gens_mmGAN, '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps')
+    torch.save(gens_mmGAN, '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps.npy')
 
     # avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
