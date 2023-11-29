@@ -17,7 +17,7 @@ def backward_model(γ: np.ndarray, 𝒟: np.ndarray) -> np.ndarray:
   return np.fft.ifft2(𝓕𝜅) # Perform 2D inverse FFT
 
 
-def Gaussian_smoothing(kappa,n,theta,epsilon=25):
+def Gaussian_smoothing(kappa:np.ndarray,n:int,theta:float,epsilon=25) -> np.ndarray:
     """Applies Gaussian smoothing to a convergence map.
 
     This is done by taking Fourier transform of the convergence map, and a Gaussian,
@@ -25,9 +25,9 @@ def Gaussian_smoothing(kappa,n,theta,epsilon=25):
 
     Args:
         kappa (np.ndarray): Convergence map.
-        n (int): The dimensions, in pixels, of kappa. Where n x n is the number of pixels in kappa.
+        n (int): The dimensions, in pixels, of a square map kappa, where n x n is the no. of pixels in kappa.
         theta (float): Opening angle in deg.
-        epsiolon (int): Smoothing scale.
+        epsilon (int): Smoothing scale.
 
     Returns:
         smoothed_kappa (np.ndarray): Returns a smoothed representation of the the convergence field.
