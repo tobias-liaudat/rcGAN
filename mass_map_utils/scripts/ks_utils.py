@@ -17,38 +17,38 @@ def backward_model(γ: np.ndarray, 𝒟: np.ndarray) -> np.ndarray:
   return np.fft.ifft2(𝓕𝜅) # Perform 2D inverse FFT
 
 
-def Gaussian_smoothing(kappa:np.ndarray,n:int,theta:float,epsilon=25) -> np.ndarray:
-    """Applies Gaussian smoothing to a convergence map.
+# def Gaussian_smoothing(kappa:np.ndarray,n:int,theta:float,epsilon=25) -> np.ndarray:
+#     """Applies Gaussian smoothing to a convergence map.
 
-    This is done by taking Fourier transform of the convergence map, and a Gaussian,
-    convolving them, and then applying an inverse Fourier transform to the result.
+#     This is done by taking Fourier transform of the convergence map, and a Gaussian,
+#     convolving them, and then applying an inverse Fourier transform to the result.
 
-    Args:
-        kappa (np.ndarray): Convergence map.
-        n (int): The dimensions, in pixels, of a square map kappa, where n x n is the no. of pixels in kappa.
-        theta (float): Opening angle in deg.
-        epsilon (int): Smoothing scale.
+#     Args:
+#         kappa (np.ndarray): Convergence map.
+#         n (int): The dimensions, in pixels, of a square map kappa, where n x n is the no. of pixels in kappa.
+#         theta (float): Opening angle in deg.
+#         epsilon (int): Smoothing scale.
 
-    Returns:
-        smoothed_kappa (np.ndarray): Returns a smoothed representation of the the convergence field.
-    """
-    kappa_f = np.fft.fft2(kappa) #Fourier transform of kappa
-    kappa_f_shifted = np.fft.fftshift(kappa_f) #Changes the indexing of the Fourier coefficients
+#     Returns:
+#         smoothed_kappa (np.ndarray): Returns a smoothed representation of the the convergence field.
+#     """
+#     kappa_f = np.fft.fft2(kappa) #Fourier transform of kappa
+#     kappa_f_shifted = np.fft.fftshift(kappa_f) #Changes the indexing of the Fourier coefficients
     
-    Gaussian_filter = np.zeros((n,n))
-    i = (epsilon*n)/(60*theta)
-    sig_pix = i/(2*np.sqrt(2*np.log(2)))
+#     Gaussian_filter = np.zeros((n,n))
+#     i = (epsilon*n)/(60*theta)
+#     sig_pix = i/(2*np.sqrt(2*np.log(2)))
 
-    t = int(n/2)
-    y = np.arange(-t,t)
-    xx,yy = np.meshgrid(y,y)
+#     t = int(n/2)
+#     y = np.arange(-t,t)
+#     xx,yy = np.meshgrid(y,y)
 
-    exponential = np.exp(-(xx**2 + yy**2)*2*(sig_pix*np.pi)**2)
-    Gaussian_filter = exponential
+#     exponential = np.exp(-(xx**2 + yy**2)*2*(sig_pix*np.pi)**2)
+#     Gaussian_filter = exponential
 
-    smoothed_kappa_f = np.fft.ifftshift(kappa_f_shifted*Gaussian_filter)
-    smoothed_kappa = np.fft.ifft2(smoothed_kappa_f)
-    return smoothed_kappa
+#     smoothed_kappa_f = np.fft.ifftshift(kappa_f_shifted*Gaussian_filter)
+#     smoothed_kappa = np.fft.ifft2(smoothed_kappa_f)
+#     return smoothed_kappa
 
 
 """
