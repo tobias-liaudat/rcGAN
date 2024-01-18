@@ -54,11 +54,11 @@ class MMDataTransform:
         """
         # Generate grid of Fourier domain
         kx = np.arange(N).astype(np.float64) - N/2
-        ky, kx = np.meshgrid(kx, kx)
+        kx, ky = np.meshgrid(kx, kx)
         k = kx**2 + ky**2
         # Define Kaiser-Squires kernel
         D = np.zeros((N, N), dtype=np.complex128)
-        # D = np.where(k > 0, ((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))/k, D)
+        #D = np.where(k > 0, ((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))/k, D)
         # Another formulation to avoid divide by zero warning
         D[k>0] = (((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))[k>0]/k[k>0])
         # Apply inverse FFT shift 
@@ -93,9 +93,10 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        D = MMDataTransform.compute_fourier_kernel(im_size) #Fourier kernel
+        D = MMDataTransform.compute_fourier_kernel(im_size)
         sigma = 0.37 / np.sqrt(((theta*60/im_size)**2)*ngal)
-        gamma = MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) + 1j * np.random.randn(im_size,im_size))
+        gamma = (MMDataTransform.forward_model(kappa, D) + sigma*(np.random.randn(im_size,im_size) 
+                                                                  + 1j * np.random.randn(im_size,im_size)))
         return gamma
     
     def realistic_noise_maker(self, kappa: np.ndarray) -> np.ndarray:
@@ -111,7 +112,8 @@ class MMDataTransform:
 
         D = MMDataTransform.compute_fourier_kernel(self.im_size) #Fourier kernel
         gamma = MMDataTransform.forward_model(kappa, D) + (
-            self.std1 * np.random.randn(self.im_size, self.im_size) + 1.j * self.std2 * np.random.randn(self.im_size, self.im_size)
+            self.std1 * np.random.randn(self.im_size, self.im_size) 
+            + 1.j * self.std2 * np.random.randn(self.im_size, self.im_size)
         )
         return gamma
 
