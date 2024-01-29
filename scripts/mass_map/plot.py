@@ -179,7 +179,7 @@ if __name__ == "__main__":
                 axes[0,0].set_aspect('equal')
                 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/overview_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/overview_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -272,7 +272,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('Std. Dev.')
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_overview_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_overview_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -402,7 +402,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('Std. Dev.')                
                 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_avg_err_std_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_aes_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -474,7 +474,7 @@ if __name__ == "__main__":
                     ax.set_title(f'Sample {samp + 3}')
                 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/diversity_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/diversity_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -580,7 +580,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('32-Avg.')
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoomed_P_ascent_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/zoom_P_ascent_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -649,7 +649,7 @@ if __name__ == "__main__":
                 cbar4 = fig.colorbar(im4, ax=axes[3], orientation='vertical', pad=0.02)
                 cbar4.mappable.set_clim(vmin, vmax)
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/ks_comparison{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/ks_comp_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -749,7 +749,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('32-Avg.')
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/P_ascent_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/P_ascent_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
