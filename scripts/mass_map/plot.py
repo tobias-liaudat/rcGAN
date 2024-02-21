@@ -219,7 +219,7 @@ if __name__ == "__main__":
                 ax.set_yticklabels([])
                 ax.set_xticks([])
                 ax.set_yticks([])
-                ax.set_title('Truth')
+                ax.set_title('Zoomed Truth')
 
                 connection_path_1 = patches.ConnectionPatch([zoom_startx + zoom_length, zoom_starty],
                                                             [0, 0], coordsA=ax1.transData,
@@ -390,7 +390,7 @@ if __name__ == "__main__":
                     ax.set_yticklabels([])
                     ax.set_xticks([])
                     ax.set_yticks([])
-                    ax.set_title(f'Sample {samp + 1}')
+                    ax.set_title('Sample')
                 
                 ax = plt.subplot(gs[3, 1])
                 ax.imshow(np_stds[method][zoom_starty:zoom_starty + zoom_length,
