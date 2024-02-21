@@ -4,9 +4,6 @@ import types
 import json
 
 import numpy as np
-import matplotlib.patches as patches
-
-#TODO: Move to within mass_map directory - same for plot, test, and validate.py
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 
@@ -14,11 +11,7 @@ from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri.math import tensor_to_complex_np
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from scipy import ndimage
-import sys
+import time
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -48,35 +41,34 @@ if __name__ == "__main__":
         mmGAN_model.eval()
 
         for i, data in enumerate(test_loader):
-            y, x, mean, std = data
-            y = y.cuda()
-            x = x.cuda()
-            print(y.size(0))
-            mean = mean.cuda()
-            std = std.cuda()
+            if i >= 5:  # Adjust the number based on your requirement
+                break
+            else:
+                y, x, mean, std = data
+                y = y.cuda()
+                x = x.cuda()
+                mean = mean.cuda()
+                std = std.cuda()
 
-            num_samples = 32
+                batch_size = 9
 
-            gens_mmGAN = torch.zeros(size=(y.size(0), num_samples, cfg.im_size, cfg.im_size, 2)).cuda()
+                gens_mmGAN = torch.zeros(size=(y.size(0),cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
+                start_time = time.time()
+                for z in range(0, cfg.num_z_test, batch_size):
+                    end_idx = min(z + batch_size, cfg.num_z_test)
+                    gens_mmGAN[:,z:end_idx, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                total_time = time.time() - start_time
+                print(f'time is: {total_time}')
 
-            for z in range(num_samples):
-                gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                gt = mmGAN_model.reformat(x)
 
-            avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
-            gt = mmGAN_model.reformat(x)
-            zfr = mmGAN_model.reformat(y)
+                np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_samps_{i}.npy', gens_mmGAN, allow_pickle=True)
+                np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_gt_{i}.npy', gt, allow_pickle=True)
 
-            save_dic = {
-                'mean': mean.detach().cpu().numpy(),
-                'std': std.detach().cpu().numpy(),
-                'gens_mmGAN': gens_mmGAN.detach().cpu().numpy(),
-                'avg_mmGAN': avg_mmGAN.detach().cpu().numpy(),
-                'gt': gt.detach().cpu().numpy(),
-                'zfr': zfr.detach().cpu().numpy(),
-            }
+            
+                # gens_mmGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
 
-            save_path = '/home/jjwhit/rcGAN/jobs/validate_test/generated_samples_plots.npy'  
-            np.save(save_path, save_dic, allow_pickle=True)
+                # for z in range(cfg.num_z_test):
+                #     gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
 
-            sys.exit()
