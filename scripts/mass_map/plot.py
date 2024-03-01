@@ -83,17 +83,17 @@ if __name__ == "__main__":
                 np_gt = None
 
                 np_gt = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).abs().numpy(), 180)
+                    torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy(), 180)
                 np_zfr = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).abs().numpy(), 180)
+                    torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy(), 180)
 
                 np_avgs['mmGAN'] = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).abs().numpy(),
+                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).numpy(),
                     180)
 
                 for z in range(cfg.num_z_test):
                     np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
-                        tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).abs().numpy(), 180))
+                        tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).numpy(), 180))
 
                 np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 
                 fig, axes = plt.subplots(nrow, ncol, figsize=(8,8), constrained_layout=True)
                 
-                axes[0,0].imshow(np_gt, aspect='auto', cmap='inferno', vmin = np.min(np_gt), vmax = np.max(np_gt), origin='lower')
+                axes[0,0].imshow(np_gt.real, aspect='auto', cmap='inferno', vmin = np.min(np_gt), vmax = np.max(np_gt), origin='lower')
                 axes[0,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
                 axes[0,0].set_title('Truth')
                 axes[0,0].set_xticklabels([])
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 axes[0,0].set_xticks([])
                 axes[0,0].set_yticks([])
                 
-                im1 = axes[0,1].imshow(np_avgs[method], cmap='inferno', vmin = np.min(np_gt), vmax = np.max(np_gt), origin='lower')
+                im1 = axes[0,1].imshow(np_avgs[method].real, cmap='inferno', vmin = np.min(np_gt), vmax = np.max(np_gt), origin='lower')
                 axes[0,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
                 axes[0,1].set_title('Reconstruction')
                 axes[0,1].set_xticklabels([])
@@ -157,7 +157,7 @@ if __name__ == "__main__":
                 axes[0,1].set_yticks([])
                 plt.colorbar(im1, ax=axes[0,1], shrink=0.8)
                 
-                im2 = axes[1,0].imshow(np.abs(np_avgs[method]-np_gt),cmap='jet',vmin=np.min(np_gt),
+                im2 = axes[1,0].imshow((np_avgs[method]-np_gt).real,cmap='jet',vmin=np.min(np_gt),
                                        vmax=np.max(np.abs(np_avgs['mmGAN']-np_gt)),origin='lower')
                 axes[1,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
                 axes[1,0].set_title('Absolute Error')
@@ -167,7 +167,7 @@ if __name__ == "__main__":
                 axes[1,0].set_yticks([])
                 plt.colorbar(im2, ax=axes[1,0], shrink=0.8)
                 
-                im3 = axes[1,1].imshow(np_stds[method], cmap='viridis', vmin=np.min(np_stds['mmGAN']), vmax = np.max(np_stds['mmGAN']), origin='lower')
+                im3 = axes[1,1].imshow(np_stds[method].real, cmap='viridis', vmin=np.min(np_stds['mmGAN']), vmax = np.max(np_stds['mmGAN']), origin='lower')
                 axes[1,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
                 axes[1,1].set_title('Std. Dev.')
                 axes[1,1].set_xticklabels([])
@@ -179,7 +179,7 @@ if __name__ == "__main__":
                 axes[0,0].set_aspect('equal')
                 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/overview_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/overview_new_n_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
                                     left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(np_gt.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -212,7 +212,7 @@ if __name__ == "__main__":
                 ax.add_patch(rect)
 
                 ax = plt.subplot(gs[0, 1])
-                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                         cmap='inferno',
                         vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
@@ -233,7 +233,7 @@ if __name__ == "__main__":
                 for samp in range(1):
                     ax = plt.subplot(gs[1, samp])
                     ax.imshow(np_samps[method][samp][zoom_starty:zoom_starty + zoom_length,
-                              zoom_startx:zoom_startx + zoom_length], cmap='inferno', 
+                              zoom_startx:zoom_startx + zoom_length].real, cmap='inferno', 
                               vmin=np.min(np_gt), vmax=np.max(np_gt))
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
@@ -243,7 +243,7 @@ if __name__ == "__main__":
 
                 ax = plt.subplot(gs[1, 1])
                 ax.imshow(
-                    np_avgs[method][zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    np_avgs[method][zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -252,9 +252,9 @@ if __name__ == "__main__":
                 ax.set_title('Reconstruction')
 
                 ax = plt.subplot(gs[2, 0])
-                ax.imshow(np.abs(np_avgs[method][zoom_starty:zoom_starty + zoom_length,    
+                ax.imshow((np_avgs[method][zoom_starty:zoom_starty + zoom_length,    
                           zoom_startx:zoom_startx + zoom_length] - np_gt[zoom_starty:zoom_starty + zoom_length,
-                          zoom_startx:zoom_startx + zoom_length]), cmap='jet', vmin=np.min(np.abs(np_avgs['mmGAN'] - np_gt)),
+                          zoom_startx:zoom_startx + zoom_length]).real, cmap='jet', vmin=np.min(np.abs(np_avgs['mmGAN'] - np_gt)),
                                vmax=np.max(np.abs(np_avgs['mmGAN'] - np_gt)))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -264,7 +264,7 @@ if __name__ == "__main__":
 
                 ax = plt.subplot(gs[2, 1])
                 ax.imshow(np_stds[method][zoom_starty:zoom_starty + zoom_length,
-                          zoom_startx:zoom_startx + zoom_length], cmap='viridis', vmin=np.min(np_stds['mmGAN']),
+                          zoom_startx:zoom_startx + zoom_length].real, cmap='viridis', vmin=np.min(np_stds['mmGAN']),
                           vmax=np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -290,7 +290,7 @@ if __name__ == "__main__":
                                        left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
                 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(np_gt.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 plt.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -306,7 +306,7 @@ if __name__ == "__main__":
                 
                 ax.add_patch(rect)
                 ax = plt.subplot(gs[0, 1])
-                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                           cmap='inferno',
                           vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
@@ -326,7 +326,7 @@ if __name__ == "__main__":
                 
                 ax = plt.subplot(gs[1, 0])
                 ax.imshow(
-                    np_avgs[method][zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    np_avgs[method][zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -341,7 +341,7 @@ if __name__ == "__main__":
                 avg = avg / 8
                 
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -357,7 +357,7 @@ if __name__ == "__main__":
                 
                 avg = avg / 4
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -373,7 +373,7 @@ if __name__ == "__main__":
                 
                 avg = avg / 2
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -384,7 +384,7 @@ if __name__ == "__main__":
                 for samp in range(1):
                     ax = plt.subplot(gs[3, 0])
                     ax.imshow(np_samps[method][samp][zoom_starty:zoom_starty + zoom_length,
-                                zoom_startx:zoom_startx + zoom_length], cmap='inferno', 
+                                zoom_startx:zoom_startx + zoom_length].real, cmap='inferno', 
                                 vmin=np.min(np_gt), vmax=np.max(np_gt))
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
@@ -394,7 +394,7 @@ if __name__ == "__main__":
                 
                 ax = plt.subplot(gs[3, 1])
                 ax.imshow(np_stds[method][zoom_starty:zoom_starty + zoom_length,
-                          zoom_startx:zoom_startx + zoom_length], cmap='viridis', vmin=np.min(np_stds['mmGAN']),
+                          zoom_startx:zoom_startx + zoom_length].real, cmap='viridis', vmin=np.min(np_stds['mmGAN']),
                           vmax=np.max(np_stds['mmGAN']))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -418,7 +418,7 @@ if __name__ == "__main__":
                                        left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
                 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(np_gt.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 plt.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -435,7 +435,7 @@ if __name__ == "__main__":
                 ax.add_patch(rect)
 
                 ax = plt.subplot(gs[0, 1])
-                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                           cmap='inferno',
                           vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
@@ -456,7 +456,7 @@ if __name__ == "__main__":
                 for samp in range(2):
                     ax = plt.subplot(gs[1, samp])
                     ax.imshow(np_samps[method][samp][zoom_starty:zoom_starty + zoom_length,
-                            zoom_startx:zoom_startx + zoom_length], cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                            zoom_startx:zoom_startx + zoom_length].real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
                     ax.set_xticks([])
@@ -466,7 +466,7 @@ if __name__ == "__main__":
                 for samp in range(2):
                     ax = plt.subplot(gs[2, samp])
                     ax.imshow(np_samps[method][samp+2][zoom_starty:zoom_starty + zoom_length,
-                            zoom_startx:zoom_startx + zoom_length], cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                            zoom_startx:zoom_startx + zoom_length].real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
                     ax.set_xticks([])
@@ -479,7 +479,7 @@ if __name__ == "__main__":
 
 
 
-                #Plot 5: zoomed P-ascent.
+                # #Plot 5: zoomed P-ascent.
                 nrow = 4
                 ncol = 2
                 fig = plt.figure(figsize=(ncol + 1, nrow + 1))
@@ -491,7 +491,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                           cmap='inferno',
                           vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
@@ -509,7 +509,7 @@ if __name__ == "__main__":
 
                 avg = avg / 2
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -525,7 +525,7 @@ if __name__ == "__main__":
 
                 avg = avg / 4
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -541,7 +541,7 @@ if __name__ == "__main__":
 
                 avg = avg / 8
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -557,7 +557,7 @@ if __name__ == "__main__":
 
                 avg = avg / 16
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -572,7 +572,7 @@ if __name__ == "__main__":
 
                 avg = avg / 32
                 ax.imshow(
-                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length],
+                    avg[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                     cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -605,7 +605,7 @@ if __name__ == "__main__":
                 vmin = np.min(np_gt)
                 vmax = np.max(np_gt)
 
-                im1 = axes[0].imshow(np_gt, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                im1 = axes[0].imshow(np_gt.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=0.75)
                 axes[0].set_title('Truth')
                 axes[0].set_xticklabels([])
@@ -613,7 +613,7 @@ if __name__ == "__main__":
                 axes[0].set_xticks([])
                 axes[0].set_yticks([])
 
-                im2 = axes[1].imshow(np_avgs[method], cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
+                im2 = axes[1].imshow(np_avgs[method].real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=0.75)
                 axes[1].set_title('cGAN')
                 axes[1].set_xticklabels([])
@@ -649,7 +649,7 @@ if __name__ == "__main__":
                 cbar4 = fig.colorbar(im4, ax=axes[3], orientation='vertical', pad=0.02)
                 cbar4.mappable.set_clim(vmin, vmax)
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/ks_comp_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/cosmos_training_plots/ks_comp_new_n_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -666,7 +666,7 @@ if __name__ == "__main__":
 
 
                 ax = plt.subplot(gs[0, 0])
-                ax.imshow(np_gt, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(np_gt.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -682,7 +682,7 @@ if __name__ == "__main__":
                     avg += np_samps[method][l]
 
                 avg = avg / 2
-                ax.imshow(avg,cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(avg.real,cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -697,7 +697,7 @@ if __name__ == "__main__":
                     avg += np_samps[method][l]
 
                 avg = avg / 4
-                ax.imshow(avg, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(avg.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -712,7 +712,7 @@ if __name__ == "__main__":
                     avg += np_samps[method][l]
 
                 avg = avg / 8
-                ax.imshow(avg, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(avg.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -727,7 +727,7 @@ if __name__ == "__main__":
                     avg += np_samps[method][l]
 
                 avg = avg / 16
-                ax.imshow(avg, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(avg.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
@@ -741,7 +741,7 @@ if __name__ == "__main__":
                     avg += np_samps[method][l]
 
                 avg = avg / 32
-                ax.imshow(avg, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
+                ax.imshow(avg.real, cmap='inferno', vmin=np.min(np_gt), vmax=np.max(np_gt))
                 ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
