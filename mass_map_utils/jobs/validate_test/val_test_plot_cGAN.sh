@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=val_cosmo_cGAN 
+#SBATCH --job-name=vtp
 #SBATCH -p GPU
 # requesting one node
 # SBATCH -N1
@@ -9,11 +9,11 @@
 #SBATCH --ntasks=1                   # nombre total de tache MPI (= nombre total de GPU)
 #SBATCH --ntasks-per-node=1          # nombre de tache MPI par noeud (= nombre de GPU par noeud)
 #SBATCH --cpus-per-task=16           # nombre de coeurs CPU par tache (un quart du noeud ici)
-#SBATCH --gres=gpu:a100:1            # requesting GPUs
+#SBATCH --gres=gpu:a100:4            # requesting GPUs
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=val_test_cosmo_cGAN_%j.out
-#SBATCH --error=val_test_cosmo_cGAN_%j.err
+#SBATCH --output=vtp_%j.out
+#SBATCH --error=vtp_%j.err
 
 
 
@@ -36,7 +36,9 @@ echo $WANDB_CONFIG_DIR
 cd /home/jjwhit/rcGAN
 
 #Remember to change exp-name to the batch you want to validate
-#srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos 
-#srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos
-# srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos --num-figs 1
-srun python -u ./scripts/mass_map/plot_cosmos.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos
+# srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new 
+# srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new
+srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new --num-figs 5
+#srun python -u ./scripts/mass_map/plot_copy.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new --num-figs 10
+# srun python -u ./scripts/mass_map/generate_32_samples.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new
+# srun python -u ./scripts/mass_map/gen_cosmos_samps.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos_new
