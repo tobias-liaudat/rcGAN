@@ -50,13 +50,17 @@ if __name__ == "__main__":
                 mean = mean.cuda()
                 std = std.cuda()
 
-                batch_size = 9
+                batch = 9
 
-                gens_mmGAN = torch.zeros(size=(y.size(0),cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
+                gens_mmGAN = torch.zeros(size=(y.size(0),1000, cfg.im_size, cfg.im_size, 2)).cuda()
                 start_time = time.time()
-                for z in range(0, cfg.num_z_test, batch_size):
-                    end_idx = min(z + batch_size, cfg.num_z_test)
-                    gens_mmGAN[:,z:end_idx, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                # for z in range(0, cfg.num_z_test, batch):
+                #     end_idx = min(z + batch, cfg.num_z_test)
+                #     gens_mmGAN[:,z:end_idx, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+
+                for z in range(0, 1000, batch):
+                    gens_mmGAN[z:z+batch, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+
                 total_time = time.time() - start_time
                 print(f'time is: {total_time}')
 
@@ -65,10 +69,4 @@ if __name__ == "__main__":
 
                 np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_samps_{i}.npy', gens_mmGAN, allow_pickle=True)
                 np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_gt_{i}.npy', gt, allow_pickle=True)
-
-            
-                # gens_mmGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
-
-                # for z in range(cfg.num_z_test):
-                #     gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
 
