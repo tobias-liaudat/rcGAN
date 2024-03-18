@@ -250,10 +250,26 @@ def normalize_instance(
     Returns:
         torch.Tensor: Normalized tensor
     """
+
     mean = data.mean()
     std = data.std()
 
     return normalize(data, mean, std, eps), mean, std
+
+def normalise_complex(
+    shear: torch.Tensor, eps: Union[float, torch.Tensor] = 0.0
+) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
+    magnitude = shear.abs()
+    phase = shear.angle() #In radians
+
+    #mag_mean = #INPUT NUMBER HERE
+    #mag_std = #INPUT NUMBER HERE
+
+    normal_mag = (magnitude - mag_mean) / (mag_std + eps)
+    normal_shear = normal_mag * torch.exp(1j*phase) #z = e^(i * theta)
+
+    return normal_shear, mag_mean, mag_std
 
 
 class UnetSample(NamedTuple):
