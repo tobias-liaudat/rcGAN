@@ -263,8 +263,8 @@ def normalise_complex(
     magnitude = shear.abs()
     phase = shear.angle() #In radians
 
-    #mag_mean = #INPUT NUMBER HERE
-    #mag_std = #INPUT NUMBER HERE
+    mag_mean = 0.14049194898307577
+    mag_std = 0.11606233247891737
 
     normal_mag = (magnitude - mag_mean) / (mag_std + eps)
     normal_shear = normal_mag * torch.exp(1j*phase) #z = e^(i * theta)

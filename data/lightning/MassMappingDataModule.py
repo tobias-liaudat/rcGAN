@@ -163,8 +163,9 @@ class MMDataTransform:
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
 
         # Normalization step.
-        normalized_gamma, mean, std = transforms.normalize_instance(pt_gamma)
-        normalized_gt = transforms.normalize(pt_kappa, mean, std)
+        normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
+        
+        normalized_gt = transforms.normalize(pt_kappa, 0.00015744006243248638, 0.02968584954283938)
 
         # Mask the shear gamma
         if self.mask is not None:
