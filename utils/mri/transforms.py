@@ -257,14 +257,14 @@ def normalize_instance(
     return normalize(data, mean, std, eps), mean, std
 
 def normalise_complex(
-    shear: torch.Tensor, eps: Union[float, torch.Tensor] = 0.0
+    shear: torch.Tensor, 
+    mag_mean: float = 0.14049194898307577,
+    mag_std: float = 0.11606233247891737,
+    eps: Union[float, torch.Tensor] = 0.0
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
-    magnitude = shear.abs()
-    phase = shear.angle() #In radians
-
-    mag_mean = 0.14049194898307577
-    mag_std = 0.11606233247891737
+    magnitude = torch.abs(shear)
+    phase = torch.angle(shear) #In radians
 
     normal_mag = (magnitude - mag_mean) / (mag_std + eps)
     normal_shear = normal_mag * torch.exp(1j*phase) #z = e^(i * theta)
