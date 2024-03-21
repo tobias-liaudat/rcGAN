@@ -257,19 +257,20 @@ def normalize_instance(
     return normalize(data, mean, std, eps), mean, std
 
 def normalise_complex(
-    shear: torch.Tensor, 
+    shear: torch.Tensor, #Shape (2, H, W) 
     mag_mean: float = 0.14049194898307577,
     mag_std: float = 0.11606233247891737,
     eps: Union[float, torch.Tensor] = 0.0
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
-    magnitude = torch.abs(shear)
-    phase = torch.angle(shear) #In radians
+    magnitude = torch.abs(torch.complex(shear[0,:,:], shear[1,:,:]))
+    phase = torch.angle(torch.complex(shear[0,:,:], shear[1,:,:])) #In radians
 
     normal_mag = (magnitude - mag_mean) / (mag_std + eps)
-    normal_shear = normal_mag * torch.exp(1j*phase) #z = e^(i * theta)
-
-    return normal_shear, mag_mean, mag_std
+    normal_shear = normal_mag * torch.exp(1j*phase)
+    normal_real = normal_shear.real
+    normal_imag = normal_shear.imag
+    return torch.stack((normal_real, normal_imag)), mag_mean, mag_std
 
 
 class UnetSample(NamedTuple):
