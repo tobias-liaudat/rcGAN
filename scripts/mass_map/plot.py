@@ -21,6 +21,7 @@ from scipy import ndimage
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from skimage.measure import find_contours
+import matplotlib.ticker as tkr
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -82,27 +83,20 @@ if __name__ == "__main__":
 
                 np_gt = None
 
+                kappa_mean = 0.00015744006243248638
+                kappa_std = 0.02968584954283938
+
                 np_gt = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy(), 180)
-                # np_gt = ndimage.rotate(
-                #     torch.tensor(tensor_to_complex_np((gt[j]).cpu())).numpy(), 180)
+                    torch.tensor(tensor_to_complex_np((gt[j] * kappa_std + kappa_mean).cpu())).numpy(), 180)
                 np_zfr = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy(), 180)
-                # np_zfr = ndimage.rotate(
-                #     torch.tensor(tensor_to_complex_np((zfr[j]).cpu())).numpy(), 180)
+                    torch.tensor(tensor_to_complex_np((zfr[j] * kappa_std + kappa_mean).cpu())).numpy(), 180)
 
                 np_avgs['mmGAN'] = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).numpy(),
+                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * kappa_std + kappa_mean).cpu())).numpy(),
                     180)
-                # np_avgs['mmGAN'] = ndimage.rotate(
-                #     torch.tensor(tensor_to_complex_np((avg_mmGAN[j]).cpu())).numpy(),
-                #     180)
-
                 for z in range(cfg.num_z_test):
                     np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
-                        tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).numpy(), 180))
-                    # np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
-                    #     tensor_to_complex_np((gens_mmGAN[j, z]).cpu())).numpy(), 180))
+                        tensor_to_complex_np((gens_mmGAN[j, z] * kappa_std + kappa_mean).cpu())).numpy(), 180))
 
                 np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 
@@ -140,55 +134,79 @@ if __name__ == "__main__":
                 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-                #Fig 1: Global recon, error, std
-                nrow = 2
-                ncol = 2
+                #FIG 1: Gt, recon, error, std
 
                 contours = find_contours(mask, 0.5)
                 outer_contour = max(contours, key=lambda x: x.shape[0])
+
+
+                fig, axes = plt.subplots(1,4)
+                for axis in axes.flatten():
+                    axis.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
                 
-                fig, axes = plt.subplots(nrow, ncol, figsize=(8,8), constrained_layout=True)
+                vmin = np.min(np_gt.real)
+                vmax = np.max(np_gt.real)
                 
-                axes[0,0].imshow(np_gt.real, aspect='auto', cmap='inferno', vmin = np.min(np_gt.real), vmax = np.max(np_gt.real), origin='lower')
-                axes[0,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
-                axes[0,0].set_title('Truth')
-                axes[0,0].set_xticklabels([])
-                axes[0,0].set_yticklabels([])
-                axes[0,0].set_xticks([])
-                axes[0,0].set_yticks([])
+                im1 = axes[0].imshow(np_gt.real, cmap='inferno', vmin = vmin, vmax = vmax, origin='lower')
+                axes[0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[0].set_title('Ground Truth')
                 
-                im1 = axes[0,1].imshow(np_avgs[method].real, cmap='inferno', vmin = np.min(np_gt.real), vmax = np.max(np_gt.real), origin='lower')
-                axes[0,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
-                axes[0,1].set_title('Reconstruction')
-                axes[0,1].set_xticklabels([])
-                axes[0,1].set_yticklabels([])
-                axes[0,1].set_xticks([])
-                axes[0,1].set_yticks([])
-                plt.colorbar(im1, ax=axes[0,1], shrink=0.8)
+                im2 = axes[1].imshow(np_avgs[method].real, cmap='inferno', vmin = vmin, vmax = vmax, origin='lower')
+                axes[1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[1].set_title('Reconstruction')
                 
-                im2 = axes[1,0].imshow((np_avgs[method]-np_gt).real,cmap='jet',vmin=np.min((np_avgs[method]-np_gt).real),
-                                       vmax=np.max((np_avgs['mmGAN']-np_gt).real),origin='lower')
-                axes[1,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
-                axes[1,0].set_title('Absolute Error')
-                axes[1,0].set_xticklabels([])
-                axes[1,0].set_yticklabels([])
-                axes[1,0].set_xticks([])
-                axes[1,0].set_yticks([])
-                plt.colorbar(im2, ax=axes[1,0], shrink=0.8)
+                im3 = axes[2].imshow(np.abs(np_avgs[method]-np_gt),cmap='jet',vmin=np.min(np.abs(np_avgs[method]-np_gt)),
+                                       vmax=np.max(np.abs(np_avgs['mmGAN']-np_gt)),origin='lower')
+                axes[2].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[2].set_title('Absolute Error')
                 
-                im3 = axes[1,1].imshow(np_stds[method].real, cmap='viridis', vmin=np.min(np_stds[method].real), vmax = np.max(np_stds[method].real), origin='lower')
-                axes[1,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
-                axes[1,1].set_title('Std. Dev.')
-                axes[1,1].set_xticklabels([])
-                axes[1,1].set_yticklabels([])
-                axes[1,1].set_xticks([])
-                axes[1,1].set_yticks([])
-                plt.colorbar(im2, ax=axes[1,1], shrink=0.8)
-                
-                axes[0,0].set_aspect('equal')
+                im4 = axes[3].imshow(np_stds[method].real, cmap='viridis', vmin=np.min(np_stds[method].real), vmax = np.max(np_stds[method].real), origin='lower')
+                axes[3].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[3].set_title('Standard Deviation')
+
+                cbar1 = fig.colorbar(im1, ax=axes[0],format=tkr.FormatStrFormatter('%.2f'))
+                cbar2 = fig.colorbar(im2, ax=axes[1],format=tkr.FormatStrFormatter('%.2f'))
+                cbar3 = fig.colorbar(im3, ax=axes[2],format=tkr.FormatStrFormatter('%.2f'))
+                cbar4 = fig.colorbar(im4, ax=axes[3],format=tkr.FormatStrFormatter('%.2f'))
+                plt.subplots_adjust(wspace=0, hspace=.2)
                 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/overview_new_n_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/overview_long_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.close(fig)
+
+                
+                fig, axes = plt.subplots(2,2)
+                for axis in axes.flatten():
+                    axis.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
+                
+                vmin = np.min(np_gt.real)
+                vmax = np.max(np_gt.real)
+                
+                im1 = axes[0,0].imshow(np_gt.real, cmap='inferno', vmin = vmin, vmax = vmax, origin='lower')
+                axes[0,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[0,0].set_title('Ground Truth')
+                
+                im2 = axes[0,1].imshow(np_avgs[method].real, cmap='inferno', vmin = vmin, vmax = vmax, origin='lower')
+                axes[0,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[0,1].set_title('Reconstruction')
+                
+                im3 = axes[1,0].imshow(np.abs(np_avgs[method]-np_gt),cmap='jet',vmin=np.min(np.abs(np_avgs[method]-np_gt)),
+                                       vmax=np.max(np.abs(np_avgs['mmGAN']-np_gt)),origin='lower')
+                axes[1,0].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[1,0].set_title('Absolute Error')
+                
+                im4 = axes[1,1].imshow(np_stds[method].real, cmap='viridis', vmin=np.min(np_stds[method].real), vmax = np.max(np_stds[method].real), origin='lower')
+                axes[1,1].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.75)
+                axes[1,1].set_title('Standard Deviation')
+
+                cbar1 = fig.colorbar(im1, ax=axes[0,0],format=tkr.FormatStrFormatter('%.2f'))
+                cbar2 = fig.colorbar(im2, ax=axes[0,1],format=tkr.FormatStrFormatter('%.2f'))
+                cbar3 = fig.colorbar(im3, ax=axes[1,0],format=tkr.FormatStrFormatter('%.2f'))
+                cbar4 = fig.colorbar(im4, ax=axes[1,1],format=tkr.FormatStrFormatter('%.2f'))
+                plt.subplots_adjust(wspace=0, hspace=.2)
+                
+
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/overview_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -261,10 +279,10 @@ if __name__ == "__main__":
                 ax.set_title('Reconstruction')
 
                 ax = plt.subplot(gs[2, 0])
-                ax.imshow((np_avgs[method][zoom_starty:zoom_starty + zoom_length,    
+                ax.imshow(np.abs(np_avgs[method][zoom_starty:zoom_starty + zoom_length,    
                           zoom_startx:zoom_startx + zoom_length] - np_gt[zoom_starty:zoom_starty + zoom_length,
-                          zoom_startx:zoom_startx + zoom_length]).real, cmap='jet', vmin=np.min((np_avgs['mmGAN'] - np_gt).real),
-                               vmax=np.max((np_avgs['mmGAN'] - np_gt).real))
+                          zoom_startx:zoom_startx + zoom_length]), cmap='jet', vmin=np.min(np.abs(np_avgs['mmGAN'] - np_gt)),
+                               vmax=np.max(np.abs(np_avgs['mmGAN'] - np_gt)))
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_xticks([])
@@ -281,7 +299,7 @@ if __name__ == "__main__":
                 ax.set_yticks([])
                 ax.set_title('Std. Dev.')
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/zoomed_overview_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/zoomed_overview{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -294,7 +312,7 @@ if __name__ == "__main__":
                 fig = plt.figure(figsize=(ncol + 1, nrow + 1))
                 
                 gs = gridspec.GridSpec(nrow, ncol,
-                                       wspace=0.25, hspace=0.25,
+                                       wspace=0.25, hspace=0.3,
                                        top=1. - 0.5 / (nrow + 1), bottom=0.5 / (nrow + 1),
                                        left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
                 
@@ -315,7 +333,7 @@ if __name__ == "__main__":
                 
                 ax.add_patch(rect)
                 ax = plt.subplot(gs[0, 1])
-                ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
+                im = ax.imshow(np_gt[zoom_starty:zoom_starty + zoom_length, zoom_startx:zoom_startx + zoom_length].real,
                           cmap='inferno',
                           vmin=np.min(np_gt.real), vmax=np.max(np_gt.real))
                 ax.set_xticklabels([])
@@ -409,9 +427,12 @@ if __name__ == "__main__":
                 ax.set_yticklabels([])
                 ax.set_xticks([])
                 ax.set_yticks([])
-                ax.set_title('Std. Dev.')                
-                
-                plt.savefig(f'/share/gpu0/jjwhit/plots/zoomed_aes_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                ax.set_title('Std. Dev.') 
+
+                cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.02])  # Adjust the position and size as needed
+                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8,format=tkr.FormatStrFormatter('%.2f'))
+
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/zoomed_aes_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
@@ -485,17 +506,17 @@ if __name__ == "__main__":
                     ax.set_title(f'Sample {samp + 3}')
                 
                 cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.02])  # Adjust the position and size as needed
-                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8)
+                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8,format=tkr.FormatStrFormatter('%.2f'))
 
                 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/diversity_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/diversity_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
 
                 # #Plot 5: zoomed P-ascent.
-                nrow = 4
+                nrow = 3
                 ncol = 2
                 fig = plt.figure(figsize=(ncol + 1, nrow + 1))
 
@@ -596,15 +617,14 @@ if __name__ == "__main__":
                 ax.set_title('32-Avg.')
 
                 cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.02])  # Adjust the position and size as needed
-                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8)
+                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8,format=tkr.FormatStrFormatter('%.2f'))
 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/zoom_P_ascent_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/zoom_P_ascent_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
                 #Plot 6: Kaiser Squires comparison
-
 
                 std1 = np.load(
                     cfg.cosmo_dir_path + 'cosmos_std1.npy', allow_pickle=True
@@ -612,8 +632,8 @@ if __name__ == "__main__":
                 std2 = np.load(
                     cfg.cosmo_dir_path + 'cosmos_std2.npy', allow_pickle=True
                 )
-                D = MMDataTransform.compute_fourier_kernel(cfg.im_size)
-                gamma_sim = MMDataTransform.forward_model(np_gt, D) + (
+                kernel = MMDataTransform.compute_fourier_kernel(cfg.im_size)
+                gamma_sim = MMDataTransform.forward_model(np_gt, kernel) + (
                             std1 * np.random.randn(cfg.im_size, cfg.im_size) + 1.j * std2 * np.random.randn(cfg.im_size, cfg.im_size)
                         )
 
@@ -640,8 +660,8 @@ if __name__ == "__main__":
                 axes[1].set_xticks([])
                 axes[1].set_yticks([])
 
-                kappa_sim = backward_model(gamma_sim, D)
-                im3 = axes[2].imshow(kappa_sim.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower') #Previously kappa_sim[0]
+                backward = backward_model(gamma_sim, kernel)
+                im3 = axes[2].imshow(backward.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower') #Previously kappa_sim[0]
                 axes[2].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
                 axes[2].set_title('Kaiser-Squires')
                 axes[2].set_xticklabels([])
@@ -649,7 +669,7 @@ if __name__ == "__main__":
                 axes[2].set_xticks([])
                 axes[2].set_yticks([])
 
-                ks = ndimage.gaussian_filter(kappa_sim, sigma=1./29) #Previously kappa_sim[0]
+                ks = ndimage.gaussian_filter(backward, sigma=1/.29)
 
                 im4 = axes[3].imshow(ks.real, cmap='inferno', vmin=vmin, vmax=vmax, origin='lower')
                 axes[3].plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=1)
@@ -659,22 +679,16 @@ if __name__ == "__main__":
                 axes[3].set_xticks([])
                 axes[3].set_yticks([])
 
-                # cbar1 = fig.colorbar(im1, ax=axes[0], shrink=0.8, orientation='vertical', pad=0.02)
-                # cbar1.mappable.set_clim(vmin, vmax)
-                # cbar2 = fig.colorbar(im2, ax=axes[1], shrink=0.8, orientation='vertical', pad=0.02)
-                # cbar2.mappable.set_clim(vmin, vmax)
-                # cbar3 = fig.colorbar(im3, ax=axes[2], shrink=0.8, orientation='vertical', pad=0.02)
-                # cbar3.mappable.set_clim(vmin, vmax)
-                cbar4 = fig.colorbar(im4, ax=axes[3], orientation='vertical', pad=0.02)
+                cbar4 = fig.colorbar(im4, ax=axes[3], orientation='vertical', pad=0.02,format=tkr.FormatStrFormatter('%.2f'))
                 cbar4.mappable.set_clim(vmin, vmax)
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/ks_comp_new_n_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/ks_comp_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
 
                 #Plot 7: P-ascent.
-                nrow = 4
+                nrow = 3
                 ncol = 2
                 fig = plt.figure(figsize=(ncol + 1, nrow + 1))
 
@@ -769,10 +783,60 @@ if __name__ == "__main__":
                 ax.set_title('32-Avg.')
 
                 cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.02])  # Adjust the position and size as needed
-                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8)
+                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8,format=tkr.FormatStrFormatter('%.2f'))
 
 
-                plt.savefig(f'/share/gpu0/jjwhit/plots/P_ascent_new_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/P_ascent_{fig_count}.png', bbox_inches='tight', dpi=300)
+                plt.close(fig)
+
+                # #Plot 8: Posterior samples.
+                nrow = 2
+                ncol = 3
+                fig = plt.figure(figsize=(ncol + 1, nrow + 1))
+
+                gs = gridspec.GridSpec(nrow, ncol,
+                                       wspace=0.25, hspace=0.25,
+                                       top=1. - 0.5 / (nrow + 1), bottom=0.5 / (nrow + 1),
+                                       left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
+
+
+                ax = plt.subplot(gs[0, 0])
+                im = ax.imshow(np_gt.real, cmap='inferno', vmin=vmin, vmax=vmax)
+                #ax.plot(outer_contour[:, 1], outer_contour[:, 0], color='white', linewidth=.5)
+                ax.set_xticklabels([])
+                ax.set_yticklabels([])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title('Truth')
+
+                ax1 = ax
+
+                for samp in range(2):
+                    ax = plt.subplot(gs[0, samp+1])
+                    ax.imshow(np_samps[method][samp].real, cmap='inferno', 
+                              vmin=vmin, vmax=vmax)
+                    ax.set_xticklabels([])
+                    ax.set_yticklabels([])
+                    ax.set_xticks([])
+                    ax.set_yticks([])
+                    ax.set_title(f'Sample {samp + 1}')
+
+                for samp in range(3):
+                    ax = plt.subplot(gs[1, samp])
+                    ax.imshow(np_samps[method][samp+3].real, cmap='inferno', 
+                              vmin=vmin, vmax=vmax)
+                    ax.set_xticklabels([])
+                    ax.set_yticklabels([])
+                    ax.set_xticks([])
+                    ax.set_yticks([])
+                    ax.set_title(f'Sample {samp + 3}')
+
+
+                cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.02])  # Adjust the position and size as needed
+                cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', shrink=0.8,format=tkr.FormatStrFormatter('%.2f'))
+
+
+                plt.savefig(f'/share/gpu0/jjwhit/plots/new/samples_new_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
 
