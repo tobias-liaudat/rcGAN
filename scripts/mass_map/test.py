@@ -93,9 +93,6 @@ if __name__ == "__main__":
                 mean = mean.cuda()
                 std = std.cuda()
 
-                # gens = torch.zeros(size=(y.size(0), n, cfg.in_chans // 2, cfg.im_size, cfg.im_size, 2)).cuda()
-                # for z in range(n):
-                #     gens[:, z, :, :, :, :] = model.reformat(model.forward(y))
                 gens = torch.zeros(size=(y.size(0), n, cfg.im_size, cfg.im_size, 2)).cuda()
                 for z in range(n):
                     gens[:, z, :, :, :] = model.reformat(model.forward(y))
@@ -107,18 +104,14 @@ if __name__ == "__main__":
                 for j in range(y.size(0)):
                     single_samps = np.zeros((n, cfg.im_size, cfg.im_size))
 
-                    # S = sp.linop.Multiply((cfg.im_size, cfg.im_size), tensor_to_complex_np(maps[j].cpu()))
                     gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu()), tensor_to_complex_np(
                         (avg[j] * std[j] + mean[j]).cpu())
-                    # gt_ksp, avg_ksp = tensor_to_complex_np((gt[j]).cpu()), tensor_to_complex_np(
-                    #     (avg[j]).cpu())
 
                     avg_gen_np = np.real(torch.tensor(avg_ksp).numpy())
-                    gt_np = np.rela(torch.tensor(gt_ksp).numpy())
+                    gt_np = np.real(torch.tensor(gt_ksp).numpy())
 
                     for z in range(n):
                         np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * std[j] + mean[j]).cpu())
-                        # np_samp = tensor_to_complex_np((gens[j, z, :, :, :]).cpu())
                         single_samps[z, :, :] = np.real(torch.tensor(np_samp).numpy())
 
                     med_np = np.median(single_samps, axis=0)

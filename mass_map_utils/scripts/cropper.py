@@ -38,7 +38,6 @@ for fname in all_test:
     print('Processing test file n', img_number)
     #Load file
     kappa = np.load(fname, allow_pickle=True)
-    kappa[kappa>0.7]=0.7
     #Crop convergence map
     center_start = (1024 - center_size) // 2
     center_end =  center_start + center_size

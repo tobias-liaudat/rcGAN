@@ -102,6 +102,8 @@ class mmGAN(pl.LightningModule):
     def forward(self, y):
         num_vectors = y.size(0)
         noise = self.get_noise(num_vectors)
+        # print('shape of y: ', y.shape)
+        # print('shape of noise: ', noise.shape)
         samples = self.generator(torch.cat([y, noise], dim=1))
         samples = self.readd_measures(samples, y)     
         return samples
