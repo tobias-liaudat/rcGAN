@@ -5,6 +5,8 @@ cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/
 
 # Define the experience
 experience: mass_mapping
+kappa_mean: 0.00015744006243248638
+kappa_std: 0.02968584954283938
 
 # Number of code vectors for each phase
 num_z_test: 32

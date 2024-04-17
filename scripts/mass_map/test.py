@@ -104,8 +104,8 @@ if __name__ == "__main__":
                 for j in range(y.size(0)):
                     single_samps = np.zeros((n, cfg.im_size, cfg.im_size))
 
-                    kappa_mean = 0.00015744006243248638
-                    kappa_std = 0.02968584954283938
+                    kappa_mean = cfg.kappa_mean
+                    kappa_std = cfg.kappa_std
 
                     gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * kappa_std + kappa_mean).cpu()), tensor_to_complex_np(
                         (avg[j] * kappa_std + kappa_mean).cpu())

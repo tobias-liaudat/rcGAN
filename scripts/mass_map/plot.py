@@ -43,6 +43,7 @@ if __name__ == "__main__":
     dm.setup()
     test_loader = dm.test_dataloader()
 
+
     with torch.no_grad():
         mmGAN_model = mmGAN.load_from_checkpoint(
             checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
@@ -83,8 +84,8 @@ if __name__ == "__main__":
 
                 np_gt = None
 
-                kappa_mean = 0.00015744006243248638
-                kappa_std = 0.02968584954283938
+                kappa_mean = cfg.kappa_mean
+                kappa_std = cfg.kappa_std
 
                 np_gt = ndimage.rotate(
                     torch.tensor(tensor_to_complex_np((gt[j] * kappa_std + kappa_mean).cpu())).numpy(), 180)
