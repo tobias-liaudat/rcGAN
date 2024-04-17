@@ -16,7 +16,7 @@ class MMDataTransform:
         self.test = test
         self.theta = theta
         self.im_size = args.im_size
-        self.ngal = ngal #TODO: Redefine ngal(?)
+        self.ngal = ngal
         self.mask = None
         self.std1 = None
         self.std2 = None
@@ -58,8 +58,7 @@ class MMDataTransform:
         k = kx**2 + ky**2
         # Define Kaiser-Squires kernel
         D = np.zeros((N, N), dtype=np.complex128)
-        #D = np.where(k > 0, ((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))/k, D)
-        # Another formulation to avoid divide by zero warning
+        # Avoid divide by zero warning
         D[k>0] = (((kx ** 2.0 - ky ** 2.0) + 1j * (2.0 * kx * ky))[k>0]/k[k>0])
         # Apply inverse FFT shift 
         return np.fft.ifftshift(D)
@@ -214,7 +213,6 @@ class MMDataModule(pl.LightningDataModule):
 
 
     # define your dataloaders
-    # again, here defined for train, validate and test, not for predict as the project is not there yet.
     def train_dataloader(self):
         return DataLoader(
             dataset=self.train,
