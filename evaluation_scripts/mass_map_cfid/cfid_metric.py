@@ -146,11 +146,11 @@ class CFIDMetric:
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
-            unnormal_im = reformatted * std[i] + mean[i]
+            unnormal_im = reformatted * std[i] + mean[i] #TODO: Which mean/std here? Gamma or kappa?
 
             #S = sp.linop.Multiply((self.args.im_size, self.args.im_size), maps[i])
 
-            im = torch.tensor(tensor_to_complex_np(unnormal_im.cpu())).abs().cuda()
+            im = torch.real(torch.tensor(tensor_to_complex_np(unnormal_im.cpu()))).cuda()
             im = (im - torch.min(im)) / (torch.max(im) - torch.min(im))
 
             embed_ims[i, 0, :, :] = im
