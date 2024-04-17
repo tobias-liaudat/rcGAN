@@ -59,7 +59,7 @@ if __name__ == "__main__":
                 #     gens_mmGAN[:,z:end_idx, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
 
                 for z in range(0, 1000, batch):
-                    gens_mmGAN[z:z+batch, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                    gens_mmGAN[z:z+batch, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y)) #TODO: Reintroduce mean and std
 
                 total_time = time.time() - start_time
                 print(f'time is: {total_time}')
@@ -67,6 +67,6 @@ if __name__ == "__main__":
                 gt = mmGAN_model.reformat(x)
 
 
-                np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_samps_{i}.npy', gens_mmGAN, allow_pickle=True)
-                np.save(f'/share/gpu0/jjwhit/plots/simulation_1k_gt_{i}.npy', gt, allow_pickle=True)
+                np.save(f'/share/gpu0/jjwhit/plots/simulation_samps_{i}.npy', gens_mmGAN, allow_pickle=True)
+                np.save(f'/share/gpu0/jjwhit/plots/simulation_gt_{i}.npy', gt, allow_pickle=True)
 

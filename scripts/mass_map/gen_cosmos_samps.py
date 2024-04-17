@@ -2,9 +2,7 @@ import torch
 import yaml
 import types
 import json
-
 import numpy as np
-
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 
@@ -21,7 +19,7 @@ def load_object(dct):
 
 if __name__ == "__main__":
 
-    #TODO: Step 1: Load model.
+    # Load model.
     torch.set_float32_matmul_precision('medium')
     args = create_arg_parser().parse_args()
     seed_everything(1, workers=True)
@@ -45,15 +43,14 @@ if __name__ == "__main__":
 
         mmGAN_model.eval()
 
-#Step 2: Load cosmos shear map
+# Load cosmos shear map.
     cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
     cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
     cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1).cuda()
 
-#Step 3: Feed through GAN and generate 32 samples.
-
+# Feed through GAN and generate 32 samples.
     normalized_gamma, mean, std = transforms.normalise_instance(cosmos_shear_tensor)
-    normalized_gamma = normalized_gamma[None,:,:,:].cuda()
+    normalized_gamma = normalized_gamma[None,:,:,:].cuda() #Required?
 
     gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
     for z in range(cfg.num_z_test):
