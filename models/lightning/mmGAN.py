@@ -9,7 +9,6 @@ from matplotlib import cm
 
 from PIL import Image
 from torch.nn import functional as F
-from utils.mri.fftc import ifft2c_new, fft2c_new #TODO: Unused imports.
 from models.archs.mass_map.generator import UNetModel
 from models.archs.mass_map.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
@@ -47,30 +46,10 @@ class mmGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
-        # reformatted_tensor = torch.zeros(
-        #     size=(samples.size(0), self.resolution, self.resolution, 2), device=self.device
-        # )
-        # #Takes values from samples and assigns to reformatted tensor
-        # reformatted_tensor[:, :, :, 0] = samples[:, 0, :, :]
-        # reformatted_tensor[:, :, :, 1] = samples[:, 1, :, :]
-        # return reformatted_tensor
-
-        # New implementation
         reformatted_tensor = torch.swapaxes(torch.clone(samples), 3, 1)
         return reformatted_tensor
 
     def readd_measures(self, samples, measures):
-        # reformatted_tensor = self.reformat(samples)
-        # measures = fft2c_new(self.reformat(measures))
-        # reconstructed_kspace = fft2c_new(reformatted_tensor)
-        # # # reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
-        # image = ifft2c_new(reconstructed_kspace)
-        # output_im = torch.zeros(size=samples.shape, device=self.device)
-        # output_im[:, 0, :, :] = image[:, :, :, 0]
-        # output_im[:, 1, :, :] = image[:, :, :, 1]
-        # return output_im
-
-        # New implementation
         return torch.clone(samples)
 
     def compute_gradient_penalty(self, real_samples, fake_samples, y):
@@ -102,8 +81,6 @@ class mmGAN(pl.LightningModule):
     def forward(self, y):
         num_vectors = y.size(0)
         noise = self.get_noise(num_vectors)
-        # print('shape of y: ', y.shape)
-        # print('shape of noise: ', noise.shape)
         samples = self.generator(torch.cat([y, noise], dim=1))
         samples = self.readd_measures(samples, y)     
         return samples
@@ -194,7 +171,7 @@ class mmGAN(pl.LightningModule):
             return d_loss
 
     def validation_step(self, batch, batch_idx, external_test=False):
-        y, x, mean, std= batch
+        y, x, mean, std= batch #TODO: Should mean/std be from kappa or gamma?
 
         fig_count = 0
 
@@ -206,11 +183,11 @@ class mmGAN(pl.LightningModule):
         gens = torch.zeros(size=(y.size(0), num_code, self.args.out_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
-            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] 
+            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] #TODO: M/s here
 
         avg = torch.mean(gens, dim=1)
         avg_gen = self.reformat(avg)
-        gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None])
+        gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None]) #TODO: M/s here
 
         mag_avg_list = []
         mag_single_list = []
@@ -219,18 +196,6 @@ class mmGAN(pl.LightningModule):
         psnr_1s = []
 
         for j in range(y.size(0)):
-            # S = sp.linop.Multiply((self.args.im_size, self.args.im_size), tensor_to_complex_np(maps[j].cpu()))
-
-            # ON CPU
-            # avg_sp_out = torch.tensor(S.H * tensor_to_complex_np(avg_gen[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            # single_sp_out = torch.tensor(S.H * tensor_to_complex_np(self.reformat(gens[:, 0])[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            # gt_sp_out = torch.tensor(S.H * tensor_to_complex_np(gt[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-
-            # ON GPU - Does not work with DDP
-            # avg_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(avg_gen[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-            # single_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(self.reformat(gens[:, 0])[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-            # gt_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(gt[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-
             psnr_8s.append(peak_signal_noise_ratio(avg_gen[j], gt[j]))
             psnr_1s.append(peak_signal_noise_ratio(self.reformat(gens[:, 0])[j], gt[j]))
 
@@ -241,7 +206,6 @@ class mmGAN(pl.LightningModule):
         psnr_8s = torch.stack(psnr_8s)
         psnr_1s = torch.stack(psnr_1s)
         mag_avg_gen = torch.cat(mag_avg_list, dim=0)
-        mag_single_gen = torch.cat(mag_single_list, dim=0)
         mag_gt = torch.cat(mag_gt_list, dim=0)
 
         self.log('psnr_8_step', psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True)

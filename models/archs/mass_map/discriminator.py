@@ -1,4 +1,4 @@
-#Mass Map discriminator
+# Mass Map discriminator.
 
 import torch
 from torch import nn

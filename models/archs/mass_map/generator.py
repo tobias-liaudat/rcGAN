@@ -1,4 +1,4 @@
-#Mass Map Generator
+# Mass Map Generator.
 
 """
 Copyright (c) Facebook, Inc. and its affiliates.
