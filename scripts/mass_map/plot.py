@@ -134,7 +134,7 @@ if __name__ == "__main__":
                 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-                #FIG 1: Gt, recon, error, std
+                #FIG 0.5: Gt, recon, error, std
 
                 contours = find_contours(mask, 0.5)
                 outer_contour = max(contours, key=lambda x: x.shape[0])
@@ -174,6 +174,7 @@ if __name__ == "__main__":
                 plt.savefig(f'/share/gpu0/jjwhit/plots/new/overview_long_{fig_count}.png', bbox_inches='tight', dpi=300)
                 plt.close(fig)
 
+                #FIG 1: Gt, recon, error, std
                 
                 fig, axes = plt.subplots(2,2)
                 for axis in axes.flatten():
@@ -231,7 +232,6 @@ if __name__ == "__main__":
                 ax.set_title('Truth')
 
                 ax1 = ax
-
                 rect = patches.Rectangle((zoom_startx, zoom_starty), zoom_length, zoom_length, linewidth=1,
                                         edgecolor='r',
                                         facecolor='none')
@@ -326,7 +326,6 @@ if __name__ == "__main__":
                 ax.set_title('Truth')
                 
                 ax1 = ax
-                
                 rect = patches.Rectangle((zoom_startx, zoom_starty), zoom_length, zoom_length, linewidth=1,
                                          edgecolor='r',
                                          facecolor='none')
@@ -457,7 +456,6 @@ if __name__ == "__main__":
                 ax.set_title('Truth')
 
                 ax1 = ax
-
                 rect = patches.Rectangle((zoom_startx, zoom_starty), zoom_length, zoom_length, linewidth=1,
                                          edgecolor='r',
                                          facecolor='none')
@@ -537,7 +535,6 @@ if __name__ == "__main__":
                 ax.set_title('Truth')
 
                 ax1 = ax
-
                 ax = plt.subplot(gs[0, 1])
                 avg = np.zeros((cfg.im_size,cfg.im_size), dtype=np.complex128)
                 for l in range(2):
@@ -640,6 +637,8 @@ if __name__ == "__main__":
                 nrow = 1
                 ncol = 4
                 fig, axes = plt.subplots(nrow, ncol, figsize=(12,3), constrained_layout=True)
+
+                #TODO: Can loop for tick labels here.
 
                 vmin = np.min(np_gt.real)
                 vmax = np.max(np_gt.real)

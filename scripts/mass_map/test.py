@@ -104,14 +104,17 @@ if __name__ == "__main__":
                 for j in range(y.size(0)):
                     single_samps = np.zeros((n, cfg.im_size, cfg.im_size))
 
-                    gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu()), tensor_to_complex_np(
-                        (avg[j] * std[j] + mean[j]).cpu())
+                    kappa_mean = 0.00015744006243248638
+                    kappa_std = 0.02968584954283938
+
+                    gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * kappa_std + kappa_mean).cpu()), tensor_to_complex_np(
+                        (avg[j] * kappa_std + kappa_mean).cpu())
 
                     avg_gen_np = np.real(torch.tensor(avg_ksp).numpy())
                     gt_np = np.real(torch.tensor(gt_ksp).numpy())
 
                     for z in range(n):
-                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * std[j] + mean[j]).cpu())
+                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * kappa_std + kappa_mean).cpu())
                         single_samps[z, :, :] = np.real(torch.tensor(np_samp).numpy())
 
                     med_np = np.median(single_samps, axis=0)
