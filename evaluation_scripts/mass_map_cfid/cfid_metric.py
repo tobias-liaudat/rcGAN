@@ -5,6 +5,7 @@ import numpy as np
 
 import torchvision.transforms as transforms
 from utils.mri.math import tensor_to_complex_np
+from utils.mri.transforms import unnormalize_complex
 from tqdm import tqdm
 
 def symmetric_matrix_square_root_torch(mat, eps=1e-10):
@@ -166,7 +167,7 @@ class CFIDMetric:
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
-            unnormal_im = transforms.unnormalize_complex(reformatted) #Mean/std calculated during preprocessing
+            unnormal_im = unnormalize_complex(reformatted) #Mean/std calculated during preprocessing
 
             im = torch.real(torch.tensor(tensor_to_complex_np(unnormal_im.cpu()))).cuda()
             im = (im - torch.min(im)) / (torch.max(im) - torch.min(im))
