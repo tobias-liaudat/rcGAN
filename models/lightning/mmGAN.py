@@ -171,7 +171,7 @@ class mmGAN(pl.LightningModule):
             return d_loss
 
     def validation_step(self, batch, batch_idx, external_test=False):
-        y, x, mean, std= batch #TODO: Should mean/std be from kappa or gamma?
+        y, x, mean, std= batch
 
         fig_count = 0
 
@@ -179,15 +179,20 @@ class mmGAN(pl.LightningModule):
             num_code = self.args.num_z_test
         else:
             num_code = self.args.num_z_valid
+        
+        kappa_mean = torch.tensor(self.args.kappa_mean)
+        kappa_std = torch.tensor(self.args.kappa_std)
 
         gens = torch.zeros(size=(y.size(0), num_code, self.args.out_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
         for z in range(num_code):
-            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] #TODO: M/s here
+            # gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] 
+            gens[:, z, :, :, :] = self.forward(y) * kappa_std[:, None, None, None] + kappa_mean[:, None, None, None] #TODO: All good here?
 
         avg = torch.mean(gens, dim=1)
         avg_gen = self.reformat(avg)
-        gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None]) #TODO: M/s here
+        # gt = self.reformat(x * std[:, None, None, None] + mean[:, None, None, None])
+        gt = self.reformat(x * kappa_std[:, None, None, None] + kappa_mean[:, None, None, None])
 
         mag_avg_list = []
         mag_single_list = []
