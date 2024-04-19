@@ -146,7 +146,7 @@ class CFIDMetric:
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
-            unnormal_im = reformatted * std[i] + mean[i] #TODO: Which mean/std here? Gamma or kappa?
+            unnormal_im = reformatted * std[i] + mean[i] 
 
             #S = sp.linop.Multiply((self.args.im_size, self.args.im_size), maps[i])
 
@@ -158,6 +158,25 @@ class CFIDMetric:
             embed_ims[i, 2, :, :] = im
 
         return embed_ims
+
+    def _get_embed_im_complex(self, multi_coil_inp):
+        embed_ims = torch.zeros(size=(multi_coil_inp.size(0), 3, self.args.im_size, self.args.im_size)).cuda()
+        for i in range(multi_coil_inp.size(0)):
+            reformatted = torch.zeros(size=(1, self.args.im_size, self.args.im_size, 2)).cuda()
+            reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
+            reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
+
+            unnormal_im = transforms.unnormalize_complex(reformatted) #Mean/std calculated during preprocessing
+
+            im = torch.real(torch.tensor(tensor_to_complex_np(unnormal_im.cpu()))).cuda()
+            im = (im - torch.min(im)) / (torch.max(im) - torch.min(im))
+
+            embed_ims[i, 0, :, :] = im
+            embed_ims[i, 1, :, :] = im
+            embed_ims[i, 2, :, :] = im
+
+        return embed_ims
+
 
     def _get_generated_distribution(self):
         image_embed = []
@@ -186,9 +205,9 @@ class CFIDMetric:
                 for l in range(self.num_samps):
                     recon = self.gan(condition)
 
-                    image = self._get_embed_im(recon, mean, std)
-                    condition_im = self._get_embed_im(condition, mean, std)
-                    true_im = self._get_embed_im(gt, mean, std)
+                    image = self._get_embed_im(recon, self.args.kappa_mean, self.args.kappa_std)
+                    condition_im = self._get_embed_im_complex(condition)
+                    true_im = self._get_embed_im(gt, self.args.kappa_mean, self.args.kappa_std)
                     # WARNING -> transform()
                     img_e = self.image_embedding(self.transforms(image))
                     cond_e = self.condition_embedding(self.transforms(condition_im))
@@ -226,9 +245,9 @@ class CFIDMetric:
                         for l in range(self.num_samps):
                             recon = self.gan(condition)
 
-                            image = self._get_embed_im(recon, mean, std)
-                            condition_im = self._get_embed_im(condition, mean, std)
-                            true_im = self._get_embed_im(gt, mean, std)
+                            image = self._get_embed_im(recon, self.args.kappa_mean, self.args.kappa_std)
+                            condition_im = self._get_embed_im_complex(condition)
+                            true_im = self._get_embed_im(gt, self.args.kappa_mean, self.args.kappa_std)
 
                             img_e = self.image_embedding(self.transforms(image))
                             cond_e = self.condition_embedding(self.transforms(condition_im))
