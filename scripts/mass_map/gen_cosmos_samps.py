@@ -49,7 +49,7 @@ if __name__ == "__main__":
     cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1).cuda()
 
 # Feed through GAN and generate 32 samples.
-    normalized_gamma, mean, std = transforms.normalise_instance(cosmos_shear_tensor)
+    normalized_gamma, mean, std = transforms.normalize_instance(cosmos_shear_tensor)
     normalized_gamma = normalized_gamma[None,:,:,:].cuda() #Required?
 
     gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
