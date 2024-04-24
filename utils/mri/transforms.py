@@ -277,10 +277,16 @@ def unnormalize_complex(
     mag_mean: float = 0.14049194898307577, 
     mag_std: float = 0.11606233247891737,
 ):
-    phase = torch.angle(torch.complex(normed_data[0,:,:], normed_data[1,:,:])) #Phase should be same as original
-    mag_data = ((normed_data * mag_std) / torch.exp(1j*phase)) + mag_mean
-    unnormed_data_real = mag_data * torch.cos(phase)
-    unnormed_data_imag = mag_data * torch.sin(phase)
+    normed_mag = torch.abs(torch.complex(normed_data[0,:,:], normed_data[1,:,:]))
+    phase = torch.angle(torch.complex(normed_data[0,:,:], normed_data[1,:,:]))
+    # mag_data = ((normed_data * mag_std) / torch.exp(1j*phase)) + mag_mean
+    # unnormed_data_real = mag_data * torch.cos(phase)
+    # unnormed_data_imag = mag_data * torch.sin(phase)
+
+    unnormed_mag = (normed_mag * mag_std) + mag_mean
+    unnormed_data = unnormed_mag * torch.exp(1j*phase)
+    unnormed_data_real = unnormed_data.real
+    unnormed_data_imag = unnormed_data.imag
     return torch.stack((unnormed_data_real, unnormed_data_imag))
 
 
