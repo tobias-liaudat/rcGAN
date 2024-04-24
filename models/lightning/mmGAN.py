@@ -180,8 +180,8 @@ class mmGAN(pl.LightningModule):
         else:
             num_code = self.args.num_z_valid
         
-        kappa_mean = torch.tensor(self.args.kappa_mean)
-        kappa_std = torch.tensor(self.args.kappa_std)
+        kappa_mean = torch.tensor([self.args.kappa_mean])
+        kappa_std = torch.tensor([self.args.kappa_std])
 
         gens = torch.zeros(size=(y.size(0), num_code, self.args.out_chans, self.args.im_size, self.args.im_size),
                            device=self.device)
