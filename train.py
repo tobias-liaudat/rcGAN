@@ -1,5 +1,5 @@
 import torch
-import torch.nn as nn
+#import torch.nn as nn
 import yaml
 import types
 import json
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     wandb_logger = WandbLogger(
         project=cfg.experience,
         name=args.exp_name,
-        log_model="all",
+        log_model="True",
         save_dir=cfg.checkpoint_dir + 'wandb'
     )
 
