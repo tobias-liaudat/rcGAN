@@ -35,14 +35,14 @@ if __name__ == "__main__":
     best_epoch = -1
     inception_embedding = VGG16Embedding()
     best_cfid = 10000000
-    start_epoch = 70 #Will start saving models after 70 epochs
-    end_epoch = 99
+    start_epoch = 80 #Will start saving models after 70 epochs
+    end_epoch = 100
 
 
     with torch.no_grad():
         
         for epoch in range(start_epoch, end_epoch):
-            print(f"VALIDATING EPOCH: {epoch + 1}")
+            print(f"VALIDATING EPOCH: {epoch}")
             try:
                 model = mmGAN.load_from_checkpoint(checkpoint_path=cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
             except Exception as e:
@@ -77,12 +77,12 @@ if __name__ == "__main__":
 
     print(f"BEST EPOCH: {best_epoch}")
 
-    for epoch in range(end_epoch):
-        try:
-            if epoch != best_epoch:
-                os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
-        except:
-            pass
+    # for epoch in range(end_epoch):
+    #     try:
+    #         if epoch != best_epoch:
+    #             os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
+    #     except:
+    #         pass
 
     os.rename(
         cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={best_epoch}.ckpt',
