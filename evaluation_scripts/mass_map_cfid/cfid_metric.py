@@ -147,7 +147,7 @@ class CFIDMetric:
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
-            unnormal_im = reformatted * std[i] + mean[i] 
+            unnormal_im = reformatted * std + mean
 
             #S = sp.linop.Multiply((self.args.im_size, self.args.im_size), maps[i])
 
