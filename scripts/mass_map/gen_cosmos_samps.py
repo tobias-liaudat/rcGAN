@@ -45,15 +45,18 @@ if __name__ == "__main__":
 
 # Load cosmos shear map.
     cosmos_shear = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_shear_cropped.npy')
-    cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
-    cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1).cuda()
+    cosmos_shear_tensor = torch.tensor(np.stack((cosmos_shear.real, cosmos_shear.imag), axis=0)).cuda()
+    # cosmos_shear_tensor = transforms.to_tensor(cosmos_shear)
+    # cosmos_shear_tensor = cosmos_shear_tensor.permute(2, 0, 1).cuda()
+
 
 # Feed through GAN and generate 32 samples.
-    normalized_gamma, mean, std = transforms.normalize_instance(cosmos_shear_tensor)
-    normalized_gamma = normalized_gamma[None,:,:,:].cuda() #Required?
+    normalized_gamma, mean, std = transforms.normalise_complex(cosmos_shear_tensor)
+    # normalized_gamma = normalized_gamma.permute(1,2,0)
+    normalized_gamma = normalized_gamma.unsqueeze(0).cuda() #Required?
 
-    gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
+    gens_mmGAN = torch.zeros(size=(1,cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
     for z in range(cfg.num_z_test):
-        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma).cuda())
+        gens_mmGAN[:,z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma))
 
-    torch.save(gens_mmGAN,'/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps_manual_2')
+    torch.save(gens_mmGAN,'/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps_manual_5')
