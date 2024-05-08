@@ -2,10 +2,8 @@ import torch
 import yaml
 import types
 import json
-
 import numpy as np
 import matplotlib.patches as patches
-
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 

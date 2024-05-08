@@ -4,24 +4,17 @@ import types
 import json
 
 import numpy as np
-import matplotlib.patches as patches
 
 import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 
 from data.lightning.MassMappingDataModule import MMDataModule
-from data.lightning.MassMappingDataModule import MMDataTransform
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
-from mass_map_utils.scripts.ks_utils import backward_model
 from scipy import ndimage
 
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from skimage.measure import find_contours
-import matplotlib.ticker as tkr
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
