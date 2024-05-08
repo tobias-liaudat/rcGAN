@@ -276,9 +276,11 @@ def unnormalize_complex(
     normed_data: torch.Tensor, 
     mag_mean: float = 0.14049194898307577, 
     mag_std: float = 0.11606233247891737,
-):
-    normed_mag = torch.abs(torch.complex(normed_data[0,:,:], normed_data[1,:,:]))
-    phase = torch.angle(torch.complex(normed_data[0,:,:], normed_data[1,:,:]))
+):  
+    # print(normed_data.shape)
+    # Sizes of tensors based on input to validate.py script, as that's where this function is called.
+    normed_mag = torch.abs(torch.complex(normed_data[:,:,:,0], normed_data[:,:,:,1]))
+    phase = torch.angle(torch.complex(normed_data[:,:,:,0], normed_data[:,:,:,1]))
     # mag_data = ((normed_data * mag_std) / torch.exp(1j*phase)) + mag_mean
     # unnormed_data_real = mag_data * torch.cos(phase)
     # unnormed_data_imag = mag_data * torch.sin(phase)
@@ -287,7 +289,9 @@ def unnormalize_complex(
     unnormed_data = unnormed_mag * torch.exp(1j*phase)
     unnormed_data_real = unnormed_data.real
     unnormed_data_imag = unnormed_data.imag
-    return torch.stack((unnormed_data_real, unnormed_data_imag))
+
+    #Permuted so output matches input shape: [batch size, img_size, img_size, re/imag]
+    return torch.stack((unnormed_data_real, unnormed_data_imag)).permute(1,2,3,0) 
 
 
 class UnetSample(NamedTuple):
