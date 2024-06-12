@@ -51,12 +51,15 @@ if __name__ == "__main__":
 
 
 # Feed through GAN and generate 32 samples.
+    mask = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy', allow_pickle=True)
     normalized_gamma, mean, std = transforms.normalise_complex(cosmos_shear_tensor)
     # normalized_gamma = normalized_gamma.permute(1,2,0)
+    normalized_gamma[:, mask==0] = 0
     normalized_gamma = normalized_gamma.unsqueeze(0).cuda() #Required?
 
     gens_mmGAN = torch.zeros(size=(1,cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
-    for z in range(cfg.num_z_test):
-        gens_mmGAN[:,z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma))
+    with torch.no_grad():
+        for z in range(cfg.num_z_test):
+            gens_mmGAN[:,z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma))
 
     torch.save(gens_mmGAN,'/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps_manual_5')
