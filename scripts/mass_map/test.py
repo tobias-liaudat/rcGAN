@@ -14,7 +14,9 @@ from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
-from evaluation_scripts.metrics import psnr, ssim
+# from evaluation_scripts.metrics import ssim, psnr
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import structural_similarity as ssim
 from utils.embeddings import VGG16Embedding
 from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric  
 from DISTS_pytorch import DISTS
