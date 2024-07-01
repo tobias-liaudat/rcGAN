@@ -46,7 +46,7 @@ if __name__ == "__main__":
     start_epoch = 80  # Will start saving models after 80 epochs
     end_epoch = 100
     mask = np.load(
-        self.args.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True
+        "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
 
     cfid_vals = []
