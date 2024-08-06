@@ -39,7 +39,8 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         mmGAN_model = mmGAN.load_from_checkpoint(
-            checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
+            # checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
+            checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint-epoch=277.ckpt')
 
         mmGAN_model.cuda()
 
@@ -95,11 +96,11 @@ if __name__ == "__main__":
                 np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(f'/share/gpu0/jjwhit/samples/np_gt_{fig_count}.npy', np_gt)
-                np.save(f'/share/gpu0/jjwhit/samples/np_zfr_{fig_count}.npy', np_zfr)
-                np.save(f'/share/gpu0/jjwhit/samples/np_avgs_{fig_count}.npy', np_avgs['mmGAN'])
-                np.save(f'/share/gpu0/jjwhit/samples/np_stds_{fig_count}.npy', np_stds['mmGAN'])
-                np.save(f'/share/gpu0/jjwhit/samples/np_samps_{fig_count}.npy', np_samps['mmGAN'])
+                np.save(f'/share/gpu0/jjwhit/samples/epoch-277/np_gt_{fig_count}.npy', np_gt)
+                np.save(f'/share/gpu0/jjwhit/samples/epoch-277/np_zfr_{fig_count}.npy', np_zfr)
+                np.save(f'/share/gpu0/jjwhit/samples/epoch-277/np_avgs_{fig_count}.npy', np_avgs['mmGAN'])
+                np.save(f'/share/gpu0/jjwhit/samples/epoch-277/np_stds_{fig_count}.npy', np_stds['mmGAN'])
+                np.save(f'/share/gpu0/jjwhit/samples/epoch-277/np_samps_{fig_count}.npy', np_samps['mmGAN'])
 
 
                 if fig_count == args.num_figs:
