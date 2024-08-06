@@ -4,6 +4,9 @@ import yaml
 import types
 import json
 import numpy as np
+from tqdm import tqdm
+from scipy import ndimage
+
 
 import sys
 
@@ -16,6 +19,8 @@ from models.lightning.mmGAN import mmGAN
 from pytorch_lightning import seed_everything
 from utils.embeddings import VGG16Embedding
 from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric
+
+from utils.mri.math import tensor_to_complex_np
 
 
 def load_object(dct):
@@ -36,15 +41,19 @@ if __name__ == "__main__":
     dm = MMDataModule(cfg)
     dm.setup()
     val_loader = dm.val_dataloader()
-    best_epoch = -1
+    best_epoch_cfid = -1
+    best_epoch_pearson = -1
+    best_epoch_psnr = -1
+    best_epoch_snr = -1
+    best_epoch_rmse = -1
     inception_embedding = VGG16Embedding()
     best_cfid = 10000000
     best_pearson = -1
     best_psnr = -1
     best_snr = -1
     best_rmse = 10000000
-    start_epoch = 80  # Will start saving models after 80 epochs
-    end_epoch = 100
+    start_epoch = 250  # Will start saving models after 250 epochs
+    end_epoch = 300
     mask = np.load(
         "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
@@ -53,7 +62,7 @@ if __name__ == "__main__":
     psnr_vals = []
     snr_vals = []
     rmse_vals = []
-    r_vals = []
+    pearson_vals = []
 
     with torch.no_grad():
 
@@ -89,39 +98,69 @@ if __name__ == "__main__":
                 num_samps=1,
             )
 
-            reconstruction, label, truth = cfid_metric._get_generated_distribution()
+            recon, label, gt = cfid_metric._get_generated_distribution()
 
             cfids = cfid_metric.get_cfid_torch_pinv()
 
             cfid_val = np.mean(cfids)
-
+            cfid_vals.append(cfid_val.item())
             if cfid_val < best_cfid:
                 best_epoch_cfid = epoch
                 best_cfid = cfid_val
 
-            pearson_val = pearsoncoeff(truth, reconstruction, mask)
-            pearson_vals.append((epoch, pearson_val))
-            if pearson_val > best_pearson:
-                best_epoch_pearson = epoch
-                best_pearson = pearson_val
+            # Trying something new - doing new metrics not in embedded space
+            for i, data in tqdm(enumerate(val_loader),
+                            desc='Generating samples',
+                            total=len(val_loader)):
+                y, x, mean, std = data
+                y = y.cuda()
+                x = x.cuda()
+                mean = mean.cuda()
+                std = std.cuda()
 
-            psnr_val = psnr(truth, reconstruction, mask)
-            psnr_vals.append((epoch, psnr_val))
-            if psnr_val > best_psnr:
-                best_epoch_psnr = epoch
-                best_psnr = psnr_val
+                gens = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
 
-            snr_val = snr(truth, reconstruction, mask)
-            snr_vals.append((epoch, snr_val))
-            if snr_val > best_snr:
-                best_epoch_snr = epoch
-                best_snr = snr_val
+                for z in range(cfg.num_z_test):
+                    gens[:,z,:,:,:] = model.reformat(model.forward(y))
+                
+                reconstruction = torch.mean(gens, dim=1)
+                truth = model.reformat(x)
+                kappa_mean = cfg.kappa_mean
+                kappa_std = cfg.kappa_std
 
-            rmse_val = rmse(truth, reconstruction, mask)
-            rmse_vals.append((epoch, rmse_val))
-            if rmse_val < best_rmse:
-                best_epoch_rmse = epoch
-                best_rmse = rmse_val
+                for j in range(y.size(0)):
+                    np_reconstruction = {'mmGAN': None,}
+                    np_gt = None
+                    np_gt = ndimage.rotate(torch.tensor(tensor_to_complex_np((truth[j] * kappa_std + kappa_mean).cpu())).numpy(), 180)
+                    np_reconstruction['mmGAN'] = ndimage.rotate(torch.tensor(tensor_to_complex_np((reconstruction[j] + kappa_std + kappa_mean).cpu())).numpy(),180)
+
+                truth = np_gt
+                reconstruction = np_reconstruction['mmGAN']
+
+                pearson_val = pearsoncoeff(truth.real, reconstruction.real)
+
+                pearson_vals.append(pearson_val.item())
+                if pearson_val > best_pearson:
+                    best_epoch_pearson = epoch
+                    best_pearson = pearson_val
+
+                psnr_val = psnr(truth.real, reconstruction.real)
+                psnr_vals.append(psnr_val.item())
+                if psnr_val > best_psnr:
+                    best_epoch_psnr = epoch
+                    best_psnr = psnr_val
+
+                snr_val = snr(truth.real, reconstruction.real)
+                snr_vals.append(snr_val.item())
+                if snr_val > best_snr:
+                    best_epoch_snr = epoch
+                    best_snr = snr_val
+
+                rmse_val = rmse(truth.real, reconstruction.real)
+                rmse_vals.append(rmse_val.item())
+                if rmse_val < best_rmse:
+                    best_epoch_rmse = epoch
+                    best_rmse = rmse_val
 
     print(f"BEST EPOCH FOR CFID: {best_epoch_cfid}")
     print(f"BEST EPOCH FOR PSNR: {best_epoch_psnr}")
@@ -129,16 +168,11 @@ if __name__ == "__main__":
     print(f"BEST EPOCH FOR RMSE: {best_epoch_rmse}")
     print(f"BEST EPOCH FOR R: {best_epoch_pearson}")
 
-    print("Epoch | CFID | PSNR | SNR | RMSE | R")
-    for epoch, cfid, psnr, snr, rmse, r in zip(
-        range(start_epoch, end_epoch),
-        cfid_vals,
-        psnr_vals,
-        snr_vals,
-        rmse_vals,
-        r_vals,
-    ):
-        print(f"{epoch} | {cfid} | {psnr} | {snr} | {rmse} | {r}")
+    print("CFID | ", cfid_vals)
+    print("PSNR | ", psnr_vals)
+    print("SNR | ", snr_vals)
+    print("RMSE | ", rmse_vals)
+    print("PEARSON | ", pearson_vals)
 
     # for epoch in range(end_epoch):
     #     try:
@@ -147,7 +181,7 @@ if __name__ == "__main__":
     #     except:
     #         pass
 
-    os.rename(
-        cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch}.ckpt",
-        cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
-    )
+    # os.rename(
+    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch}.ckpt",
+    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
+    # )
