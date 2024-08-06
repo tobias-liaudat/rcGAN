@@ -80,6 +80,23 @@ class MMDataTransform:
         return np.fft.ifft2(F_gamma) # Perform 2D inverse FFT
 
     @staticmethod
+    def backward_model(gamma: np.ndarray, D: np.ndarray) -> np.ndarray:
+        """Applies the backward mapping between shear and convergence through their 
+            relationship in Fourier space.
+
+        Args:
+            gamma (np.ndarray): Shearing field, with shape [N,N].
+            D (np.ndarray): Fourier space Kaiser-Squires kernel, with shape = [N,N].
+
+        Returns:
+            kappa (np.ndarray): Convergence field, with shape [N,N].
+        """
+        F_gamma = np.fft.fft2(gamma)
+        F_kappa = F_gamma / D
+        F_kappa = np.nan_to_num(F_kappa, nan=0, posinf=0, neginf=0)
+        return np.fft.ifft2(F_kappa)
+
+    @staticmethod
     def noise_maker(theta: float, im_size: int, ngal: int, kappa: np.ndarray) -> np.ndarray:
         """Adds some random Gaussian noise to a mock weak lensing map.
 
@@ -153,6 +170,7 @@ class MMDataTransform:
         """
         # Generate observation on the fly.
         gamma = self.gamma_gen(kappa)
+        ks = self.backward_model(gamma, self.compute_fourier_kernel(self.im_size))
 
         # Format input gt data.
         pt_kappa = transforms.to_tensor(kappa) # Shape (H, W, 2)
@@ -163,8 +181,12 @@ class MMDataTransform:
 
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
-        
         normalized_gt = transforms.normalize(pt_kappa, 0.00015744006243248638, 0.02968584954283938)
+        #TODO: for now normalising KS like kappa see how this performs?
+        normalized_ks = transforms.normalize(ks, 0.00015744006243248638, 0.02968584954283938)
+
+
+        normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0)
 
         # Mask the shear gamma
         if self.mask is not None:
