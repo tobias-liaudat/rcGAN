@@ -7,6 +7,7 @@ from data.datasets.MM_data import MassMappingDataset_Test, MassMappingDataset_Tr
 from utils.mri import transforms
 from typing import Tuple
 import pathlib
+import torch
 
 
 
@@ -172,6 +173,7 @@ class MMDataTransform:
         gamma = self.gamma_gen(kappa)
         ks = self.backward_model(gamma, self.compute_fourier_kernel(self.im_size))
 
+
         # Format input gt data.
         pt_kappa = transforms.to_tensor(kappa) # Shape (H, W, 2)
         pt_kappa = pt_kappa.permute(2, 0, 1)  # Shape (2, H, W)
@@ -179,12 +181,14 @@ class MMDataTransform:
         pt_gamma = transforms.to_tensor(gamma) # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
 
+        pt_ks = transforms.to_tensor(ks)
+        pt_ks = pt_ks.permute(2, 0, 1)
+
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
         normalized_gt = transforms.normalize(pt_kappa, 0.00015744006243248638, 0.02968584954283938)
-        #TODO: for now normalising KS like kappa see how this performs?
-        normalized_ks = transforms.normalize(ks, 0.00015744006243248638, 0.02968584954283938)
-
+        normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
+        normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
 
         normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0)
 
