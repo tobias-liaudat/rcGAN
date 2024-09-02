@@ -44,7 +44,7 @@ if __name__ == "__main__":
     best_snr = -1
     best_rmse = 10000000
     start_epoch = 80  # Will start saving models after 80 epochs
-    end_epoch = 100
+    end_epoch = cfg.num_epochs
     mask = np.load(
         "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
