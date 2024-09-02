@@ -14,7 +14,7 @@ num_z_valid: 8
 num_z_train: 2
 
 # Data
-in_chans: 3  # Real+Imag parts from observation + Kaiser squires map
+in_chans: 4  # Real+Imag parts from observation + Kaiser squires map
 out_chans: 2
 im_size: 300 # Pixel width/height (square iamges)
 
