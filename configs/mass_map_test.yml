@@ -14,7 +14,7 @@ num_z_valid: 8
 num_z_train: 2
 
 # Data
-in_chans: 4  # Real+Imag parts from observation + Kaiser squires map
+in_chans: 4  # Real+Imag parts from observation + Kaiser squires map #TODO: If this works, add this to normal config
 out_chans: 2
 im_size: 300 # Pixel width/height (square iamges)
 
@@ -30,7 +30,7 @@ adv_weight: 1e-5
 # Training
 batch_size: 9
 #Remember to increase this for full training
-num_epochs: 100
+num_epochs: 10
 psnr_gain_tol: 0.25
 
-num_workers: 4
+num_workers: 1

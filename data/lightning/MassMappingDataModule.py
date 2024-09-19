@@ -7,6 +7,7 @@ from data.datasets.MM_data import MassMappingDataset_Test, MassMappingDataset_Tr
 from utils.mri import transforms
 from typing import Tuple
 import pathlib
+import torch
 
 
 
@@ -78,6 +79,23 @@ class MMDataTransform:
         F_kappa = np.fft.fft2(kappa) # Perform 2D forward FFT
         F_gamma = F_kappa * D # Map convergence onto shear
         return np.fft.ifft2(F_gamma) # Perform 2D inverse FFT
+
+    @staticmethod
+    def backward_model(gamma: np.ndarray, D: np.ndarray) -> np.ndarray:
+        """Applies the backward mapping between shear and convergence through their 
+            relationship in Fourier space.
+
+        Args:
+            gamma (np.ndarray): Shearing field, with shape [N,N].
+            D (np.ndarray): Fourier space Kaiser-Squires kernel, with shape = [N,N].
+
+        Returns:
+            kappa (np.ndarray): Convergence field, with shape [N,N].
+        """
+        F_gamma = np.fft.fft2(gamma)
+        F_kappa = F_gamma / D
+        F_kappa = np.nan_to_num(F_kappa, nan=0, posinf=0, neginf=0)
+        return np.fft.ifft2(F_kappa)
 
     @staticmethod
     def noise_maker(theta: float, im_size: int, ngal: int, kappa: np.ndarray) -> np.ndarray:
@@ -153,6 +171,8 @@ class MMDataTransform:
         """
         # Generate observation on the fly.
         gamma = self.gamma_gen(kappa)
+        ks = self.backward_model(gamma, self.compute_fourier_kernel(self.im_size))
+
 
         # Format input gt data.
         pt_kappa = transforms.to_tensor(kappa) # Shape (H, W, 2)
@@ -161,10 +181,16 @@ class MMDataTransform:
         pt_gamma = transforms.to_tensor(gamma) # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
 
+        pt_ks = transforms.to_tensor(ks)
+        pt_ks = pt_ks.permute(2, 0, 1)
+
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
-        
         normalized_gt = transforms.normalize(pt_kappa, 0.00015744006243248638, 0.02968584954283938)
+        normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
+        normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
+
+        normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0)
 
         # Mask the shear gamma
         if self.mask is not None:
